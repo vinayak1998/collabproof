@@ -1,0 +1,1202 @@
+[
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 0,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 0,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 0,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 1500000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 1500000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 1500000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 2000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2000100,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2000100,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 2000100,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2100000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2100000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 2100000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2222200,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2222200,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 2222200,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2222300,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2222300,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 2222300,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 6000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 6000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 6000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 2000000,
+  "product_fmv_paise": 1500000,
+  "product_retained": false,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 2000000,
+  "product_fmv_paise": 2100000,
+  "product_retained": false,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 2000000,
+  "product_fmv_paise": 3000000,
+  "product_retained": false,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 2000000,
+  "product_fmv_paise": 6000000,
+  "product_retained": false,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": false,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": false,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2100000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": false,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "individual",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 400000000,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2100000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "individual",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 400000000,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "individual",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 400000000,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 6000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 1000000,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 1500000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 1800000,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 250000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 1999900,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 100,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 1800000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "provider"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 2700000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "provider"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 4500000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "provider"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 195000000
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2500000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 195000000
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2500000,
+  "product_retained": false,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": true,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 100000000
+  },
+  "cash_fee_paise": 3000000,
+  "product_fmv_paise": 2000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": true,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 195000000
+  },
+  "cash_fee_paise": 5000000,
+  "product_fmv_paise": 6000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": true,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": false,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": true
+  },
+  "creator": {
+   "is_resident": false,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ },
+ {
+  "brand": {
+   "entity_type": "company",
+   "preceding_fy_business_turnover_paise": 0,
+   "preceding_fy_profession_receipts_paise": 0,
+   "in_business": false
+  },
+  "creator": {
+   "is_resident": true,
+   "pan_furnished": true,
+   "special_category_state": false,
+   "gst_registered": false,
+   "fy_prior_benefits_from_brand_paise": 0,
+   "fy_prior_194r_tds_paise": 0,
+   "fy_prior_cash_fees_from_brand_paise": 0,
+   "fy_prior_cash_tds_paise": 0,
+   "fy_prior_aggregate_turnover_paise": 0
+  },
+  "cash_fee_paise": 0,
+  "product_fmv_paise": 3000000,
+  "product_retained": true,
+  "deliverable_linked": true,
+  "tax_borne_by": "recipient"
+ }
+]

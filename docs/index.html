@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>collabproof — certify the tax treatment of a creator barter collab</title>
+<style>
+  :root{--ink:#1a1f2b;--mut:#5b6474;--line:#e3e7ee;--bg:#f7f8fb;--card:#ffffff;
+        --ok:#0a7a4b;--okbg:#e8f7ef;--bad:#b3261e;--badbg:#fdeceb;
+        --amb:#8a5a00;--ambbg:#fff4dc;--ref:#4a4f8c;--refbg:#eceefc;--acc:#274690}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg)}
+  .wrap{max-width:1060px;margin:0 auto;padding:28px 20px 60px}
+  header h1{margin:0;font-size:26px;letter-spacing:-.01em}
+  header p{margin:6px 0 0;color:var(--mut);max-width:74ch}
+  .badge{display:inline-block;margin-top:10px;padding:4px 10px;border-radius:999px;
+         font-size:12.5px;font-weight:600;border:1px solid var(--line)}
+  .badge.ok{background:var(--okbg);color:var(--ok);border-color:#bfe7d2}
+  .badge.bad{background:var(--badbg);color:var(--bad)}
+  .grid{display:grid;grid-template-columns:390px 1fr;gap:18px;margin-top:22px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h2{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+  label{display:block;font-size:12.5px;color:var(--mut);margin:10px 0 3px}
+  input[type=number],select{width:100%;padding:7px 9px;border:1px solid var(--line);
+    border-radius:8px;font-size:14.5px;background:#fff;color:var(--ink)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tog{display:flex;align-items:center;gap:8px;margin:9px 0 0;font-size:13.5px;color:var(--ink)}
+  .tog input{width:16px;height:16px}
+  .det{border-top:1px solid var(--line);padding:10px 2px}
+  .det:first-of-type{border-top:none}
+  .det .q{font-size:12.5px;color:var(--mut)}
+  .det .v{font-size:17px;font-weight:650;margin:1px 0}
+  .det .c{font-size:12px;color:var(--mut)}
+  .pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:2px}
+  .pill.on{background:var(--badbg);color:var(--bad)} .pill.off{background:var(--okbg);color:var(--ok)}
+  .fork{background:#f2f5fb;border:1px dashed #c9d4ea;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:13.5px}
+  .status{border-radius:10px;padding:12px 14px;font-weight:650;margin-top:10px}
+  .status.CERTIFIED{background:var(--okbg);color:var(--ok)}
+  .status.REJECTED{background:var(--badbg);color:var(--bad)}
+  .status.AMBIGUOUS{background:var(--ambbg);color:var(--amb)}
+  .status.OUT_OF_SCOPE{background:var(--refbg);color:var(--ref)}
+  .mm{font-size:13px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--bad);
+      border-radius:8px;padding:8px 10px;margin-top:8px;font-weight:500;color:var(--ink)}
+  .mm code{background:#f2f3f7;padding:1px 5px;border-radius:5px}
+  button{padding:8px 14px;border:1px solid var(--acc);background:var(--acc);color:#fff;
+         border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+  button.ghost{background:#fff;color:var(--acc)}
+  .btnrow{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  svg text{font:11px -apple-system,sans-serif;fill:var(--mut)}
+  .note{font-size:12.5px;color:var(--mut);margin-top:8px}
+  footer{margin-top:26px;color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+  footer a{color:var(--acc)}
+  .ref-note{font-size:13px;color:var(--ref);background:var(--refbg);border-radius:8px;padding:8px 10px;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>collabproof</h1>
+  <p>An executable formalization of the Indian tax rules for brand ↔ creator barter collabs —
+     <b>Section 194R TDS + GST composition, FY 2024-25</b>. Enter a deal; every number comes back
+     with the statutory rule it follows from, or the system refuses. Inspired by the verification
+     architecture of <a href="https://pramaanalabs.ai/">Pramaana Labs</a>; built independently on public rules.</p>
+  <span class="badge" id="parity">running parity check…</span>
+  <span class="badge" id="parity2" style="display:none"></span>
+</header>
+
+<div class="grid">
+  <div class="card">
+    <h2>The deal (facts)</h2>
+    <div class="row">
+      <div><label>Cash fee (₹)</label><input type="number" id="cash" value="50000" min="0" step="1000"></div>
+      <div><label>Product value / FMV (₹)</label><input type="number" id="product" value="25000" min="0" step="500"></div>
+    </div>
+    <div class="row">
+      <div><label>Brand entity</label>
+        <select id="brand_entity"><option value="company">Company</option><option value="firm">Firm</option>
+        <option value="individual">Individual</option><option value="huf">HUF</option></select></div>
+      <div><label>Who bears in-kind tax</label>
+        <select id="bearer"><option value="recipient">Creator (advance tax)</option>
+        <option value="provider">Brand (gross-up)</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Brand preceding-FY business turnover (₹)</label><input type="number" id="bturn" value="50000000" min="0" step="100000"></div>
+      <div><label>…or profession receipts (₹)</label><input type="number" id="brec" value="0" min="0" step="100000"></div>
+    </div>
+    <div class="row">
+      <div><label>Creator: prior benefits from this brand this FY (₹)</label><input type="number" id="pben" value="0" min="0" step="500"></div>
+      <div><label>Prior cash fees from this brand this FY (₹)</label><input type="number" id="pcash" value="0" min="0" step="500"></div>
+    </div>
+    <div class="row">
+      <div><label>Creator FY turnover so far, all clients (₹)</label><input type="number" id="pturn" value="500000" min="0" step="10000"></div>
+      <div><label>&nbsp;</label><div>
+        <div class="tog"><input type="checkbox" id="retained" checked><span>Product retained (not returned)</span></div>
+        <div class="tog"><input type="checkbox" id="linked" checked><span>Product tied to a deliverable</span></div>
+      </div></div>
+    </div>
+    <div class="tog"><input type="checkbox" id="pan" checked><span>PAN furnished</span></div>
+    <div class="tog"><input type="checkbox" id="resident" checked><span>Creator is a resident</span></div>
+    <div class="tog"><input type="checkbox" id="nexus" checked><span>Brand acting in course of business</span></div>
+    <div class="tog"><input type="checkbox" id="special"><span>Special-category state (₹10L GST threshold)</span></div>
+    <div class="tog"><input type="checkbox" id="gstreg"><span>Creator already GST-registered</span></div>
+    <div class="btnrow">
+      <button class="ghost" id="btnNaive">What would a naive calculator say?</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2>Assessment — every number carries its rule</h2>
+      <div id="out"></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2>The ₹20,000 cliff (proved in Z3; drawn here)</h2>
+      <div id="chart"></div>
+      <div class="note" id="chartnote"></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2>Certify a claim — yours, your CA's, or an LLM's</h2>
+      <div class="row">
+        <div><label>Claimed 194R TDS (₹)</label><input type="number" id="c194r" placeholder="e.g. 2500"></div>
+        <div><label>Claimed cash TDS (₹)</label><input type="number" id="ccash" placeholder="e.g. 5000"></div>
+      </div>
+      <div class="row">
+        <div><label>Cash TDS basis</label>
+          <select id="cbasis"><option value="">— not stated —</option>
+          <option value="IT-194J-PROF">s.194J (professional)</option>
+          <option value="IT-194C-WORK">s.194C (contract)</option></select></div>
+        <div><label>GST registration needed?</label>
+          <select id="creg"><option value="">— not claimed —</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+      </div>
+      <div class="btnrow"><button id="btnVerify">Certify against the spec</button></div>
+      <div id="cert"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <b>Scope:</b> FY 2024-25 (Income-tax Act 1961 through Finance (No. 2) Act 2024; CBDT Circulars 12/2022 &amp; 18/2022; CGST Act 2017 + Rule 27).
+  Educational toy — statutory rounding, 206AB, s.195, GST time-of-supply/ITC and the Income-tax Act 2025 renumbering are out of scope.
+  <b>Not tax advice.</b> The JS engine on this page is mechanically held to the Python spec (badge above) —
+  same rules, or the badge goes red. Source: <a href="https://github.com/">github repo</a> ·
+  proofs: <code>proofs/prove_cliff.py</code>.
+</footer>
+</div>
+
+<script src="collabproof.js"></script>
+<script src="parity_vectors.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const cp=window.collabproof;
+const fmt=p=>{const r=p/100;return "₹"+r.toLocaleString("en-IN",{maximumFractionDigits:2})};
+
+function facts(){return{
+  brand_entity:$("brand_entity").value,
+  brand_business_turnover:(+$("bturn").value||0)*100,
+  brand_profession_receipts:(+$("brec").value||0)*100,
+  brand_in_business:$("nexus").checked,
+  resident:$("resident").checked, pan:$("pan").checked,
+  special_state:$("special").checked, gst_registered:$("gstreg").checked,
+  prior_benefits:(+$("pben").value||0)*100, prior_194r_tds:0,
+  prior_cash_fees:(+$("pcash").value||0)*100, prior_cash_tds:0,
+  prior_turnover:(+$("pturn").value||0)*100,
+  cash:(+$("cash").value||0)*100, product:(+$("product").value||0)*100,
+  retained:$("retained").checked, deliverable_linked:$("linked").checked,
+  bearer:$("bearer").value};}
+
+function det(q,v,cites,extra){return `<div class="det"><div class="q">${q}</div>
+  <div class="v">${v}</div><div class="c">${cites.map(r=>`[${r}] ${cp.RULES[r]}`).join("<br>")}</div>${extra||""}</div>`;}
+
+function render(){
+  const f=facts(), a=cp.assess(f), out=$("out");
+  if(!a.ok){
+    out.innerHTML=`<div class="status OUT_OF_SCOPE">REFUSED — cannot certify this fact pattern</div>
+      <div class="ref-note">[${a.refusal}] ${cp.RULES[a.refusal]}<br>${a.note}
+      <br><b>This is the point:</b> a system that can prove refuses rather than guesses.</div>`;
+    drawChart(f); return;
+  }
+  let h="";
+  h+=det("s.194R TDS due now on the benefit", fmt(a.tds_194r)
+        +(a.gate?'<span class="pill on">release gate ON</span>':'<span class="pill off">no gate</span>'),
+        a.tds_rules.concat(a.gate?["IT-194R-RELEASEGATE"]:[]),
+        a.gate?'<div class="note">Before handing over the product: collect advance-tax evidence, or gross-up and deposit.</div>':"");
+  h+=det("FY aggregate benefit tested against ₹20,000", fmt(a.aggregate), ["IT-194R-THRESHOLD"]);
+  const forkRows=Object.entries(a.fork).map(([k,v])=>`<b>${fmt(v)}</b> under [${k}]`).join(" &nbsp;·&nbsp; ");
+  h+=det("TDS on the cash fee", a.fork_material
+        ? `<span class="pill on" style="margin-left:0">INTERPRETIVE FORK</span>`
+        : fmt(a.fork["IT-194J-PROF"]),
+        ["IT-FORK-JvC"],
+        `<div class="fork">${forkRows}${a.fork_material?
+          "<div class='note'>The statute covers advertising under BOTH sections. The spec refuses to pick — an answer is only certifiable if it states its basis.</div>":
+          "<div class='note'>Branches agree on these facts — the ambiguity is immaterial here.</div>"}</div>`);
+  h+=det("GST: value of the creator's supply", fmt(a.gst_supply),
+        ["GST-SUPPLY-BARTER","GST-VALUE-RULE27"]);
+  h+=det("GST registration required?", (a.gst_reg?"YES":"no")+` — turnover after this deal ${fmt(a.gst_turnover_after)}`,
+        ["GST-REG-THRESHOLD"]);
+  h+=det("GST charge (if registered)", a.gst_liability===null?"— not registered":fmt(a.gst_liability),
+        ["GST-RATE-18"]);
+  for(const [r,n] of a.notes) h+=`<div class="ref-note">[${r}] ${n}</div>`;
+  out.innerHTML=h;
+  drawChart(f);
+}
+
+function drawChart(f){
+  const W=620,H=210,L=46,B=178,T=14,R=16;
+  const maxV=30000, rate=f.pan?10:20;
+  const net=v=>v<=20000?v:v*(1-rate/100);
+  const x=v=>L+(v/maxV)*(W-L-R), y=n=>B-(n/maxV)*(B-T);
+  let pts1="",pts2="";
+  for(let v=0;v<=20000;v+=100) pts1+=`${x(v)},${y(net(v))} `;
+  for(let v=20001;v<=maxV;v+=100) pts2+=`${x(v)},${y(net(v))} `;
+  const dzEnd=f.pan?22222:24999;
+  const cur=Math.min((f.product/100),maxV);
+  const inDz=cur>20000&&cur<=dzEnd;
+  $("chart").innerHTML=
+   `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="net value vs freebie value">
+     <rect x="${x(20001)}" y="${T}" width="${x(dzEnd)-x(20001)}" height="${B-T}" fill="#fdeceb"/>
+     <line x1="${L}" y1="${B}" x2="${W-R}" y2="${B}" stroke="#c9cfda"/>
+     <line x1="${L}" y1="${T}" x2="${L}" y2="${B}" stroke="#c9cfda"/>
+     <polyline points="${pts1}" fill="none" stroke="#274690" stroke-width="2"/>
+     <polyline points="${pts2}" fill="none" stroke="#274690" stroke-width="2"/>
+     <circle cx="${x(20000)}" cy="${y(20000)}" r="3.5" fill="#274690"/>
+     <circle cx="${x(20001)}" cy="${y(net(20001))}" r="3.5" fill="#b3261e"/>
+     ${cur>0?`<line x1="${x(cur)}" y1="${T}" x2="${x(cur)}" y2="${B}" stroke="${inDz?"#b3261e":"#0a7a4b"}" stroke-dasharray="4 3"/>`:""}
+     <text x="${x(20800)}" y="${T+12}" fill="#b3261e">dead zone ₹20,001–₹${dzEnd.toLocaleString("en-IN")}</text>
+     <text x="${L+4}" y="${T+10}">net value kept by creator (in-kind deal, creator funds TDS)</text>
+     <text x="${W-150}" y="${B-6}">freebie value →</text>
+   </svg>`;
+  $("chartnote").innerHTML =
+   `Rate ${rate}% (${f.pan?"PAN furnished":"no PAN — s.206AA"}). A ₹${(20001).toLocaleString("en-IN")} freebie nets `+
+   `<b>${fmt(net(20001)*100)}</b> — less than a ₹20,000 one. `+
+   (inDz?`<b style="color:#b3261e">Your current product value sits inside the dead zone.</b>`
+        :`Machine-checked in <code>proofs/prove_cliff.py</code> (Z3, unbounded domain).`);
+}
+
+$("btnVerify").onclick=()=>{
+  const f=facts();
+  const claim={};
+  if($("c194r").value!=="") claim.tds_194r=(+$("c194r").value)*100;
+  if($("ccash").value!=="") claim.cash_tds=(+$("ccash").value)*100;
+  if($("cbasis").value) claim.cash_basis=$("cbasis").value;
+  if($("creg").value) claim.gst_reg=$("creg").value==="yes";
+  const r=cp.verify(claim,f);
+  let h=`<div class="status ${r.status}">${r.status.replace("_"," ")}</div>`;
+  if(r.status==="REJECTED")
+    h+=r.mismatches.map(m=>`<div class="mm"><code>${m.field}</code>: claimed <b>${typeof m.claimed==="number"?fmt(m.claimed):m.claimed}</b>, `+
+      `spec says <b>${typeof m.expected==="number"?fmt(m.expected):JSON.stringify(m.expected)}</b><br>`+
+      `<span style="color:var(--mut)">[${m.rule}] ${cp.RULES[m.rule]||""}</span></div>`).join("");
+  if(r.status==="AMBIGUOUS") h+=`<div class="mm" style="border-left-color:var(--amb)">${r.note}<br>
+    <span style="color:var(--mut)">[IT-FORK-JvC] ${cp.RULES["IT-FORK-JvC"]}</span></div>`;
+  if(r.status==="OUT_OF_SCOPE") h+=`<div class="ref-note">[${r.refusal}] ${r.note} Numeric claims about an out-of-scope pattern are uncertifiable.</div>`;
+  $("cert").innerHTML=h;
+};
+
+$("btnNaive").onclick=()=>{
+  const f=facts(), nb=cp.naive(f), r=cp.verify(nb,f);
+  $("c194r").value=nb.tds_194r/100; $("ccash").value=nb.cash_tds/100;
+  $("cbasis").value=""; $("creg").value=nb.gst_reg?"yes":"no";
+  $("btnVerify").click();
+  $("cert").insertAdjacentHTML("afterbegin",
+    `<div class="note" style="margin-top:10px">Filled the claim boxes with the <b>naive calculator's</b> answer `+
+    `(the common misreadings: TDS on the excess over ₹20k, barter invisible to GST, gate ignored) — and certified it. Verdict below.</div>`);
+};
+
+// live re-render
+document.querySelectorAll("input,select").forEach(el=>{
+  if(["c194r","ccash","cbasis","creg"].includes(el.id)) return;
+  el.addEventListener("input",render);
+});
+
+// parity badge
+(function(){
+  const b=$("parity");
+  try{
+    const {total,failures}=cp.runParity(window.PARITY_VECTORS);
+    if(failures.length){b.className="badge bad";b.textContent=`PARITY FAILED: ${failures.length}/${total} vectors diverge — do not trust this page`;}
+    else{b.className="badge ok";b.textContent=`parity: JS engine matches the Python spec on ${total}/${total} frozen vectors`;}
+  }catch(e){b.className="badge bad";b.textContent="parity check could not run: "+e.message;}
+})();
+
+render();
+</script>
+</body>
+</html>
