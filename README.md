@@ -77,8 +77,9 @@ Top catch reasons: `IT-194R-SCOPE`/excess-vs-aggregate (27), missed release gate
 The question worth answering publicly is not "does an LLM score lower?" but **"does giving the
 LLM the legal documents close the gap?"** Three arms, one oracle: **A** bare LLM (facts only);
 **B** the steelman — the same LLM with the governing statutory texts in context; **C** arm B
-inside the verifier loop, where rejections feed back *only the failing rule's citation* (never
-the corrected number) and the model retries. The schema lets the model abstain
+inside the verifier loop, where retries happen *in the same conversation* — the legal materials
+and the model's own prior answer stay in context — and the feedback turn adds *only the failing
+rule's citation* (never the corrected number). The schema lets the model abstain
 (`cannot_determine`), so the headline metric — **confidently-wrong answers** — is fair. A
 verified pipeline's certified-wrong count is zero by construction; an LLM's is an empirical
 draw, and arm B tests whether retrieval changes that. Arm C tests the productizable claim:

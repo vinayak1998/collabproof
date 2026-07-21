@@ -1,538 +1,833 @@
 {
  "reports": [
   {
-   "arm": "selftest-scripted",
+   "arm": "selftest-scripted-with-retries",
    "model": "none",
    "n": 50,
    "tally": {
     "CERTIFIED": 6,
     "REJECTED": 39,
+    "fixed_after_feedback": 42,
     "AMBIGUOUS": 3,
     "OUT_OF_SCOPE": 2
    },
    "confidently_wrong_first_answer": 39,
    "abstained": 0,
-   "fixed_after_feedback": 0,
+   "fixed_after_feedback": 42,
    "per_case": [
     {
      "case": 0,
-     "status": "CERTIFIED",
+     "first_status": "CERTIFIED",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 1,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 2,
-     "status": "AMBIGUOUS",
+     "first_status": "AMBIGUOUS",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 3,
-     "status": "CERTIFIED",
+     "first_status": "CERTIFIED",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 4,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 5,
-     "status": "AMBIGUOUS",
+     "first_status": "AMBIGUOUS",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 6,
-     "status": "CERTIFIED",
+     "first_status": "CERTIFIED",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 7,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 8,
-     "status": "AMBIGUOUS",
+     "first_status": "AMBIGUOUS",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 9,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 10,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 11,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 12,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 13,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 14,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 15,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 16,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 17,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 18,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 19,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 20,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 21,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 22,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 23,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 24,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 25,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 26,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 27,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 28,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
       "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 29,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
       "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 30,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
       "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 31,
-     "status": "CERTIFIED",
+     "first_status": "CERTIFIED",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 32,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10000, spec says 420000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 33,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 34,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 35,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 36,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 37,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 0, spec says 250000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 38,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 0, spec says 205000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 39,
-     "status": "CERTIFIED",
+     "first_status": "CERTIFIED",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 40,
-     "status": "CERTIFIED",
+     "first_status": "CERTIFIED",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 41,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 70000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 42,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 250000, spec says 500000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 43,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 50000, spec says 250000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 44,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 50000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 45,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
       "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 46,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
       "gst_liability_paise: claimed 900000, spec says 1980000 [GST-RATE-18: Notification 11/2017-CT(Rate), SAC 9983 (advertising/marketing)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 47,
-     "status": "REJECTED",
+     "first_status": "REJECTED",
      "mismatches": [
       "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
-     "raw": {
-      "selftest": true
-     }
+     "retries": [
+      {
+       "attempt": 1,
+       "status": "CERTIFIED"
+      }
+     ],
+     "answers": [
+      "[naive]",
+      "[spec answer]"
+     ]
     },
     {
      "case": 48,
-     "status": "OUT_OF_SCOPE",
+     "first_status": "OUT_OF_SCOPE",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     },
     {
      "case": 49,
-     "status": "OUT_OF_SCOPE",
+     "first_status": "OUT_OF_SCOPE",
      "mismatches": [],
-     "raw": {
-      "selftest": true
-     }
+     "answers": [
+      "[naive]"
+     ]
     }
    ]
   }

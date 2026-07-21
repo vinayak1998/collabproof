@@ -5,11 +5,12 @@ the gap that verification closes?
   Arm A  bare       LLM sees only the deal facts.
   Arm B  grounded   LLM sees the facts + the governing legal texts (the steelman
                     for "an LLM with access to Indian tax law").
-  Arm C  verified   Arm B inside the verifier loop: the checker certifies or
-                    rejects; on rejection ONLY the failing rule (id + citation)
-                    is fed back — never the corrected number — and the LLM
-                    retries (max 2). Measures whether verification *repairs* an
-                    LLM, not just grades it.
+  Arm C  verified   Arm B inside the verifier loop. Retries are TRUE MULTI-TURN:
+                    the conversation retains the legal materials and the model's
+                    own previous answer, and the new turn adds ONLY the failing
+                    rule (id + citation) — never the corrected number. Max 2
+                    retries. Measures whether verification *repairs* an LLM,
+                    not just grades it.
 
 Oracle: the executable spec (collabproof/spec.py), whose own correctness is
 covered by the hand-computed golden tests. Two-oracle hygiene as in run_eval.py.
@@ -17,13 +18,16 @@ covered by the hand-computed golden tests. Two-oracle hygiene as in run_eval.py.
 Fairness features:
   * The LLM may abstain: {"cannot_determine": true, "reason": ...} — so the
     "confidently wrong" metric is fair.
-  * Temperature 0; prompts and raw responses saved verbatim for audit.
+  * Temperature 0; per-case assistant answers saved verbatim for audit (prompt
+    templates live in this file; corpus files are versioned — full transcripts
+    are reconstructible).
   * Corpus ships as paraphrase-with-citations; REPLACE WITH OFFICIAL TEXT
     before publishing (see experiments/corpus/00_README.md).
 
 INTEGRITY: this file publishes nothing by itself. Without an API key it exits.
-`--selftest` runs a scripted answerer purely to test plumbing and is labeled as
-such in its output file. No LLM numbers exist until you run with a key.
+`--selftest` runs a scripted answerer purely to test plumbing — including the
+multi-turn retry path — and is labeled as such. No LLM numbers exist until you
+run with a key.
 
 Usage:
   python experiments/three_arms.py --selftest
@@ -39,7 +43,7 @@ from collections import Counter
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from collabproof import Status, assess, naive_answer, verify
+from collabproof import RULES, Status, assess, assessment_as_claim, naive_answer, verify
 from collabproof.llm_adapter import facts_of
 from collabproof.verify import Claim
 from run_eval import build_cases
@@ -76,13 +80,16 @@ Facts of the deal:
 
 {schema}"""
 
-FEEDBACK = """Your previous answer could not be certified. A deterministic
-checker encoding the same legal materials found these violations (the rule that
-breaks is named; the correct value is NOT given — re-derive it):
+# Sent as a FOLLOW-UP TURN in the same conversation: the legal materials and
+# your previous answer are above in the transcript. Only the failing rule is
+# named; the correct value is withheld.
+FEEDBACK = """Your answer above could not be certified. A deterministic checker
+encoding the legal materials above found these violations (the rule that breaks
+is named; the correct value is NOT given — re-derive it from the materials):
 
 {violations}
 
-Revise your answer. {schema}"""
+Revise your full answer. {schema}"""
 
 
 def load_corpus() -> str:
@@ -94,11 +101,12 @@ def load_corpus() -> str:
     return "\n\n".join(parts)
 
 
-def call_llm(prompt: str, model: str) -> str:
+def call_llm(messages: list, model: str) -> str:
+    """messages: full [{role, content}, ...] transcript — retries keep context."""
     key = os.environ["ANTHROPIC_API_KEY"]
     body = json.dumps({
         "model": model, "max_tokens": 1200, "temperature": 0,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": messages,
     }).encode()
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages", data=body,
@@ -127,8 +135,7 @@ def parse_claim(text: str):
 
 
 def violations_text(cert) -> str:
-    lines = [f"- field `{m.fld}` violates [{m.rule_id}]: "
-             f"{__import__('collabproof').RULES[m.rule_id].citation}"
+    lines = [f"- field `{m.fld}` violates [{m.rule_id}]: {RULES[m.rule_id].citation}"
              for m in cert.mismatches]
     if cert.status == Status.AMBIGUOUS:
         lines.append("- cash TDS matches one branch of the s.194J/s.194C overlap "
@@ -136,19 +143,66 @@ def violations_text(cert) -> str:
     return "\n".join(lines) or "- (no field details available)"
 
 
-def scripted_answerer(collab, _prompt_kind):
-    """--selftest only: exercises plumbing. NEVER a result."""
-    claim = naive_answer(collab)
-    return claim, {"selftest": True}
+class LlmAnswerer:
+    """Conversation-per-case answerer. start() opens the transcript;
+    retry() APPENDS to it, so corpus + prior answers stay in context."""
+
+    def __init__(self, initial_prompt_of, model):
+        self.initial_prompt_of = initial_prompt_of
+        self.model = model
+        self.transcript = None
+
+    def _call(self):
+        time.sleep(0.4)
+        text = call_llm(self.transcript, self.model)
+        self.transcript = self.transcript + [{"role": "assistant", "content": text}]
+        return parse_claim(text)
+
+    def start(self, collab):
+        self.transcript = [{"role": "user",
+                            "content": self.initial_prompt_of(collab)}]
+        return self._call()
+
+    def retry(self, collab, feedback):
+        self.transcript = self.transcript + [{"role": "user", "content": feedback}]
+        return self._call()
+
+    def answers_so_far(self):
+        return [m["content"] for m in (self.transcript or [])
+                if m["role"] == "assistant"]
 
 
-def run_arm(name, cases, answer_fn, feedback_capable, model):
+class ScriptedAnswerer:
+    """--selftest only: exercises plumbing incl. the multi-turn retry path.
+    First answer = naive baseline (mostly wrong); retry answer = the spec's own
+    assessment (always certifiable). NEVER a result."""
+
+    def __init__(self):
+        self.transcript = []
+
+    def start(self, collab):
+        self.transcript = [{"role": "user", "content": "[selftest initial]"},
+                           {"role": "assistant", "content": "[naive]"}]
+        return naive_answer(collab), {"selftest": True}
+
+    def retry(self, collab, feedback):
+        self.transcript += [{"role": "user", "content": feedback},
+                            {"role": "assistant", "content": "[spec answer]"}]
+        a = assess(collab)
+        return (assessment_as_claim(a) if a.ok else Claim()), {"selftest": True}
+
+    def answers_so_far(self):
+        return [m["content"] for m in self.transcript if m["role"] == "assistant"]
+
+
+def run_arm(name, cases, make_answerer, feedback_capable, model):
     tally, per_case = Counter(), []
     confidently_wrong = 0
     abstained = 0
     fixed_after_feedback = 0
     for i, c in enumerate(cases):
-        claim, raw = answer_fn(c, "initial")
+        ans = make_answerer()
+        claim, raw = ans.start(c)
         if claim is None:
             tally["unparseable"] += 1
             per_case.append({"case": i, "status": "unparseable", "raw": raw})
@@ -163,13 +217,13 @@ def run_arm(name, cases, answer_fn, feedback_capable, model):
         tally[cert.status.value] += 1
         if cert.status == Status.REJECTED:
             confidently_wrong += 1
-        entry = {"case": i, "status": cert.status.value,
-                 "mismatches": [m.explain() for m in cert.mismatches], "raw": raw}
+        entry = {"case": i, "first_status": cert.status.value,
+                 "mismatches": [m.explain() for m in cert.mismatches]}
 
         if feedback_capable and cert.status in (Status.REJECTED, Status.AMBIGUOUS):
             for attempt in range(2):
                 fb = FEEDBACK.format(violations=violations_text(cert), schema=SCHEMA)
-                claim2, raw2 = answer_fn(c, ("retry", fb))
+                claim2, raw2 = ans.retry(c, fb)
                 if claim2 is None:
                     break
                 cert = verify(claim2, c)
@@ -179,6 +233,7 @@ def run_arm(name, cases, answer_fn, feedback_capable, model):
                     fixed_after_feedback += 1
                     tally["fixed_after_feedback"] += 1
                     break
+        entry["answers"] = ans.answers_so_far()   # assistant turns, for audit
         per_case.append(entry)
     return {"arm": name, "model": model, "n": len(cases), "tally": dict(tally),
             "confidently_wrong_first_answer": confidently_wrong,
@@ -208,9 +263,10 @@ def main():
     if args.selftest:
         print("=" * 66)
         print("SELFTEST — scripted answerer, PLUMBING CHECK ONLY, NOT RESULTS")
+        print("(retry path exercised: scripted retry returns the spec's answer)")
         print("=" * 66)
-        def fn(c, kind): return scripted_answerer(c, kind)
-        reports = [run_arm("selftest-scripted", cases, fn, False, "none")]
+        reports = [run_arm("selftest-scripted-with-retries", cases,
+                           ScriptedAnswerer, True, "none")]
         out = os.path.join(HERE, "results_selftest.json")
     else:
         if not os.environ.get("ANTHROPIC_API_KEY"):
@@ -218,31 +274,26 @@ def main():
                   "run --selftest to check plumbing.")
             return 1
 
-        def mk(prompt_of):
-            def fn(c, kind):
-                if isinstance(kind, tuple):      # retry with feedback
-                    prompt = kind[1] + "\n\nFacts again:\n" + facts_of(c)
-                else:
-                    prompt = prompt_of(c)
-                time.sleep(0.4)
-                return parse_claim(call_llm(prompt, args.model))
-            return fn
-
-        bare_fn = mk(lambda c: BARE.format(facts=facts_of(c), schema=SCHEMA))
-        grounded_fn = mk(lambda c: GROUNDED.format(
-            corpus=corpus, facts=facts_of(c), schema=SCHEMA))
+        bare_of = lambda c: BARE.format(facts=facts_of(c), schema=SCHEMA)
+        grounded_of = lambda c: GROUNDED.format(
+            corpus=corpus, facts=facts_of(c), schema=SCHEMA)
 
         reports = [
-            run_arm("A-bare", cases, bare_fn, False, args.model),
-            run_arm("B-grounded", cases, grounded_fn, False, args.model),
-            run_arm("C-verified-loop", cases, grounded_fn, True, args.model),
+            run_arm("A-bare", cases,
+                    lambda: LlmAnswerer(bare_of, args.model), False, args.model),
+            run_arm("B-grounded", cases,
+                    lambda: LlmAnswerer(grounded_of, args.model), False, args.model),
+            run_arm("C-verified-loop", cases,
+                    lambda: LlmAnswerer(grounded_of, args.model), True, args.model),
         ]
         # Dead-zone probe: raw answers saved verbatim for quotation, unscored.
         probes = {}
         for label, block in [("bare", ""), ("grounded",
                               "\n=== LEGAL MATERIALS ===\n" + corpus)]:
             probes[label] = call_llm(
-                DEADZONE_PROBE.format(corpus_block=block), args.model)
+                [{"role": "user",
+                  "content": DEADZONE_PROBE.format(corpus_block=block)}],
+                args.model)
         out = os.path.join(HERE, "results.json")
 
     for r in reports:
@@ -257,7 +308,8 @@ def main():
         payload["deadzone_probe_raw"] = probes
         payload["note"] = ("Spec-as-oracle: 'wrong' means 'disagrees with the "
                           "published executable spec'; audit the spec via its "
-                          "golden tests. Corpus was placeholder/official per "
+                          "golden tests. Retries are multi-turn (corpus + prior "
+                          "answer retained). Corpus was placeholder/official per "
                           "experiments/corpus/00_README.md at time of run.")
     with open(out, "w") as f:
         json.dump(payload, f, indent=1)
