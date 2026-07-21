@@ -83,7 +83,18 @@ rule's citation* (never the corrected number). The schema lets the model abstain
 (`cannot_determine`), so the headline metric — **confidently-wrong answers** — is fair. A
 verified pipeline's certified-wrong count is zero by construction; an LLM's is an empirical
 draw, and arm B tests whether retrieval changes that. Arm C tests the productizable claim:
-verification doesn't just grade a model, it repairs one. Also included: a dead-zone probe
+verification doesn't just grade a model, it repairs one.
+
+The experiment applies its own **completeness rule** on top of `verify()`: the certifier's
+"check only what's asserted" semantics are right for a certifier API but would let empty,
+partial, or abstaining answers score as wins. So every attempt — initial or retry — is judged
+by `experiment_status()`: abstention counts as abstention on every attempt; in-scope answers
+must assert all required fields to count `CERTIFIED_COMPLETE` (missing fields → `INCOMPLETE`,
+retried with field names only); out-of-scope patterns are answered correctly only by explicit
+refusal (`CORRECT_REFUSAL`), while numbers on them count `ASSERTED_ON_OUT_OF_SCOPE` — the
+confident-fabrication metric. Wrong beats missing (`REJECTED` takes precedence). The
+`--selftest` asserts its own expected counts, including two regression cases for exactly the
+holes this rule closes (an abstaining retry and a partial first answer). Also included: a dead-zone probe
 ("is a ₹21,000 freebie better than ₹20,000?") whose raw answers are saved verbatim, unscored,
 for quotation against the machine-checked proof. Before publishing results, replace the
 placeholder corpus with official statutory text (`experiments/corpus/00_README.md`).

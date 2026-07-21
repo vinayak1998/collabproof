@@ -143,6 +143,63 @@ def violations_text(cert) -> str:
     return "\n".join(lines) or "- (no field details available)"
 
 
+INCOMPLETE_FEEDBACK = """Your answer above is incomplete: it asserts nothing
+false, but leaves required fields unanswered:
+
+{missing}
+
+An unanswered field is not a certified field. Either assert every required
+field or state cannot_determine=true with a reason. {schema}"""
+
+CLAIM_FIELDS = ("tds_194r_paise", "release_gate_required", "cash_tds_paise",
+                "gst_registration_required", "gst_liability_paise")
+
+
+def required_fields(collab):
+    """Experiment-level completeness for an in-scope case. gst_liability is
+    required only when the creator is registered (when not registered the
+    spec's answer IS None, so null is the correct complete answer)."""
+    req = ["tds_194r_paise", "release_gate_required", "cash_tds_paise",
+           "gst_registration_required"]
+    if collab.creator.gst_registered:
+        req.append("gst_liability_paise")
+    return req
+
+
+def experiment_status(claim, raw, collab):
+    """The experiment's own verdict for ONE attempt (initial or retry).
+
+    verify() certifies only what is asserted — correct for a certifier API,
+    but as an experiment success metric it would let empty/partial claims and
+    abstentions count as wins. This wrapper closes that gap:
+      * cannot_determine counts as abstention on EVERY attempt;
+      * in-scope: all required fields must be asserted (basis handled by
+        verify()'s AMBIGUOUS when the fork is material);
+      * out-of-scope: the complete answer is an explicit refusal with no
+        asserted outcomes; assertions take precedence over a refusal flag.
+    Precedence: wrong beats missing (REJECTED > INCOMPLETE)."""
+    a = assess(collab)
+    abstained = isinstance(raw, dict) and bool(raw.get("cannot_determine"))
+    if not a.ok:
+        asserted = any(getattr(claim, f) is not None for f in CLAIM_FIELDS)
+        if asserted:
+            return "ASSERTED_ON_OUT_OF_SCOPE", None, []
+        if abstained:
+            return "CORRECT_REFUSAL", None, []
+        return "SILENT_ON_OUT_OF_SCOPE", None, []
+    if abstained:
+        return "ABSTAINED", None, []
+    cert = verify(claim, collab)
+    if cert.status == Status.REJECTED:
+        return "REJECTED", cert, []
+    if cert.status == Status.AMBIGUOUS:
+        return "AMBIGUOUS", cert, []
+    missing = [f for f in required_fields(collab) if getattr(claim, f) is None]
+    if missing:
+        return "INCOMPLETE", cert, missing
+    return "CERTIFIED_COMPLETE", cert, []
+
+
 class LlmAnswerer:
     """Conversation-per-case answerer. start() opens the transcript;
     retry() APPENDS to it, so corpus + prior answers stay in context."""
@@ -173,21 +230,37 @@ class LlmAnswerer:
 
 
 class ScriptedAnswerer:
-    """--selftest only: exercises plumbing incl. the multi-turn retry path.
-    First answer = naive baseline (mostly wrong); retry answer = the spec's own
-    assessment (always certifiable). NEVER a result."""
+    """--selftest only: exercises plumbing incl. the multi-turn retry path AND
+    the abstention/incompleteness handling the metric depends on. NEVER a result.
+      * default: first answer = naive baseline; retry = the spec's own answer.
+      * case ABSTAIN_ON_RETRY_CASE: retry abstains — must count as abstention,
+        never as fixed_after_feedback (regression test for the certified-
+        abstention hole).
+      * case PARTIAL_INITIAL_CASE: first answer asserts one correct field and
+        nothing else — must count INCOMPLETE, not CERTIFIED."""
 
-    def __init__(self):
+    ABSTAIN_ON_RETRY_CASE = 2
+    PARTIAL_INITIAL_CASE = 4
+
+    def __init__(self, index):
+        self.index = index
         self.transcript = []
 
     def start(self, collab):
         self.transcript = [{"role": "user", "content": "[selftest initial]"},
-                           {"role": "assistant", "content": "[naive]"}]
+                           {"role": "assistant", "content": "[scripted]"}]
+        if self.index == self.PARTIAL_INITIAL_CASE:
+            a = assess(collab)
+            return (Claim(gst_registration_required=a.d("gst_registration_required")),
+                    {"selftest": True})
         return naive_answer(collab), {"selftest": True}
 
     def retry(self, collab, feedback):
         self.transcript += [{"role": "user", "content": feedback},
-                            {"role": "assistant", "content": "[spec answer]"}]
+                            {"role": "assistant", "content": "[scripted retry]"}]
+        if self.index == self.ABSTAIN_ON_RETRY_CASE:
+            return Claim(), {"selftest": True, "cannot_determine": True,
+                             "reason": "scripted abstention"}
         a = assess(collab)
         return (assessment_as_claim(a) if a.ok else Claim()), {"selftest": True}
 
@@ -195,50 +268,68 @@ class ScriptedAnswerer:
         return [m["content"] for m in self.transcript if m["role"] == "assistant"]
 
 
+RETRYABLE = {"REJECTED", "AMBIGUOUS", "INCOMPLETE"}
+
+
+def feedback_for(status, cert, missing):
+    if status == "INCOMPLETE":
+        return INCOMPLETE_FEEDBACK.format(
+            missing="\n".join(f"- `{f}`" for f in missing), schema=SCHEMA)
+    return FEEDBACK.format(violations=violations_text(cert), schema=SCHEMA)
+
+
 def run_arm(name, cases, make_answerer, feedback_capable, model):
+    """Every attempt — initial or retry — is judged by experiment_status(),
+    so abstentions and partial answers can never score as certified."""
     tally, per_case = Counter(), []
     confidently_wrong = 0
-    abstained = 0
     fixed_after_feedback = 0
+    abstained_after_feedback = 0
     for i, c in enumerate(cases):
-        ans = make_answerer()
+        ans = make_answerer(i)
         claim, raw = ans.start(c)
         if claim is None:
             tally["unparseable"] += 1
-            per_case.append({"case": i, "status": "unparseable", "raw": raw})
+            per_case.append({"case": i, "first_status": "unparseable", "raw": raw})
             continue
-        if isinstance(raw, dict) and raw.get("cannot_determine"):
-            abstained += 1
-            a = assess(c)
-            tally["abstained_in_scope" if a.ok else "abstained_out_of_scope"] += 1
-            per_case.append({"case": i, "status": "abstained", "raw": raw})
-            continue
-        cert = verify(claim, c)
-        tally[cert.status.value] += 1
-        if cert.status == Status.REJECTED:
+        status, cert, missing = experiment_status(claim, raw, c)
+        tally[status] += 1
+        if status == "REJECTED":
             confidently_wrong += 1
-        entry = {"case": i, "first_status": cert.status.value,
-                 "mismatches": [m.explain() for m in cert.mismatches]}
+        entry = {"case": i, "first_status": status,
+                 "mismatches": ([m.explain() for m in cert.mismatches]
+                                if cert else []),
+                 "missing": missing}
 
-        if feedback_capable and cert.status in (Status.REJECTED, Status.AMBIGUOUS):
+        if feedback_capable and status in RETRYABLE:
             for attempt in range(2):
-                fb = FEEDBACK.format(violations=violations_text(cert), schema=SCHEMA)
+                fb = feedback_for(status, cert, missing)
                 claim2, raw2 = ans.retry(c, fb)
                 if claim2 is None:
+                    entry.setdefault("retries", []).append(
+                        {"attempt": attempt + 1, "status": "unparseable"})
                     break
-                cert = verify(claim2, c)
+                status, cert, missing = experiment_status(claim2, raw2, c)
                 entry.setdefault("retries", []).append(
-                    {"attempt": attempt + 1, "status": cert.status.value})
-                if cert.status == Status.CERTIFIED:
+                    {"attempt": attempt + 1, "status": status})
+                if status == "CERTIFIED_COMPLETE":
                     fixed_after_feedback += 1
                     tally["fixed_after_feedback"] += 1
+                    break
+                if status == "ABSTAINED":      # terminal: abstention is an
+                    abstained_after_feedback += 1   # answer, never a fix
+                    tally["abstained_after_feedback"] += 1
+                    break
+                if status not in RETRYABLE:
                     break
         entry["answers"] = ans.answers_so_far()   # assistant turns, for audit
         per_case.append(entry)
     return {"arm": name, "model": model, "n": len(cases), "tally": dict(tally),
             "confidently_wrong_first_answer": confidently_wrong,
-            "abstained": abstained,
+            "abstained_first_answer": tally.get("ABSTAINED", 0)
+                                      + tally.get("CORRECT_REFUSAL", 0),
             "fixed_after_feedback": fixed_after_feedback,
+            "abstained_after_feedback": abstained_after_feedback,
             "per_case": per_case}
 
 
@@ -263,11 +354,31 @@ def main():
     if args.selftest:
         print("=" * 66)
         print("SELFTEST — scripted answerer, PLUMBING CHECK ONLY, NOT RESULTS")
-        print("(retry path exercised: scripted retry returns the spec's answer)")
+        print("(exercises: multi-turn retries, abstention-on-retry, partial-")
+        print(" initial-answer — the metric holes this harness must not have)")
         print("=" * 66)
         reports = [run_arm("selftest-scripted-with-retries", cases,
-                           ScriptedAnswerer, True, "none")]
+                           lambda i: ScriptedAnswerer(i), True, "none")]
         out = os.path.join(HERE, "results_selftest.json")
+        if args.n == 50:   # self-checking plumbing: expected counts, asserted
+            t = reports[0]["tally"]
+            expect = {"CERTIFIED_COMPLETE": 6, "REJECTED": 38, "AMBIGUOUS": 3,
+                      "INCOMPLETE": 1, "ASSERTED_ON_OUT_OF_SCOPE": 2,
+                      "fixed_after_feedback": 41, "abstained_after_feedback": 1}
+            for k, v in expect.items():
+                assert t.get(k) == v, f"selftest expectation failed: {k}: {t.get(k)} != {v}"
+            assert reports[0]["fixed_after_feedback"] == 41
+            assert reports[0]["abstained_after_feedback"] == 1
+            # A refusal flag must not launder asserted numbers on an
+            # out-of-scope pattern into CORRECT_REFUSAL.
+            mixed_status, _, _ = experiment_status(
+                Claim(tds_194r_paise=1),
+                {"cannot_determine": True, "reason": "scripted refusal"},
+                cases[-1])
+            assert mixed_status == "ASSERTED_ON_OUT_OF_SCOPE"
+            print("selftest expectations: ALL PASSED (abstention never counted "
+                  "as fixed; partial answer never counted as certified; "
+                  "assertions cannot hide behind refusal)")
     else:
         if not os.environ.get("ANTHROPIC_API_KEY"):
             print("ANTHROPIC_API_KEY not set. No LLM numbers are invented; "
@@ -280,11 +391,11 @@ def main():
 
         reports = [
             run_arm("A-bare", cases,
-                    lambda: LlmAnswerer(bare_of, args.model), False, args.model),
+                    lambda i: LlmAnswerer(bare_of, args.model), False, args.model),
             run_arm("B-grounded", cases,
-                    lambda: LlmAnswerer(grounded_of, args.model), False, args.model),
+                    lambda i: LlmAnswerer(grounded_of, args.model), False, args.model),
             run_arm("C-verified-loop", cases,
-                    lambda: LlmAnswerer(grounded_of, args.model), True, args.model),
+                    lambda i: LlmAnswerer(grounded_of, args.model), True, args.model),
         ]
         # Dead-zone probe: raw answers saved verbatim for quotation, unscored.
         probes = {}
@@ -301,7 +412,9 @@ def main():
         for k, v in sorted(r["tally"].items()):
             print(f"  {k:<24} {v}")
         print(f"  confidently-wrong (first answer): {r['confidently_wrong_first_answer']}")
-        print(f"  abstained: {r['abstained']}   fixed-after-feedback: {r['fixed_after_feedback']}")
+        print(f"  abstained (first): {r['abstained_first_answer']}   "
+              f"fixed-after-feedback: {r['fixed_after_feedback']}   "
+              f"abstained-after-feedback: {r['abstained_after_feedback']}")
 
     payload = {"reports": reports}
     if not args.selftest:
