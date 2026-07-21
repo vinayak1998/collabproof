@@ -72,6 +72,22 @@ Top catch reasons: `IT-194R-SCOPE`/excess-vs-aggregate (27), missed release gate
 
 **No LLM numbers are published here** because no LLM was called during construction. The adapter (`collabproof/llm_adapter.py`) is wired; run `--llm` with a key to generate them. Nothing in this repo is invented.
 
+## The LLM experiment (`experiments/three_arms.py`) — ready to run, not yet run
+
+The question worth answering publicly is not "does an LLM score lower?" but **"does giving the
+LLM the legal documents close the gap?"** Three arms, one oracle: **A** bare LLM (facts only);
+**B** the steelman — the same LLM with the governing statutory texts in context; **C** arm B
+inside the verifier loop, where rejections feed back *only the failing rule's citation* (never
+the corrected number) and the model retries. The schema lets the model abstain
+(`cannot_determine`), so the headline metric — **confidently-wrong answers** — is fair. A
+verified pipeline's certified-wrong count is zero by construction; an LLM's is an empirical
+draw, and arm B tests whether retrieval changes that. Arm C tests the productizable claim:
+verification doesn't just grade a model, it repairs one. Also included: a dead-zone probe
+("is a ₹21,000 freebie better than ₹20,000?") whose raw answers are saved verbatim, unscored,
+for quotation against the machine-checked proof. Before publishing results, replace the
+placeholder corpus with official statutory text (`experiments/corpus/00_README.md`).
+`--selftest` exercises the plumbing with a scripted answerer and is labeled as such.
+
 ## How this extends (not duplicates) Pramaana's published work
 
 Their public demos ([Indian marginal relief](https://pramaanalabs.ai/blog/when-math-meets-policy-formalizing-indian-tax-logic), [1040 optimization](https://pramaanalabs.ai/blog/audit-defensible-tax-optimization)) are single-statute, single-taxpayer income tax in Lean. This project deliberately probes four things they haven't shown publicly:
