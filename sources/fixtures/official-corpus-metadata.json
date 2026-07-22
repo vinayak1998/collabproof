@@ -1,0 +1,12 @@
+{
+  "fixture_version": 1,
+  "purpose": "Offline governance test fixture containing metadata only; it is not legal text and is never supplied to an LLM.",
+  "source_ids": [
+    "ita-1961-fy2024-25",
+    "cbdt-circular-12-2022",
+    "cbdt-circular-715-1995",
+    "cgst-act-2017",
+    "cgst-rules-2017",
+    "notification-11-2017-ctr"
+  ]
+}

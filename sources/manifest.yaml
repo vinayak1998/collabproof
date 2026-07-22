@@ -1,0 +1,165 @@
+schema_version: 1
+bundle_version: "2024-25.1"
+jurisdiction: IN
+as_of: 2024-04-01
+sources:
+  - id: ita-1961-fy2024-25
+    title: Income-tax Act, 1961 (official CBDT text)
+    authority: Central Board of Direct Taxes, Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://www.incometaxindia.gov.in/en/income-tax-act
+    jurisdiction: IN
+    effective_from: 2024-04-01
+    effective_to: 2025-03-31
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: The official landing page is dynamic; pin the bytes from an official export in the local cache before promoting this source.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: No checked-in copy until redistribution permission is documented.
+    snapshot: null
+    cache_path: sources/cache/ita-1961-fy2024-25.html
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null
+
+  - id: cbdt-circular-12-2022
+    title: CBDT Circular No. 12 of 2022
+    authority: Central Board of Direct Taxes, Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://www.incometaxindia.gov.in/documents/20117/6507196/circular-no-12-2022.pdf/1ecab0f7-4d54-2d8a-4ac7-b788a61efc2b
+    jurisdiction: IN
+    effective_from: 2022-06-16
+    effective_to: null
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: Official bytes were not downloaded while preparing this public POC.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: Cache locally; do not commit the PDF without documented permission.
+    snapshot: null
+    cache_path: sources/cache/cbdt-circular-12-2022.pdf
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null
+
+  - id: cbdt-circular-18-2022
+    title: CBDT Circular No. 18 of 2022
+    authority: Central Board of Direct Taxes, Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://incometaxindia.gov.in/communications/circular/circular-no-18-2022.pdf
+    jurisdiction: IN
+    effective_from: 2022-09-13
+    effective_to: null
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: Official bytes were not downloaded while preparing this public POC.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: Cache locally; do not commit the PDF without documented permission.
+    snapshot: null
+    cache_path: sources/cache/cbdt-circular-18-2022.pdf
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null
+
+  - id: cbdt-circular-715-1995
+    title: CBDT Circular No. 715, dated 8 August 1995
+    authority: Central Board of Direct Taxes, Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://www.incometaxindia.gov.in/w/715-circular-no.-715-dated-8-8-1995
+    jurisdiction: IN
+    effective_from: 1995-08-08
+    effective_to: null
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: The official source is a dynamic HTML page; cache bytes locally before pinning.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: No checked-in copy until redistribution permission is documented.
+    snapshot: null
+    cache_path: sources/cache/cbdt-circular-715-1995.html
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null
+
+  - id: cgst-act-2017
+    title: Central Goods and Services Tax Act, 2017
+    authority: Central Board of Indirect Taxes and Customs, Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://cbic-gst.gov.in/hindi/CGST-bill-e.html
+    jurisdiction: IN
+    effective_from: 2017-07-01
+    effective_to: null
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: The official consolidated HTML is dynamic; cache bytes locally before pinning.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: No checked-in copy until redistribution permission is documented.
+    snapshot: null
+    cache_path: sources/cache/cgst-act-2017.html
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null
+
+  - id: cgst-rules-2017
+    title: Central Goods and Services Tax Rules, 2017 (official CBIC consolidation)
+    authority: Central Board of Indirect Taxes and Customs, Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://cbic-gst.gov.in/pdf/01062021-CGST-Rules-2017-Part-A-Rules.pdf
+    jurisdiction: IN
+    effective_from: 2017-06-22
+    effective_to: null
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: Official bytes were not downloaded while preparing this public POC.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: Cache locally; do not commit the PDF without documented permission.
+    snapshot: null
+    cache_path: sources/cache/cgst-rules-2017.pdf
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null
+
+  - id: notification-11-2017-ctr
+    title: Notification No. 11/2017-Central Tax (Rate)
+    authority: Department of Revenue, Ministry of Finance, Government of India
+    official_url: https://cbic-gst.gov.in/hindi/pdf/central-tax-rate/Notification11-CGST.pdf
+    jurisdiction: IN
+    effective_from: 2017-07-01
+    effective_to: null
+    retrieved_on: 2026-07-22
+    sha256:
+      state: pending
+      value: null
+      reason: Official bytes were not downloaded while preparing this public POC.
+    redistribution:
+      status: not_confirmed
+      snapshot_allowed: false
+      note: Cache locally; do not commit the PDF without documented permission.
+    snapshot: null
+    cache_path: sources/cache/notification-11-2017-ctr.pdf
+    review:
+      status: needs_independent_tax_review
+      reviewer: null
+      reviewed_on: null

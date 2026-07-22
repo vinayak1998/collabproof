@@ -37,6 +37,15 @@ jobs:
       - name: Run the full Python test suite
         run: python -m pytest -q
 
+      - name: Validate source and rule governance
+        run: python -m collabproof.governance validate
+
+      - name: Refresh the browser rule-bundle hash
+        run: python -m collabproof.governance sync-js-hash
+
+      - name: Reject stale browser rule-bundle hash
+        run: git diff --exit-code -- docs/collabproof.js
+
       - name: Run the Z3 proofs and implementation binding
         run: python proofs/prove_cliff.py
 

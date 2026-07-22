@@ -21,8 +21,8 @@ Fairness features:
   * Temperature 0; per-case assistant answers saved verbatim for audit (prompt
     templates live in this file; corpus files are versioned — full transcripts
     are reconstructible).
-  * Corpus ships as paraphrase-with-citations; REPLACE WITH OFFICIAL TEXT
-    before publishing (see experiments/corpus/00_README.md).
+  * The grounded corpus is built only from the manifest-driven local cache of
+    official sources. Author paraphrases are never used as legal material.
 
 INTEGRITY: this file publishes nothing by itself. Without an API key it exits.
 `--selftest` runs a scripted answerer purely to test plumbing — including the
@@ -53,6 +53,7 @@ from collabproof.llm_adapter import (
     validate_llm_payload,
 )
 from collabproof.verify import Claim
+from collabproof.governance import ROOT, manifest, provenance
 from run_eval import build_cases
 
 HERE = os.path.dirname(__file__)
@@ -93,11 +94,68 @@ Revise your full answer. {schema}"""
 
 
 def load_corpus() -> str:
-    parts = []
-    cdir = os.path.join(HERE, "corpus")
-    for f in sorted(os.listdir(cdir)):
-        if f.endswith(".md") and not f.startswith("00_"):
-            parts.append(open(os.path.join(cdir, f)).read())
+    """Load official cached material; never fall back to repo-authored summaries.
+
+    HTML is reduced to visible text. PDF sources require a local `.txt`
+    sidecar produced from the cached PDF (for example with `pdftotext`). The
+    raw bytes remain in the ignored cache for hashing and audit.
+    """
+    from html.parser import HTMLParser
+
+    class VisibleText(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.parts = []
+            self.hidden = 0
+
+        def handle_starttag(self, tag, attrs):
+            if tag in {"script", "style", "noscript"}:
+                self.hidden += 1
+
+        def handle_endtag(self, tag):
+            if tag in {"script", "style", "noscript"} and self.hidden:
+                self.hidden -= 1
+
+        def handle_data(self, data):
+            if not self.hidden and data.strip():
+                self.parts.append(data.strip())
+
+    man = manifest()
+    prov = provenance()
+    used = {
+        ref["source_id"]
+        for record in prov["rules"].values()
+        for ref in record["sources"]
+    }
+    parts, missing = [], []
+    for source in sorted(man["sources"], key=lambda item: item["id"]):
+        if source["id"] not in used:
+            continue
+        raw_path = ROOT / source["cache_path"]
+        if raw_path.suffix.lower() == ".pdf":
+            text_path = raw_path.with_suffix(".txt")
+            if not raw_path.is_file() or not text_path.is_file():
+                missing.append(f"{source['id']} ({raw_path.relative_to(ROOT)} + .txt sidecar)")
+                continue
+            text = text_path.read_text(encoding="utf-8")
+        elif raw_path.is_file():
+            parser = VisibleText()
+            parser.feed(raw_path.read_text(encoding="utf-8", errors="replace"))
+            text = "\n".join(parser.parts)
+        else:
+            missing.append(f"{source['id']} ({raw_path.relative_to(ROOT)})")
+            continue
+        parts.append(
+            f"=== {source['id']}: {source['title']} ===\n"
+            f"Official URL: {source['official_url']}\n{text}"
+        )
+    if missing:
+        raise RuntimeError(
+            "Official grounded corpus cache is incomplete:\n- "
+            + "\n- ".join(missing)
+            + "\nRun `python -m collabproof.governance fetch`; for each PDF, "
+              "create the adjacent UTF-8 .txt sidecar with a deterministic PDF text extractor."
+        )
     return "\n\n".join(parts)
 
 
@@ -313,8 +371,6 @@ def main():
     args = ap.parse_args()
 
     cases = build_cases()[: args.n]
-    corpus = load_corpus()
-
     if args.selftest:
         print("=" * 66)
         print("SELFTEST — scripted answerer, PLUMBING CHECK ONLY, NOT RESULTS")
@@ -346,6 +402,7 @@ def main():
                   "assertions cannot hide behind refusal; invalid types and "
                   "contradictory refusals are rejected)")
     else:
+        corpus = load_corpus()
         if not os.environ.get("ANTHROPIC_API_KEY"):
             print("ANTHROPIC_API_KEY not set. No LLM numbers are invented; "
                   "run --selftest to check plumbing.")
@@ -388,8 +445,8 @@ def main():
         payload["note"] = ("Spec-as-oracle: 'wrong' means 'disagrees with the "
                           "published executable spec'; audit the spec via its "
                           "golden tests. Retries are multi-turn (corpus + prior "
-                          "answer retained). Corpus was placeholder/official per "
-                          "experiments/corpus/00_README.md at time of run.")
+                          "answer retained). Grounded corpus came from the "
+                          "manifest-driven official local cache.")
     with open(out, "w") as f:
         json.dump(payload, f, indent=1)
     print(f"\nwrote {out}")

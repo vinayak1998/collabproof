@@ -17,12 +17,22 @@ Statuses:
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from functools import lru_cache
+from typing import TYPE_CHECKING, Optional
 
 from .spec import (S194R_FY_THRESHOLD, Assessment, Collab, Q, RULES,
                    TaxBearer, assess)
+
+if TYPE_CHECKING:
+    from .governance import CertificateFreshness
+
+
+@lru_cache(maxsize=1)
+def _rule_bundle_hash() -> str:
+    from .governance import rule_bundle_hash
+    return rule_bundle_hash(RULES)
 
 
 class _Unset:
@@ -104,6 +114,32 @@ class Certificate:
     required_fields: tuple[str, ...] = CLAIM_FIELDS
     checked_fields: tuple[str, ...] = ()
     missing_fields: tuple[str, ...] = ()
+    rule_bundle_hash: str = field(default_factory=_rule_bundle_hash)
+    governed_rule_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.governed_rule_ids and self.assessment is not None:
+            from .governance import governed_rule_ids
+            object.__setattr__(self, "governed_rule_ids",
+                               governed_rule_ids(self.assessment))
+
+    def governance_record(self) -> dict:
+        """Portable fields needed for later staleness/impact checks."""
+        return {
+            "status": self.status.value,
+            "rule_bundle_hash": self.rule_bundle_hash,
+            "governed_rule_ids": list(self.governed_rule_ids),
+        }
+
+    def freshness(self, *, current_hash: Optional[str] = None,
+                  affected_rule_ids: tuple[str, ...] = ()) -> "CertificateFreshness":
+        from .governance import certificate_freshness
+        return certificate_freshness(
+            self.rule_bundle_hash,
+            self.governed_rule_ids,
+            current_hash or _rule_bundle_hash(),
+            affected_rule_ids,
+        )
 
 
 def _claim_schema_issues(claim: Claim) -> tuple[str, ...]:

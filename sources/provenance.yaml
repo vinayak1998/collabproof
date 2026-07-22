@@ -1,0 +1,178 @@
+schema_version: 1
+rules:
+  IT-194R-SCOPE:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194R(1), opening words through rate clause
+    interpretation: Applies the resident-recipient, business-or-profession nexus and 10 percent deduction rule to a retained benefit.
+    assumptions: [The encoded facts correctly identify residence and the business/profession nexus.]
+    boundary_tests: [tests/test_golden.py::test_g1_basic_in_kind, tests/test_golden.py::test_g2_under_threshold]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-194R-RETAINED:
+    status: experimental
+    sources:
+      - source_id: cbdt-circular-12-2022
+        location: Question 3, social-media influencer example
+    interpretation: A promotional product is treated as a benefit only when retained after the service.
+    assumptions: [The product is the item described by the circular example and return is genuine.]
+    boundary_tests: [tests/test_golden.py::test_g4_returned_product, tests/test_verify.py::test_returned_product_error_names_retained_rule]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-194R-THRESHOLD:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194R(1), first proviso
+    interpretation: The proviso disables deduction while the FY aggregate does not exceed Rs 20,000; after crossing, the model deducts on the aggregate rather than only the excess.
+    assumptions: [One recipient-per-provider FY aggregation and no section 288B rounding.]
+    boundary_tests: [tests/test_golden.py::test_g2_under_threshold, tests/test_golden.py::test_g3_aggregate_crossing, tests/test_golden.py::test_g10_boundary_stack]
+    formal_theorems: [T1 non-monotonicity witness, T2 dead zone, T3 exit point, T4 monotone above threshold, T5 no-PAN dead zone]
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-194R-CARVEOUT:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194R(1), second proviso
+    interpretation: Excludes qualifying individual/HUF providers at or below both preceding-FY limits.
+    assumptions: [Business and profession figures are separately and correctly classified.]
+    boundary_tests: [tests/test_golden.py::test_g5_small_provider_carveout, tests/test_verify.py::test_small_provider_error_names_carveout_rule]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-194R-GROSSUP:
+    status: experimental
+    sources:
+      - source_id: cbdt-circular-12-2022
+        location: Question 9, final paragraph on tax paid by provider being a further benefit
+    interpretation: Provider-borne tax is pyramided as t = value * rate / (1-rate); the threshold-crossing path is a model interpretation requiring early review.
+    assumptions: [No mixed prior bearer modes, paise rounding half up, provider deposit is itself a benefit.]
+    boundary_tests: [tests/test_golden.py::test_g8_grossup_pyramiding, tests/test_verify.py::test_provider_borne_error_names_grossup_rule, tests/test_properties.py::test_p5_grossup_never_cheaper]
+    formal_theorems: [T6 brand-side gross-up boundary exhibit]
+    review: {status: needs_independent_tax_review, priority: early, reviewer: null, reviewed_on: null}
+  IT-194R-RELEASEGATE:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194R(1), proviso for benefit wholly or partly in kind
+      - source_id: cbdt-circular-12-2022
+        location: Question 8, alternatives for satisfying the in-kind tax condition
+    interpretation: The product is not released until the provider has ensured tax was paid by the recipient or deposited by the provider.
+    assumptions: [The benefit is wholly or partly in kind and deduction is otherwise due.]
+    boundary_tests: [tests/test_golden.py::test_g1_basic_in_kind, tests/test_verify.py::test_release_gate_error_names_release_gate_rule]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-206AA:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 206AA(1)
+    interpretation: Uses 20 percent where PAN is not furnished because it is higher than the encoded applicable rates.
+    assumptions: [No other higher rate applies.]
+    boundary_tests: [tests/test_golden.py::test_g6_no_pan_206aa, tests/test_verify.py::test_no_pan_rate_error_names_206aa, tests/test_properties.py::test_p3_206aa_doubles_recipient_mode]
+    formal_theorems: [T5 no-PAN dead zone]
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-194J-PROF:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194J(1), fee threshold and rate; Explanation (a), advertising
+    interpretation: Models direct creator advertising services as a possible professional-services branch at 10 percent.
+    assumptions: [The creator is an individual and the payment is for advertising services.]
+    boundary_tests: [tests/test_golden.py::test_g7_interpretive_fork, tests/test_golden.py::test_g10_boundary_stack]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-194C-WORK:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194C(1), (5), and Explanation (iv)(a)
+      - source_id: cbdt-circular-715-1995
+        location: Questions 1 and 3
+    interpretation: Models the same advertising payment as a possible work-contract branch at the individual/HUF payee rate.
+    assumptions: [The creator is an individual and the arrangement is a contract for work.]
+    boundary_tests: [tests/test_golden.py::test_g7_interpretive_fork, tests/test_golden.py::test_g10_boundary_stack]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  IT-FORK-JvC:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194J Explanation (a) and Section 194C Explanation (iv)(a)
+      - source_id: cbdt-circular-715-1995
+        location: Questions 1 and 3
+    interpretation: The public sources do not conclusively classify a direct brand-to-creator payment, so both branches are returned and a material fork requires an asserted basis.
+    assumptions: [No controlling fact or later authority resolves classification for the specific arrangement.]
+    boundary_tests: [tests/test_golden.py::test_g7_interpretive_fork, tests/test_verify.py::test_explicit_null_basis_is_ambiguous_only_for_material_fork]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  GST-SUPPLY-BARTER:
+    status: experimental
+    sources:
+      - source_id: cgst-act-2017
+        location: Section 7(1)(a)
+    interpretation: Treats barter linked to a promotion deliverable as a supply in the course of business.
+    assumptions: [The creator acts in the course or furtherance of business.]
+    boundary_tests: [tests/test_golden.py::test_g9_cross_statute_composition]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  GST-CONSIDERATION:
+    status: experimental
+    sources:
+      - source_id: cgst-act-2017
+        location: Section 2(31)(a)
+    interpretation: Includes non-money product consideration only when linked reciprocally to the deliverable.
+    assumptions: [deliverable_linked accurately captures the reciprocal obligation.]
+    boundary_tests: [tests/test_golden.py::test_g9_cross_statute_composition]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  GST-VALUE-RULE27:
+    status: experimental
+    sources:
+      - source_id: cgst-rules-2017
+        location: Rule 27(a)
+    interpretation: Uses the entered product FMV as open-market value where consideration is not wholly money.
+    assumptions: [The entered FMV is valid open-market value; valuation uncertainty is outside certification.]
+    boundary_tests: [tests/test_golden.py::test_g9_cross_statute_composition, tests/test_verify.py::test_gst_liability_error_names_rate_rule]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  GST-REG-THRESHOLD:
+    status: experimental
+    sources:
+      - source_id: cgst-act-2017
+        location: Sections 2(6) and 22(1), including the special-category-state proviso and Explanation
+    interpretation: Adds modeled cash and barter supply value to prior aggregate turnover and applies the normal or encoded special-state threshold.
+    assumptions: [The supplier State and prior aggregate turnover are correctly supplied; compulsory-registration exceptions are out of scope.]
+    boundary_tests: [tests/test_golden.py::test_g9_cross_statute_composition, tests/test_golden.py::test_g10_boundary_stack, tests/test_properties.py::test_p6_gst_registration_monotone]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  GST-RATE-18:
+    status: experimental
+    sources:
+      - source_id: notification-11-2017-ctr
+        location: Annexure scheme of classification, Heading 9983; rate table entry for other professional, technical and business services
+    interpretation: Applies an aggregate 18 percent GST rate (9 percent central plus assumed matching State tax) to the modeled advertising/marketing service.
+    assumptions: [Intra-State supply, matching 9 percent State tax, and classification under Heading 9983.]
+    boundary_tests: [tests/test_golden.py::test_g9_cross_statute_composition, tests/test_verify.py::test_gst_liability_error_names_rate_rule]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  SCOPE-RESIDENT:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194R(1), resident-recipient condition; Section 195 scope marker
+    interpretation: Refuses non-resident recipients rather than applying section 194R logic.
+    assumptions: [Residence fact is correct; no section 195 analysis is attempted.]
+    boundary_tests: [tests/test_golden.py::test_refusal_non_resident]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
+  SCOPE-BUSINESS-NEXUS:
+    status: experimental
+    sources:
+      - source_id: ita-1961-fy2024-25
+        location: Section 194R(1), arising-from-business-or-profession condition; Section 56(2)(x) scope marker
+    interpretation: Refuses a transfer represented as lacking business/profession nexus and points outside this model.
+    assumptions: [in_business accurately represents the nexus; no section 56 computation is attempted.]
+    boundary_tests: [tests/test_golden.py::test_refusal_no_business_nexus, tests/test_llm_boundary.py::test_in_scope_and_no_business_nexus_prompts_are_not_identical]
+    formal_theorems: []
+    review: {status: needs_independent_tax_review, priority: standard, reviewer: null, reviewed_on: null}
