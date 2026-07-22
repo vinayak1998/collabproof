@@ -31,7 +31,7 @@
      "case": 1,
      "first_status": "REJECTED",
      "mismatches": [
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -119,7 +119,7 @@
      "case": 7,
      "first_status": "REJECTED",
      "mismatches": [
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -153,7 +153,7 @@
      "case": 9,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -172,9 +172,9 @@
      "case": 10,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -192,7 +192,7 @@
      "case": 11,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -211,7 +211,7 @@
      "case": 12,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -230,9 +230,9 @@
      "case": 13,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -250,7 +250,7 @@
      "case": 14,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -269,7 +269,7 @@
      "case": 15,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -288,9 +288,9 @@
      "case": 16,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -308,7 +308,7 @@
      "case": 17,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -327,7 +327,7 @@
      "case": 18,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -346,9 +346,9 @@
      "case": 19,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -366,7 +366,7 @@
      "case": 20,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -385,7 +385,7 @@
      "case": 21,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -404,9 +404,9 @@
      "case": 22,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -424,7 +424,7 @@
      "case": 23,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -443,7 +443,7 @@
      "case": 24,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -462,9 +462,9 @@
      "case": 25,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -482,7 +482,7 @@
      "case": 26,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -501,7 +501,7 @@
      "case": 27,
      "first_status": "REJECTED",
      "mismatches": [
-      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -519,8 +519,8 @@
      "case": 28,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -538,8 +538,8 @@
      "case": 29,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -557,8 +557,8 @@
      "case": 30,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+      "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -585,7 +585,7 @@
      "case": 32,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10000, spec says 420000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 10000, spec says 420000 [IT-206AA: s.206AA, Income-tax Act 1961; supporting rules: IT-194R-SCOPE, IT-194R-THRESHOLD]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -604,7 +604,7 @@
      "case": 33,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 100000, spec says 600000 [IT-206AA: s.206AA, Income-tax Act 1961; supporting rules: IT-194R-SCOPE, IT-194R-THRESHOLD]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -623,7 +623,7 @@
      "case": 34,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
+      "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-CARVEOUT: s.194R, second proviso; supporting rules: IT-194R-THRESHOLD]"
      ],
      "missing": [],
      "retries": [
@@ -641,7 +641,7 @@
      "case": 35,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
+      "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-CARVEOUT: s.194R, second proviso; supporting rules: IT-194R-THRESHOLD]"
      ],
      "missing": [],
      "retries": [
@@ -659,7 +659,7 @@
      "case": 36,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
+      "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-CARVEOUT: s.194R, second proviso; supporting rules: IT-194R-THRESHOLD]"
      ],
      "missing": [],
      "retries": [
@@ -677,7 +677,7 @@
      "case": 37,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 0, spec says 250000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 0, spec says 250000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -696,7 +696,7 @@
      "case": 38,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 0, spec says 205000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 0, spec says 205000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -733,7 +733,7 @@
      "case": 41,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 70000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 70000, spec says 300000 [IT-194R-GROSSUP: CBDT Circular 12/2022, Q9 (pyramiding); supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -752,7 +752,7 @@
      "case": 42,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 250000, spec says 500000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 250000, spec says 500000 [IT-194R-GROSSUP: CBDT Circular 12/2022, Q9 (pyramiding); supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],
@@ -771,10 +771,10 @@
      "case": 43,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 50000, spec says 250000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 50000, spec says 250000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -792,8 +792,8 @@
      "case": 44,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 50000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "tds_194r_paise: claimed 50000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -812,7 +812,7 @@
      "first_status": "REJECTED",
      "mismatches": [
       "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
-      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+      "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
      ],
      "missing": [],
      "retries": [
@@ -830,10 +830,10 @@
      "case": 46,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
       "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
-      "gst_liability_paise: claimed 900000, spec says 1980000 [GST-RATE-18: Notification 11/2017-CT(Rate), SAC 9983 (advertising/marketing)]"
+      "gst_liability_paise: claimed 900000, spec says 1980000 [GST-RATE-18: Notification 11/2017-CT(Rate), SAC 9983 (advertising/marketing); supporting rules: GST-VALUE-RULE27]"
      ],
      "missing": [],
      "retries": [
@@ -851,7 +851,7 @@
      "case": 47,
      "first_status": "REJECTED",
      "mismatches": [
-      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+      "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
       "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
      ],
      "missing": [],

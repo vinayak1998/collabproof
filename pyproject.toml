@@ -1,0 +1,11 @@
+[project]
+name = "collabproof"
+version = "0.1.0"
+description = "Executable verification-layer POC for creator-commerce tax decisions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

@@ -22,9 +22,10 @@ creator's marginal rate; the cash-flow cliff and dead zone are exact regardless.
 Three layers of evidence, strongest first:
   1. Z3 proofs over the UNBOUNDED domain (negation-unsat).
   2. Exhaustive enumeration over Rs 1..1,00,000 (proof by computation, bounded).
-  3. Model-vs-implementation binding: the Z3 model is checked against the
-     actual spec.assess() on every enumerated point, so the proofs are about
-     the shipped code, not a hand-transcription that could drift.
+  3. Model-vs-implementation binding evidence: the Z3 model is checked against
+     spec.assess() on every enumerated whole-rupee point in the bounded range.
+     This catches transcription drift in that slice; it is not a general proof
+     that the Python implementation and Z3 model are equivalent.
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))

@@ -9,7 +9,9 @@ Two-layer eval hygiene:
 Answerers:
   * naive-baseline : collabproof/baseline.py (the modal misunderstanding).
   * llm            : only runs if ANTHROPIC_API_KEY is set (--llm). This repo
-                     ships no LLM numbers it did not actually produce.
+                     ships no LLM numbers it did not actually produce. Model
+                     output crosses the same strict typed/completeness boundary
+                     used by experiments/three_arms.py.
 """
 import json
 import os
@@ -19,9 +21,13 @@ from dataclasses import asdict
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from collabproof import (Brand, Collab, Creator, EntityType, Status, TaxBearer,
+from collabproof import (Brand, Collab, Creator, EntityType, TaxBearer,
                          assess, assessment_as_claim, naive_answer, rup, verify)
-from collabproof.llm_adapter import llm_answer
+from collabproof.llm_adapter import (
+    ParsedLlmAnswer,
+    classify_llm_answer,
+    llm_response,
+)
 
 
 def build_cases() -> list[Collab]:
@@ -107,23 +113,37 @@ def evaluate(name, answer_fn, cases):
     certified_wrong = 0
     rows = []
     for i, c in enumerate(cases):
-        claim = answer_fn(c)
-        if claim is None:
+        answer = answer_fn(c)
+        if answer is None:
             return None
-        cert = verify(claim, c)
-        tally[cert.status.value] += 1
+        if isinstance(answer, ParsedLlmAnswer):
+            verdict = classify_llm_answer(answer, c)
+            status = verdict.status
+            cert = verdict.certificate
+            claim = answer.claim
+            validation_error = answer.invalid_reason
+            missing = list(verdict.missing)
+        else:
+            claim = answer
+            cert = verify(claim, c)
+            status = cert.status.value
+            validation_error = None
+            missing = list(getattr(cert, "missing_fields", ()))
+        tally[status] += 1
         a = assess(c)
         truth = assessment_as_claim(a) if a.ok else None
-        if cert.status == Status.CERTIFIED and truth is not None:
+        if status in {"CERTIFIED", "CERTIFIED_COMPLETE"} and truth is not None:
             if wrong_fields(claim, truth):
                 certified_wrong += 1
-        for m in cert.mismatches:
+        for m in cert.mismatches if cert else ():
             rule_hits[m.rule_id] += 1
         rows.append({
             "case": i,
-            "status": cert.status.value,
-            "mismatches": [m.explain() for m in cert.mismatches],
-            "notes": list(cert.notes),
+            "status": status,
+            "mismatches": [m.explain() for m in cert.mismatches] if cert else [],
+            "notes": list(cert.notes) if cert else [],
+            "missing": missing,
+            "validation_error": validation_error,
         })
     return {"answerer": name, "n": len(cases), "tally": dict(tally),
             "certified_but_wrong": certified_wrong,
@@ -144,7 +164,7 @@ def main():
     reports.append(r)
 
     if "--llm" in sys.argv:
-        rl = evaluate("llm(claude)", llm_answer, cases)
+        rl = evaluate("llm(claude)", llm_response, cases)
         if rl is None:
             print("(--llm requested but ANTHROPIC_API_KEY not set: skipped, "
                   "no numbers invented)")

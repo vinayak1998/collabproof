@@ -1,46 +1,80 @@
 """
-collabproof.verify — the certifier.
+collabproof.verify — fail-closed claim certification.
 
-verify(claim, collab) plays the role of Pramaana's "compiler back half":
-an external answer (from an LLM, a junior accountant, a blog calculator) is
-checked field-by-field against the executable spec. It either CERTIFIES the
-answer, or returns the exact rule that breaks, with citation.
+The assessor answers the questions modeled by the executable specification.
+The certifier checks a *complete, typed claim* against that assessment. A
+certificate therefore means every required output field was present and
+checked; omitted fields produce INCOMPLETE rather than vacuous success.
 
 Statuses:
-  CERTIFIED    every asserted field matches the spec (fork fields matched
-               under a stated statutory basis, or the fork is immaterial).
-  AMBIGUOUS    a fork-sensitive field was asserted without a statutory basis
-               while the branches disagree. Not wrong — unprovable as stated.
-  REJECTED     at least one asserted field contradicts the spec.
-  OUT_OF_SCOPE the spec refuses this fact pattern; any numeric assertion
-               about it is uncertifiable by construction.
+  CERTIFIED    every required field was present, well typed, and matched.
+  INCOMPLETE   no checked field was wrong, but one or more fields were omitted.
+  INVALID      the claim did not satisfy the runtime claim schema.
+  AMBIGUOUS    all fields were present, but a material statutory fork was left
+               unresolved by an explicit null basis.
+  REJECTED     at least one asserted field contradicted the specification.
+  OUT_OF_SCOPE the specification refuses the fact pattern.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
-from .spec import Assessment, Collab, Q, RULES, assess
+from .spec import (S194R_FY_THRESHOLD, Assessment, Collab, Q, RULES,
+                   TaxBearer, assess)
+
+
+class _Unset:
+    """Marker for an omitted claim field; distinct from an explicit JSON null."""
+
+    __slots__ = ()
+
+    def __repr__(self) -> str:
+        return "UNSET"
+
+
+UNSET = _Unset()
 
 
 class Status(Enum):
     CERTIFIED = "CERTIFIED"
+    INCOMPLETE = "INCOMPLETE"
+    INVALID = "INVALID"
     AMBIGUOUS = "AMBIGUOUS"
     REJECTED = "REJECTED"
     OUT_OF_SCOPE = "OUT_OF_SCOPE"
 
 
+CLAIM_FIELDS = (
+    "tds_194r_paise",
+    "release_gate_required",
+    "cash_tds_paise",
+    "cash_tds_basis",
+    "gst_registration_required",
+    "gst_liability_paise",
+)
+
+
 @dataclass(frozen=True)
 class Claim:
-    """What an answerer asserts about a collab. All fields optional:
-    only asserted fields are checked. Amounts in paise."""
-    tds_194r_paise: Optional[int] = None
-    release_gate_required: Optional[bool] = None
-    cash_tds_paise: Optional[int] = None
-    cash_tds_basis: Optional[str] = None      # "IT-194J-PROF" | "IT-194C-WORK"
-    gst_registration_required: Optional[bool] = None
-    gst_liability_paise: Optional[int] = None
+    """A structured answer to certify.
+
+    ``UNSET`` means the field was omitted. ``None`` is an explicit null and is
+    meaningful only for ``cash_tds_basis`` (no basis asserted) and
+    ``gst_liability_paise`` (the specification computes no charge for an
+    unregistered creator). Amounts are integer paise.
+    """
+
+    tds_194r_paise: object = UNSET
+    release_gate_required: object = UNSET
+    cash_tds_paise: object = UNSET
+    cash_tds_basis: object = UNSET
+    gst_registration_required: object = UNSET
+    gst_liability_paise: object = UNSET
+
+    def checked_fields(self) -> tuple[str, ...]:
+        return tuple(name for name in CLAIM_FIELDS if getattr(self, name) is not UNSET)
 
 
 @dataclass(frozen=True)
@@ -49,11 +83,16 @@ class Mismatch:
     claimed: object
     expected: object
     rule_id: str
+    supporting_rule_ids: tuple[str, ...] = ()
 
     def explain(self) -> str:
-        r = RULES[self.rule_id]
-        return (f"{self.fld}: claimed {self.claimed!r}, spec says {self.expected!r} "
-                f"[{self.rule_id}: {r.citation}]")
+        rule = RULES[self.rule_id]
+        support = tuple(r for r in self.supporting_rule_ids if r != self.rule_id)
+        suffix = f"; supporting rules: {', '.join(support)}" if support else ""
+        return (
+            f"{self.fld}: claimed {self.claimed!r}, spec says {self.expected!r} "
+            f"[{self.rule_id}: {rule.citation}{suffix}]"
+        )
 
 
 @dataclass(frozen=True)
@@ -62,93 +101,254 @@ class Certificate:
     mismatches: tuple[Mismatch, ...] = ()
     notes: tuple[str, ...] = ()
     assessment: Optional[Assessment] = None
+    required_fields: tuple[str, ...] = CLAIM_FIELDS
+    checked_fields: tuple[str, ...] = ()
+    missing_fields: tuple[str, ...] = ()
+
+
+def _claim_schema_issues(claim: Claim) -> tuple[str, ...]:
+    """Validate runtime types without Python's bool-as-int coercion."""
+
+    issues: list[str] = []
+
+    def money(name: str, *, nullable: bool = False) -> None:
+        value = getattr(claim, name)
+        if value is UNSET:
+            return
+        if nullable and value is None:
+            return
+        if type(value) is not int:  # deliberately excludes bool
+            issues.append(f"{name} must be a non-negative integer number of paise")
+        elif value < 0:
+            issues.append(f"{name} must be non-negative")
+
+    def boolean(name: str) -> None:
+        value = getattr(claim, name)
+        if value is not UNSET and type(value) is not bool:
+            issues.append(f"{name} must be a boolean")
+
+    money("tds_194r_paise")
+    boolean("release_gate_required")
+    money("cash_tds_paise")
+    boolean("gst_registration_required")
+    money("gst_liability_paise", nullable=True)
+
+    basis = claim.cash_tds_basis
+    allowed_bases = ("IT-194J-PROF", "IT-194C-WORK")
+    if basis is not UNSET and basis is not None and basis not in allowed_bases:
+        issues.append(
+            "cash_tds_basis must be IT-194J-PROF, IT-194C-WORK, or explicit null"
+        )
+    return tuple(issues)
+
+
+def _causal_rule(key: str, assessment: Assessment, collab: Collab) -> str:
+    """Return the rule that decides the expected field on this execution path.
+
+    Determination.rule_ids remains the full support trail. This function picks
+    the path-specific rule a user needs to fix the claim, rather than blindly
+    attaching the first citation in that trail.
+    """
+
+    if key == Q.TDS_194R:
+        if not assessment.d(Q.BENEFIT_QUALIFIES):
+            return "IT-194R-RETAINED" if collab.product_fmv_paise else "IT-194R-SCOPE"
+        if not assessment.d(Q.PROVIDER_OBLIGATED):
+            return "IT-194R-CARVEOUT"
+        if assessment.d(Q.AGGREGATE_BENEFIT) <= S194R_FY_THRESHOLD:
+            return "IT-194R-THRESHOLD"
+        if not collab.creator.pan_furnished:
+            return "IT-206AA"
+        if collab.tax_borne_by is TaxBearer.PROVIDER:
+            return "IT-194R-GROSSUP"
+        # Once the threshold is crossed, the same rule requires deduction on
+        # the aggregate. This diagnoses the common "tax only the excess" error.
+        return "IT-194R-THRESHOLD"
+    if key == Q.RELEASE_GATE:
+        return "IT-194R-RELEASEGATE"
+    if key == Q.GST_REG_REQUIRED:
+        return "GST-REG-THRESHOLD"
+    if key == Q.GST_LIABILITY:
+        return "GST-RATE-18"
+    return assessment.determinations[key].rule_ids[0]
 
 
 def verify(claim: Claim, collab: Collab) -> Certificate:
-    a = assess(collab)
+    assessment = assess(collab)
+    checked = claim.checked_fields()
 
-    if not a.ok:
-        asserted = any(v is not None for v in (
-            claim.tds_194r_paise, claim.cash_tds_paise,
-            claim.gst_liability_paise, claim.gst_registration_required,
-            claim.release_gate_required))
-        note = (f"Spec refuses this fact pattern [{a.refusal_rule_id}: "
-                f"{RULES[a.refusal_rule_id].citation}] — {a.refusal_note}")
-        if asserted:
-            return Certificate(Status.OUT_OF_SCOPE, notes=(
-                note, "Numeric assertions about an out-of-scope pattern are "
-                      "uncertifiable; the honest output is a refusal."), assessment=a)
-        return Certificate(Status.OUT_OF_SCOPE, notes=(note,), assessment=a)
+    if not assessment.ok:
+        note = (
+            f"Spec refuses this fact pattern [{assessment.refusal_rule_id}: "
+            f"{RULES[assessment.refusal_rule_id].citation}] — {assessment.refusal_note}"
+        )
+        notes = [note]
+        if checked:
+            notes.append(
+                "Assertions about an out-of-scope pattern are uncertifiable; "
+                "the honest output is a refusal."
+            )
+        return Certificate(
+            Status.OUT_OF_SCOPE,
+            notes=tuple(notes),
+            assessment=assessment,
+            required_fields=(),
+            checked_fields=checked,
+            missing_fields=(),
+        )
+
+    missing = tuple(name for name in CLAIM_FIELDS if name not in checked)
+    schema_issues = _claim_schema_issues(claim)
+    if schema_issues:
+        return Certificate(
+            Status.INVALID,
+            notes=schema_issues,
+            assessment=assessment,
+            checked_fields=checked,
+            missing_fields=missing,
+        )
 
     mismatches: list[Mismatch] = []
     notes: list[str] = []
 
-    def check(fld: str, claimed, key: str):
-        if claimed is None:
+    def check(field_name: str, key: str) -> None:
+        claimed = getattr(claim, field_name)
+        if claimed is UNSET:
             return
-        d = a.determinations[key]
-        if claimed != d.value:
-            mismatches.append(Mismatch(fld, claimed, d.value, d.rule_ids[0]))
+        determination = assessment.determinations[key]
+        if claimed != determination.value:
+            primary = _causal_rule(key, assessment, collab)
+            mismatches.append(
+                Mismatch(
+                    field_name,
+                    claimed,
+                    determination.value,
+                    primary,
+                    determination.rule_ids,
+                )
+            )
 
-    check("tds_194r_paise", claim.tds_194r_paise, Q.TDS_194R)
-    check("release_gate_required", claim.release_gate_required, Q.RELEASE_GATE)
-    check("gst_registration_required", claim.gst_registration_required, Q.GST_REG_REQUIRED)
-    check("gst_liability_paise", claim.gst_liability_paise, Q.GST_LIABILITY)
+    check("tds_194r_paise", Q.TDS_194R)
+    check("release_gate_required", Q.RELEASE_GATE)
+    check("gst_registration_required", Q.GST_REG_REQUIRED)
+    check("gst_liability_paise", Q.GST_LIABILITY)
 
     ambiguous = False
-    if claim.cash_tds_paise is not None:
-        branches = {b.basis_rule_id: b.tds_paise for b in a.cash_tds_fork}
-        if claim.cash_tds_basis is not None:
-            if claim.cash_tds_basis not in branches:
-                mismatches.append(Mismatch("cash_tds_basis", claim.cash_tds_basis,
-                                           tuple(branches), "IT-FORK-JvC"))
-            elif claim.cash_tds_paise != branches[claim.cash_tds_basis]:
-                mismatches.append(Mismatch("cash_tds_paise", claim.cash_tds_paise,
-                                           branches[claim.cash_tds_basis],
-                                           claim.cash_tds_basis))
-            else:
-                notes.append(f"cash TDS certified UNDER {claim.cash_tds_basis} "
-                             f"[{RULES[claim.cash_tds_basis].citation}]; the "
-                             f"194J/194C overlap itself is unresolved [IT-FORK-JvC].")
-        else:
-            if not a.fork_material:
-                # branches agree — basis is immaterial, value checkable outright
-                expected = a.cash_tds_fork[0].tds_paise if a.cash_tds_fork else 0
-                if claim.cash_tds_paise != expected:
-                    mismatches.append(Mismatch("cash_tds_paise", claim.cash_tds_paise,
-                                               expected, "IT-194J-PROF"))
-            elif claim.cash_tds_paise in branches.values():
+    cash_tds = claim.cash_tds_paise
+    cash_basis = claim.cash_tds_basis
+    if cash_tds is not UNSET:
+        branches = {b.basis_rule_id: b.tds_paise for b in assessment.cash_tds_fork}
+        if cash_basis is UNSET:
+            # Coverage reporting will return INCOMPLETE below. We can still
+            # reject a value that matches no branch.
+            if cash_tds not in branches.values():
+                mismatches.append(
+                    Mismatch(
+                        "cash_tds_paise",
+                        cash_tds,
+                        tuple(branches.values()),
+                        "IT-FORK-JvC",
+                        tuple(branches),
+                    )
+                )
+        elif cash_basis is None:
+            if not assessment.fork_material:
+                expected = next(iter(branches.values()), 0)
+                if cash_tds != expected:
+                    mismatches.append(
+                        Mismatch(
+                            "cash_tds_paise",
+                            cash_tds,
+                            expected,
+                            "IT-194J-PROF",
+                            ("IT-194J-PROF", "IT-194C-WORK"),
+                        )
+                    )
+            elif cash_tds in branches.values():
                 ambiguous = True
-                notes.append("cash TDS matches one branch of a MATERIAL 194J/194C "
-                             "fork but no statutory basis was stated. Value "
-                             f"alternatives: {branches} [IT-FORK-JvC].")
+                notes.append(
+                    "Cash TDS matches a branch of a material 194J/194C fork, "
+                    "but the claim explicitly states no statutory basis "
+                    "[IT-FORK-JvC]."
+                )
             else:
-                mismatches.append(Mismatch("cash_tds_paise", claim.cash_tds_paise,
-                                           tuple(branches.values()), "IT-FORK-JvC"))
+                mismatches.append(
+                    Mismatch(
+                        "cash_tds_paise",
+                        cash_tds,
+                        tuple(branches.values()),
+                        "IT-FORK-JvC",
+                        tuple(branches),
+                    )
+                )
+        elif cash_tds != branches[cash_basis]:
+            mismatches.append(
+                Mismatch(
+                    "cash_tds_paise",
+                    cash_tds,
+                    branches[cash_basis],
+                    cash_basis,
+                    (cash_basis,),
+                )
+            )
+        else:
+            notes.append(
+                f"Cash TDS certified under {cash_basis} "
+                f"[{RULES[cash_basis].citation}]; the 194J/194C overlap itself "
+                "remains unresolved [IT-FORK-JvC]."
+            )
 
     if mismatches:
-        return Certificate(Status.REJECTED, tuple(mismatches), tuple(notes), a)
+        return Certificate(
+            Status.REJECTED,
+            tuple(mismatches),
+            tuple(notes),
+            assessment,
+            checked_fields=checked,
+            missing_fields=missing,
+        )
+    if missing:
+        return Certificate(
+            Status.INCOMPLETE,
+            notes=(
+                "A certificate requires every output field; omitted fields were not checked.",
+            ),
+            assessment=assessment,
+            checked_fields=checked,
+            missing_fields=missing,
+        )
     if ambiguous:
-        return Certificate(Status.AMBIGUOUS, (), tuple(notes), a)
-    return Certificate(Status.CERTIFIED, (), tuple(notes), a)
+        return Certificate(
+            Status.AMBIGUOUS,
+            notes=tuple(notes),
+            assessment=assessment,
+            checked_fields=checked,
+        )
+    return Certificate(
+        Status.CERTIFIED,
+        notes=tuple(notes),
+        assessment=assessment,
+        checked_fields=checked,
+    )
 
 
-def assessment_as_claim(a: Assessment, basis: Optional[str] = None) -> Claim:
-    """Round-trip helper: the spec's own answer, expressed as a Claim."""
-    if not a.ok:
+def assessment_as_claim(assessment: Assessment, basis: Optional[str] = None) -> Claim:
+    """Express every output of an in-scope assessment as a complete claim."""
+
+    if not assessment.ok:
         return Claim()
-    branches = {b.basis_rule_id: b.tds_paise for b in a.cash_tds_fork}
-    if basis is None and not a.fork_material and a.cash_tds_fork:
-        basis_val = a.cash_tds_fork[0].tds_paise
+    branches = {b.basis_rule_id: b.tds_paise for b in assessment.cash_tds_fork}
+    if basis is None and not assessment.fork_material and assessment.cash_tds_fork:
+        basis_value = assessment.cash_tds_fork[0].tds_paise
         basis_id = None
     else:
         basis_id = basis or "IT-194J-PROF"
-        basis_val = branches[basis_id]
+        basis_value = branches[basis_id]
     return Claim(
-        tds_194r_paise=a.d(Q.TDS_194R),
-        release_gate_required=a.d(Q.RELEASE_GATE),
-        cash_tds_paise=basis_val,
+        tds_194r_paise=assessment.d(Q.TDS_194R),
+        release_gate_required=assessment.d(Q.RELEASE_GATE),
+        cash_tds_paise=basis_value,
         cash_tds_basis=basis_id,
-        gst_registration_required=a.d(Q.GST_REG_REQUIRED),
-        gst_liability_paise=a.d(Q.GST_LIABILITY),
+        gst_registration_required=assessment.d(Q.GST_REG_REQUIRED),
+        gst_liability_paise=assessment.d(Q.GST_LIABILITY),
     )

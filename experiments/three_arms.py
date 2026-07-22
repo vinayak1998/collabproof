@@ -43,21 +43,21 @@ from collections import Counter
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from collabproof import RULES, Status, assess, assessment_as_claim, naive_answer, verify
-from collabproof.llm_adapter import facts_of
+from collabproof import RULES, Status, assess, assessment_as_claim, naive_answer
+from collabproof.llm_adapter import (
+    STRICT_OUTPUT_SCHEMA,
+    classify_llm_answer,
+    facts_of,
+    parse_llm_output,
+    payload_for_claim,
+    validate_llm_payload,
+)
 from collabproof.verify import Claim
 from run_eval import build_cases
 
 HERE = os.path.dirname(__file__)
 
-SCHEMA = """Respond with ONLY a JSON object, amounts in integer paise:
-{"tds_194r_paise": int|null, "release_gate_required": bool|null,
- "cash_tds_paise": int|null, "cash_tds_basis": "IT-194J-PROF"|"IT-194C-WORK"|null,
- "gst_registration_required": bool|null, "gst_liability_paise": int|null,
- "cannot_determine": bool, "reason": string|null}
-If you are not certain enough to assert a field, set it to null. If the whole
-fact pattern cannot be determined under these rules, set cannot_determine=true
-and explain in reason. Stating a number is a claim of correctness."""
+SCHEMA = STRICT_OUTPUT_SCHEMA
 
 BARE = """You are advising on the Indian tax treatment (FY 2024-25) of a
 brand-creator collaboration. Facts:
@@ -118,20 +118,11 @@ def call_llm(messages: list, model: str) -> str:
 
 
 def parse_claim(text: str):
-    try:
-        s = text[text.find("{"): text.rfind("}") + 1]
-        d = json.loads(s)
-    except Exception:
-        return None, {"parse_error": True, "raw": text}
-    claim = Claim(
-        tds_194r_paise=d.get("tds_194r_paise"),
-        release_gate_required=d.get("release_gate_required"),
-        cash_tds_paise=d.get("cash_tds_paise"),
-        cash_tds_basis=d.get("cash_tds_basis"),
-        gst_registration_required=d.get("gst_registration_required"),
-        gst_liability_paise=d.get("gst_liability_paise"),
-    )
-    return claim, d
+    parsed = parse_llm_output(text)
+    if not parsed.valid:
+        return None, {"validation_error": parsed.invalid_reason,
+                      "raw": parsed.raw}
+    return parsed.claim, parsed.raw
 
 
 def violations_text(cert) -> str:
@@ -151,53 +142,23 @@ false, but leaves required fields unanswered:
 An unanswered field is not a certified field. Either assert every required
 field or state cannot_determine=true with a reason. {schema}"""
 
-CLAIM_FIELDS = ("tds_194r_paise", "release_gate_required", "cash_tds_paise",
-                "gst_registration_required", "gst_liability_paise")
 
-
-def required_fields(collab):
-    """Experiment-level completeness for an in-scope case. gst_liability is
-    required only when the creator is registered (when not registered the
-    spec's answer IS None, so null is the correct complete answer)."""
-    req = ["tds_194r_paise", "release_gate_required", "cash_tds_paise",
-           "gst_registration_required"]
-    if collab.creator.gst_registered:
-        req.append("gst_liability_paise")
-    return req
-
-
-def experiment_status(claim, raw, collab):
+def experiment_status(_claim, raw, collab):
     """The experiment's own verdict for ONE attempt (initial or retry).
 
-    verify() certifies only what is asserted — correct for a certifier API,
-    but as an experiment success metric it would let empty/partial claims and
-    abstentions count as wins. This wrapper closes that gap:
+    The raw payload is revalidated here so no caller can bypass the strict
+    model boundary by constructing a permissive Claim directly:
       * cannot_determine counts as abstention on EVERY attempt;
       * in-scope: all required fields must be asserted (basis handled by
         verify()'s AMBIGUOUS when the fork is material);
       * out-of-scope: the complete answer is an explicit refusal with no
         asserted outcomes; assertions take precedence over a refusal flag.
     Precedence: wrong beats missing (REJECTED > INCOMPLETE)."""
-    a = assess(collab)
-    abstained = isinstance(raw, dict) and bool(raw.get("cannot_determine"))
-    if not a.ok:
-        asserted = any(getattr(claim, f) is not None for f in CLAIM_FIELDS)
-        if asserted:
-            return "ASSERTED_ON_OUT_OF_SCOPE", None, []
-        if abstained:
-            return "CORRECT_REFUSAL", None, []
-        return "SILENT_ON_OUT_OF_SCOPE", None, []
-    if abstained:
-        return "ABSTAINED", None, []
-    cert = verify(claim, collab)
-    if cert.status == Status.REJECTED:
-        return "REJECTED", cert, []
-    if cert.status == Status.AMBIGUOUS:
-        return "AMBIGUOUS", cert, []
-    missing = [f for f in required_fields(collab) if getattr(claim, f) is None]
-    if missing:
-        return "INCOMPLETE", cert, missing
-    return "CERTIFIED_COMPLETE", cert, []
+    parsed = validate_llm_payload(raw)
+    if not parsed.valid:
+        return "INVALID_OUTPUT", None, []
+    verdict = classify_llm_answer(parsed, collab)
+    return verdict.status, verdict.certificate, list(verdict.missing)
 
 
 class LlmAnswerer:
@@ -251,18 +212,21 @@ class ScriptedAnswerer:
                            {"role": "assistant", "content": "[scripted]"}]
         if self.index == self.PARTIAL_INITIAL_CASE:
             a = assess(collab)
-            return (Claim(gst_registration_required=a.d("gst_registration_required")),
-                    {"selftest": True})
-        return naive_answer(collab), {"selftest": True}
+            claim = Claim(gst_registration_required=a.d("gst_registration_required"))
+            return claim, payload_for_claim(claim)
+        claim = naive_answer(collab)
+        return claim, payload_for_claim(claim)
 
     def retry(self, collab, feedback):
         self.transcript += [{"role": "user", "content": feedback},
                             {"role": "assistant", "content": "[scripted retry]"}]
         if self.index == self.ABSTAIN_ON_RETRY_CASE:
-            return Claim(), {"selftest": True, "cannot_determine": True,
-                             "reason": "scripted abstention"}
+            claim = Claim()
+            return claim, payload_for_claim(
+                claim, cannot_determine=True, reason="scripted abstention")
         a = assess(collab)
-        return (assessment_as_claim(a) if a.ok else Claim()), {"selftest": True}
+        claim = assessment_as_claim(a) if a.ok else Claim()
+        return claim, payload_for_claim(claim)
 
     def answers_so_far(self):
         return [m["content"] for m in self.transcript if m["role"] == "assistant"]
@@ -289,8 +253,8 @@ def run_arm(name, cases, make_answerer, feedback_capable, model):
         ans = make_answerer(i)
         claim, raw = ans.start(c)
         if claim is None:
-            tally["unparseable"] += 1
-            per_case.append({"case": i, "first_status": "unparseable", "raw": raw})
+            tally["INVALID_OUTPUT"] += 1
+            per_case.append({"case": i, "first_status": "INVALID_OUTPUT", "raw": raw})
             continue
         status, cert, missing = experiment_status(claim, raw, c)
         tally[status] += 1
@@ -307,7 +271,7 @@ def run_arm(name, cases, make_answerer, feedback_capable, model):
                 claim2, raw2 = ans.retry(c, fb)
                 if claim2 is None:
                     entry.setdefault("retries", []).append(
-                        {"attempt": attempt + 1, "status": "unparseable"})
+                        {"attempt": attempt + 1, "status": "INVALID_OUTPUT"})
                     break
                 status, cert, missing = experiment_status(claim2, raw2, c)
                 entry.setdefault("retries", []).append(
@@ -372,13 +336,15 @@ def main():
             # A refusal flag must not launder asserted numbers on an
             # out-of-scope pattern into CORRECT_REFUSAL.
             mixed_status, _, _ = experiment_status(
-                Claim(tds_194r_paise=1),
-                {"cannot_determine": True, "reason": "scripted refusal"},
+                Claim(tds_194r_paise=1), payload_for_claim(
+                    Claim(tds_194r_paise=1), cannot_determine=True,
+                    reason="scripted refusal"),
                 cases[-1])
-            assert mixed_status == "ASSERTED_ON_OUT_OF_SCOPE"
+            assert mixed_status == "INVALID_OUTPUT"
             print("selftest expectations: ALL PASSED (abstention never counted "
                   "as fixed; partial answer never counted as certified; "
-                  "assertions cannot hide behind refusal)")
+                  "assertions cannot hide behind refusal; invalid types and "
+                  "contradictory refusals are rejected)")
     else:
         if not os.environ.get("ANTHROPIC_API_KEY"):
             print("ANTHROPIC_API_KEY not set. No LLM numbers are invented; "

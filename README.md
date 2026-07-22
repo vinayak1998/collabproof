@@ -1,54 +1,55 @@
 # collabproof
 
-**An executable formalization of the Indian tax rules governing brand ↔ creator barter collaborations — with a certifier that either proves an answer against the statute or names the exact rule it breaks.**
+**An executable, version-pinned interpretation of Indian tax rules governing brand ↔ creator barter collaborations — with a fail-closed checker that either certifies a complete claim against the encoded specification or explains why it cannot.**
 
-Built as a working miniature of the [Pramaana Labs](https://pramaanalabs.ai/) architecture (LLM proposes → deterministic layer verifies → certify or refuse), on a domain their published work hasn't touched: **Section 194R TDS on influencer freebies, composed with GST barter rules** — the compliance surface of India's creator economy.
+Built independently from public materials as a [Pramaana Labs](https://pramaanalabs.ai/)-inspired exploration of the verification-layer pattern (answer proposed → deterministic specification checks → certify, reject, or refuse). The synthetic domain is **Section 194R TDS on creator benefits, composed with GST barter rules**. This project is not affiliated with or endorsed by Pramaana Labs or any employer.
 
 Every number in this README was produced by code in this repo. Run it yourself:
 
 ```bash
-pip install z3-solver hypothesis pytest
-python -m pytest tests/ -q          # 19 tests: 12 golden + 7 property classes
+python -m pip install -r requirements-dev.txt
+python -m pytest -q                 # golden, adversarial, LLM-boundary, property tests
 python proofs/prove_cliff.py        # Z3 proofs + exhaustive enumeration
 python run_eval.py                  # certifier vs the naive baseline (n=50)
 python run_eval.py --llm            # optional; needs ANTHROPIC_API_KEY
-python gen_parity_vectors.py && node docs/parity_check_node.js   # JS↔Python parity
+python gen_parity_vectors.py && node docs/parity_check_node.js   # assessor + verifier parity
 ```
 
 **Try it in a browser — no install:** `docs/` is a self-contained page (GitHub Pages-ready:
 Settings → Pages → deploy from `/docs`). Enter a deal, get every number with its statutory rule,
-certify your own (or an LLM's) answer, and see the dead-zone chart live. The page's JS engine is
-mechanically held to the Python spec: **62/62 frozen vectors** replay on every page load and in CI
-(`.github/workflows/ci.yml`), which also gates merges on the proofs and the zero
-certified-but-wrong invariant. If the JS ever drifts from the Python, the badge goes red — the
-demo polices itself the same way the domain logic does.
+certify your own (or an LLM's) complete answer, and inspect a fact-sensitive product-value chart.
+The page's JS engine is mechanically held to the Python source of truth: **62 assessment and 15
+verifier fixtures** replay on every page load and in CI (`.github/workflows/ci.yml`). CI also runs
+the full Python suite, the Z3 artifact, stale-fixture detection, and Node parity. A drifted browser
+engine makes the badge and build go red.
 
 ---
 
 ## The finding: the ₹20,000 dead zone (machine-checked)
 
-Section 194R has a **cliff, not a marginal rule**: once the FY aggregate of benefits to a creator exceeds ₹20,000, TDS applies to the *whole aggregate*, not the excess. For an in-kind freebie where the creator funds the tax (the advance-tax route required by CBDT Circular 12/2022 before the product can even be released), Z3 proves, over the unbounded domain:
+Section 194R has a **cliff, not a marginal rule** in this encoded interpretation: once the FY aggregate of benefits to a creator exceeds ₹20,000, TDS applies to the *whole aggregate*, not the excess. For the theorem's deliberately narrow slice—whole-rupee product values, no prior benefits/TDS, company provider, retained in-kind product, PAN furnished, and creator-funded tax—Z3 proves over the unbounded whole-rupee domain:
 
 | Claim | Status |
 |---|---|
 | Accepting a **bigger** freebie can leave the creator with **less** (witness: ₹20,000 → ₹20,001) | EXHIBIT (SAT) |
-| **Dead zone is exactly ₹20,001–₹22,222**: every value in it nets below a plain ₹20,000 freebie | **PROVED** (unsat of negation) |
+| **Whole-rupee dead zone is exactly ₹20,001–₹22,222**: every value in it nets below a plain ₹20,000 freebie | **PROVED** (unsat of negation) |
 | From ₹22,223 up, net strictly beats ₹20,000 | **PROVED** |
 | The cliff is unique — strictly monotone on each side of the threshold | **PROVED** |
 | **No PAN (s.206AA, 20%): dead zone widens to ₹20,001–₹24,999**, indifference at exactly ₹25,000 | **PROVED** |
 | Brand side, gross-up mode: the marginal rupee of gift at the boundary costs the brand **₹2,223.33** (exactly 6670/3) | EXHIBIT (exact rationals) |
 
-Exhaustive enumeration over ₹1–₹1,00,000 confirms: **2,222 dead-zone values; worst case ₹1,999.10 of immediate cash-adjusted loss at ₹20,001** — and binds the proof model to the shipped `assess()` implementation at all 100,000 points, so the proofs are about the code, not a hand-copy of it.
+Exhaustive enumeration over the 100,000 whole-rupee points ₹1–₹1,00,000 confirms **2,222 dead-zone values and a worst immediate cash-adjusted loss of ₹1,999.10 at ₹20,001**. It is a strong binding check for that slice, not a proof that the entire Python implementation is equivalent to the Z3 model. The runtime engine accepts paise; the paise-granularity boundary is outside this theorem.
 
 *Scope disclosure:* "worse off" is an immediate-cash statement — TDS is creditable against final liability, so the permanent loss depends on the creator's slab; the cash-flow cliff and the dead-zone boundaries are exact regardless. This is the structural cousin of Pramaana's marginal-relief non-monotonicity (₹50L → ₹51L drops take-home by ₹4,000), found in a different statute: **threshold-cliff provisions are a reusable bug class, and provers find them mechanically.**
 
 ## What the certifier does
 
-`assess(collab)` compiles a fact pattern into determinations, each carrying statutory citations. `verify(claim, collab)` checks any answerer's output and returns one of:
+`assess(collab)` compiles a fact pattern into determinations, each carrying rule IDs and citations. `verify(claim, collab)` checks a typed six-field claim, reports its coverage, and returns one of:
 
-- `CERTIFIED` — every asserted field matches the spec
-- `REJECTED` — with the exact failing rule, e.g. a real trace from the eval run:
-  `tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]`
+- `CERTIFIED` — every required field is present, well typed, and matches the encoded spec
+- `INCOMPLETE` — one or more required fields were omitted; unchecked fields can never turn green
+- `INVALID` — malformed types, amounts, or bases fail the runtime claim schema
+- `REJECTED` — with the path-specific decision rule and supporting trail, e.g. an excess-only calculation is attributed to `IT-194R-THRESHOLD`, not a generic scope citation
 - `AMBIGUOUS` — the answer matches one branch of a *material* statutory fork but states no basis
 - `OUT_OF_SCOPE` — the spec refuses the pattern (non-resident payee → s.195; no business nexus → s.56(2)(x)) rather than guessing
 
@@ -68,9 +69,11 @@ Exhaustive enumeration over ₹1–₹1,00,000 confirms: **2,222 dead-zone value
 | OUT_OF_SCOPE (asserted numbers on refusal patterns) | 2 |
 | **Certified-but-wrong (soundness)** | **0** |
 
-Top catch reasons: `IT-194R-SCOPE`/excess-vs-aggregate (27), missed release gate (27), 194J threshold ignored (16), threshold boundary (7), GST registration (3+1).
+Top catch reasons in the regenerated run include the missed release gate (27), the s.194R threshold/aggregate rule (23), and the 194J branch (16). The full per-case explanations are committed in `eval/results.json`.
 
 **No LLM numbers are published here** because no LLM was called during construction. The adapter (`collabproof/llm_adapter.py`) is wired; run `--llm` with a key to generate them. Nothing in this repo is invented.
+LLM modes transmit serialized case facts to the configured provider and persist responses locally;
+use synthetic, non-confidential cases only.
 
 ## The LLM experiment (`experiments/three_arms.py`) — ready to run, not yet run
 
@@ -85,16 +88,14 @@ verified pipeline's certified-wrong count is zero by construction; an LLM's is a
 draw, and arm B tests whether retrieval changes that. Arm C tests the productizable claim:
 verification doesn't just grade a model, it repairs one.
 
-The experiment applies its own **completeness rule** on top of `verify()`: the certifier's
-"check only what's asserted" semantics are right for a certifier API but would let empty,
-partial, or abstaining answers score as wins. So every attempt — initial or retry — is judged
-by `experiment_status()`: abstention counts as abstention on every attempt; in-scope answers
-must assert all required fields to count `CERTIFIED_COMPLETE` (missing fields → `INCOMPLETE`,
-retried with field names only); out-of-scope patterns are answered correctly only by explicit
-refusal (`CORRECT_REFUSAL`), while numbers on them count `ASSERTED_ON_OUT_OF_SCOPE` — the
-confident-fabrication metric. Wrong beats missing (`REJECTED` takes precedence). The
-`--selftest` asserts its own expected counts, including two regression cases for exactly the
-holes this rule closes (an abstaining retry and a partial first answer). Also included: a dead-zone probe
+The core certifier itself is fail-closed: empty and partial claims return `INCOMPLETE`. The model
+boundary additionally requires one strict eight-key JSON object, rejects unknown/duplicate keys,
+bool-as-int, floats or strings for money, invalid bases, and contradictory refusal-plus-assertion
+outputs. Every initial answer and retry passes through that same boundary. Explicit abstention
+counts as abstention; out-of-scope patterns count as correct only when the model explicitly refuses
+without asserting an outcome. Wrong beats missing (`REJECTED` takes precedence). The `--selftest`
+asserts expected counts for partial answers, malformed output, asserted refusals, and abstaining
+retries. Also included: a dead-zone probe
 ("is a ₹21,000 freebie better than ₹20,000?") whose raw answers are saved verbatim, unscored,
 for quotation against the machine-checked proof. Before publishing results, replace the
 placeholder corpus with official statutory text (`experiments/corpus/00_README.md`).
@@ -115,10 +116,12 @@ Their public demos ([Indian marginal relief](https://pramaanalabs.ai/blog/when-m
 Pramaana's publicly described pattern ([their funding post](https://pramaanalabs.ai/blog/we-raised-27m-to-build-a-compiler-for-mission-critical-ai)):
 encode a domain's actual rules into a formal language once; when a question arrives, translate it
 into a formal statement, run it through a proof engine, and either certify the answer or name the
-exact rule that breaks — refusing when it cannot prove. collabproof is that pattern in miniature,
-minus the ML: `spec.py` is the hand-encoded rule fabric (tiny); `verify()` is the runtime
-certifier; `AMBIGUOUS`/`OUT_OF_SCOPE` are the refusal verdicts; the rule-ID trail is the
-plain-language back-translation. What this toy deliberately does **not** have is the hard part —
+decision rule and support trail when a claim breaks — refusing unsupported patterns. collabproof
+explores that pattern without claiming implementation equivalence: `spec.py` is a hand-encoded
+rule engine; `verify()` is a fail-closed equality checker over its outputs;
+`AMBIGUOUS`/`OUT_OF_SCOPE` are refusal verdicts; and the rule-ID trail is the plain-language
+back-translation. It does **not** emit a machine-checkable proof for each runtime answer. What this
+toy also deliberately does **not** have is the hard part —
 automated translation of statute into formal rules. Every hour I spent hand-encoding circular
 Q&As is an argument for why automating that step is the actual product.
 
@@ -146,8 +149,8 @@ is certified garbage.
 
 ## Limitations (read before citing)
 
-Toy scope, deliberately: one recipient-per-brand aggregation model; no s.288B rounding; ss.206AB, 195, GST time-of-supply/ITC/RCM/e-commerce TCS unmodeled; the GST-exclusive valuation line of Circular 12/2022 and mixed prior bearer-modes are flagged in docstrings as verify-before-relying. **Version pin:** FY 2024-25 (Act of 1961 through Finance (No. 2) Act 2024). Finance Act 2025 threshold revisions and the Income-tax Act 2025 renumbering would both break this spec — which is the point: *rule drift makes spec versioning a first-class product problem for any verification company.* Not legal or tax advice.
+Toy scope, deliberately: one recipient-per-brand aggregation model; no s.288B rounding; ss.206AB, 195, GST time-of-supply/ITC/RCM/e-commerce TCS unmodeled; the GST-exclusive valuation line of Circular 12/2022 and mixed prior bearer-modes are flagged in docstrings as verify-before-relying. The rule registry contains author-entered summaries and citations, not yet an independently reviewed source-to-formalization manifest. **Version pin:** FY 2024-25 (Act of 1961 through Finance (No. 2) Act 2024). Finance Act 2025 threshold revisions and the Income-tax Act 2025 renumbering would both break this spec — which is the point: *rule drift makes spec versioning a first-class product problem for any verification company.* Educational, synthetic, and not legal or tax advice.
 
 ---
 
-*Author: Vinayak Rastogi · July 2026 · ~1,250 lines of Python · statutes: Income-tax Act 1961 (ss. 194R, 194J, 194C, 206AA), CBDT Circulars 12/2022 & 18/2022, CGST Act 2017 (ss. 2(31), 7, 22) & Rule 27.*
+*Author: Vinayak Rastogi · July 2026 · statutes encoded: Income-tax Act 1961 (ss. 194R, 194J, 194C, 206AA), CBDT Circulars 12/2022 & 18/2022, CGST Act 2017 (ss. 2(31), 7, 22) & Rule 27.*

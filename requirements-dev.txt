@@ -1,0 +1,10 @@
+# Fully pinned test/proof environment used by .github/workflows/ci.yml.
+attrs==26.1.0
+hypothesis==6.131.9
+iniconfig==2.3.0
+packaging==26.2
+pluggy==1.6.0
+Pygments==2.20.0
+pytest==9.0.3
+sortedcontainers==2.4.0
+z3-solver==4.14.1.0

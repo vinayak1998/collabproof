@@ -26,6 +26,7 @@
   input[type=number],select{width:100%;padding:7px 9px;border:1px solid var(--line);
     border-radius:8px;font-size:14.5px;background:#fff;color:var(--ink)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
   .tog{display:flex;align-items:center;gap:8px;margin:9px 0 0;font-size:13.5px;color:var(--ink)}
   .tog input{width:16px;height:16px}
   .det{border-top:1px solid var(--line);padding:10px 2px}
@@ -41,6 +42,15 @@
   .status.REJECTED{background:var(--badbg);color:var(--bad)}
   .status.AMBIGUOUS{background:var(--ambbg);color:var(--amb)}
   .status.OUT_OF_SCOPE{background:var(--refbg);color:var(--ref)}
+  .status.INCOMPLETE{background:#fff7e8;color:#795200}
+  .status.INVALID{background:var(--badbg);color:var(--bad)}
+  .action{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:9px;
+    padding:9px 11px;margin:0 0 10px;font-size:13px;background:#f7f9fd}
+  .action b{display:block;font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+  .action.HOLD,.action.REJECT{border-left-color:var(--bad);background:var(--badbg)}
+  .action.RELEASE,.action.CERTIFIED{border-left-color:var(--ok);background:var(--okbg)}
+  .action.REQUEST_FACT{border-left-color:var(--amb);background:var(--ambbg)}
+  .action.ROUTE_EXPERT{border-left-color:var(--ref);background:var(--refbg)}
   .mm{font-size:13px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--bad);
       border-radius:8px;padding:8px 10px;margin-top:8px;font-weight:500;color:var(--ink)}
   .mm code{background:#f2f3f7;padding:1px 5px;border-radius:5px}
@@ -50,6 +60,15 @@
   .btnrow{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
   svg text{font:11px -apple-system,sans-serif;fill:var(--mut)}
   .note{font-size:12.5px;color:var(--mut);margin-top:8px}
+  .contract{font-size:12.5px;color:var(--mut);background:#f2f5fb;border:1px solid #d7dfef;
+    border-radius:9px;padding:9px 11px;margin-bottom:10px}
+  .validation{font-size:12.5px;color:var(--bad);background:var(--badbg);border-radius:8px;
+    padding:8px 10px;margin-top:10px}
+  .validation ul{margin:4px 0 0;padding-left:20px}
+  input.invalid,select.invalid{border-color:var(--bad);box-shadow:0 0 0 2px rgba(179,38,30,.1)}
+  .chart-empty{font-size:13px;color:var(--mut);background:#f2f3f7;border-radius:9px;padding:16px}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  [hidden]{display:none!important}
   footer{margin-top:26px;color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
   footer a{color:var(--acc)}
   .ref-note{font-size:13px;color:var(--ref);background:var(--refbg);border-radius:8px;padding:8px 10px;margin-top:6px}
@@ -70,9 +89,10 @@
 <div class="grid">
   <div class="card">
     <h2>The deal (facts)</h2>
+    <div id="dealErrors" aria-live="polite"></div>
     <div class="row">
-      <div><label>Cash fee (₹)</label><input type="number" id="cash" value="50000" min="0" step="1000"></div>
-      <div><label>Product value / FMV (₹)</label><input type="number" id="product" value="25000" min="0" step="500"></div>
+      <div><label for="cash">Cash fee (₹)</label><input type="number" id="cash" value="50000" min="0" step="0.01" required></div>
+      <div><label for="product">Product value / FMV (₹)</label><input type="number" id="product" value="25000" min="0" step="0.01" required></div>
     </div>
     <div class="row">
       <div><label>Brand entity</label>
@@ -83,15 +103,19 @@
         <option value="provider">Brand (gross-up)</option></select></div>
     </div>
     <div class="row">
-      <div><label>Brand preceding-FY business turnover (₹)</label><input type="number" id="bturn" value="50000000" min="0" step="100000"></div>
-      <div><label>…or profession receipts (₹)</label><input type="number" id="brec" value="0" min="0" step="100000"></div>
+      <div><label for="bturn">Brand preceding-FY business turnover (₹)</label><input type="number" id="bturn" value="50000000" min="0" step="0.01" required></div>
+      <div><label for="brec">…or profession receipts (₹)</label><input type="number" id="brec" value="0" min="0" step="0.01" required></div>
     </div>
     <div class="row">
-      <div><label>Creator: prior benefits from this brand this FY (₹)</label><input type="number" id="pben" value="0" min="0" step="500"></div>
-      <div><label>Prior cash fees from this brand this FY (₹)</label><input type="number" id="pcash" value="0" min="0" step="500"></div>
+      <div><label for="pben">Prior benefits from this brand this FY (₹)</label><input type="number" id="pben" value="0" min="0" step="0.01" required></div>
+      <div><label for="ptds194r">Prior s.194R TDS already deposited (₹)</label><input type="number" id="ptds194r" value="0" min="0" step="0.01" required></div>
     </div>
     <div class="row">
-      <div><label>Creator FY turnover so far, all clients (₹)</label><input type="number" id="pturn" value="500000" min="0" step="10000"></div>
+      <div><label for="pcash">Prior cash fees from this brand this FY (₹)</label><input type="number" id="pcash" value="0" min="0" step="0.01" required></div>
+      <div><label for="ptdscash">Prior cash-fee TDS already deposited (₹)</label><input type="number" id="ptdscash" value="0" min="0" step="0.01" required></div>
+    </div>
+    <div class="row">
+      <div><label for="pturn">Creator FY turnover so far, all clients (₹)</label><input type="number" id="pturn" value="500000" min="0" step="0.01" required></div>
       <div><label>&nbsp;</label><div>
         <div class="tog"><input type="checkbox" id="retained" checked><span>Product retained (not returned)</span></div>
         <div class="tog"><input type="checkbox" id="linked" checked><span>Product tied to a deliverable</span></div>
@@ -112,27 +136,42 @@
       <h2>Assessment — every number carries its rule</h2>
       <div id="out"></div>
     </div>
-    <div class="card" style="margin-top:18px">
-      <h2>The ₹20,000 cliff (proved in Z3; drawn here)</h2>
+    <div class="card" id="chartCard" style="margin-top:18px">
+      <h2>Product-value sensitivity — selected facts held fixed</h2>
       <div id="chart"></div>
       <div class="note" id="chartnote"></div>
     </div>
     <div class="card" style="margin-top:18px">
       <h2>Certify a claim — yours, your CA's, or an LLM's</h2>
+      <div class="contract"><b>Complete-claim contract:</b> assert every checkable output below.
+        For GST liability, explicitly choose an amount or “no amount / null.” A partial claim is
+        held as <b>INCOMPLETE</b> before it reaches the verifier. A green result means agreement
+        with this encoded FY 2024-25 spec, not independent validation of the facts or law.</div>
       <div class="row">
-        <div><label>Claimed 194R TDS (₹)</label><input type="number" id="c194r" placeholder="e.g. 2500"></div>
-        <div><label>Claimed cash TDS (₹)</label><input type="number" id="ccash" placeholder="e.g. 5000"></div>
+        <div><label for="c194r">Claimed 194R TDS (₹)</label><input type="number" id="c194r" min="0" step="0.01" placeholder="e.g. 2500"></div>
+        <div><label for="cgate">Release gate required?</label>
+          <select id="cgate"><option value="">— choose —</option><option value="yes">Yes — hold product</option><option value="no">No</option></select></div>
       </div>
       <div class="row">
-        <div><label>Cash TDS basis</label>
-          <select id="cbasis"><option value="">— not stated —</option>
+        <div><label for="ccash">Claimed cash TDS (₹)</label><input type="number" id="ccash" min="0" step="0.01" placeholder="e.g. 5000"></div>
+        <div><label for="cbasis">Cash TDS basis</label>
+          <select id="cbasis"><option value="">— choose —</option>
+          <option value="unstated">Explicitly no basis stated</option>
           <option value="IT-194J-PROF">s.194J (professional)</option>
           <option value="IT-194C-WORK">s.194C (contract)</option></select></div>
-        <div><label>GST registration needed?</label>
-          <select id="creg"><option value="">— not claimed —</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+      </div>
+      <div class="row">
+        <div><label for="creg">GST registration needed?</label>
+          <select id="creg"><option value="">— choose —</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+        <div><label for="cgstmode">GST liability claim</label>
+          <select id="cgstmode"><option value="">— choose —</option><option value="amount">Claim an amount</option>
+          <option value="null">No amount / null</option></select></div>
+      </div>
+      <div id="cgstAmountWrap" hidden>
+        <label for="cgst">Claimed GST liability (₹)</label><input type="number" id="cgst" min="0" step="0.01" placeholder="e.g. 19800">
       </div>
       <div class="btnrow"><button id="btnVerify">Certify against the spec</button></div>
-      <div id="cert"></div>
+      <div id="cert" aria-live="polite"></div>
     </div>
   </div>
 </div>
@@ -141,44 +180,112 @@
   <b>Scope:</b> FY 2024-25 (Income-tax Act 1961 through Finance (No. 2) Act 2024; CBDT Circulars 12/2022 &amp; 18/2022; CGST Act 2017 + Rule 27).
   Educational toy — statutory rounding, 206AB, s.195, GST time-of-supply/ITC and the Income-tax Act 2025 renumbering are out of scope.
   <b>Not tax advice.</b> The JS engine on this page is mechanically held to the Python spec (badge above) —
-  same rules, or the badge goes red. Source: <a href="https://github.com/">github repo</a> ·
+  same rules, or the badge goes red. Source: <a href="https://github.com/vinayak1998/collabproof">github repo</a> ·
   proofs: <code>proofs/prove_cliff.py</code>.
 </footer>
 </div>
 
-<script src="collabproof.js"></script>
-<script src="parity_vectors.js"></script>
+<script src="collabproof.js?v=2"></script>
+<script src="parity_vectors.js?v=2"></script>
 <script>
 const $=id=>document.getElementById(id);
 const cp=window.collabproof;
 const fmt=p=>{const r=p/100;return "₹"+r.toLocaleString("en-IN",{maximumFractionDigits:2})};
+const DEAL_AMOUNT_FIELDS=[
+  ["cash","Cash fee"],["product","Product value / FMV"],
+  ["bturn","Brand business turnover"],["brec","Brand profession receipts"],
+  ["pben","Prior benefits"],["ptds194r","Prior s.194R TDS"],
+  ["pcash","Prior cash fees"],["ptdscash","Prior cash-fee TDS"],
+  ["pturn","Prior aggregate turnover"],
+];
+const CLAIM_FIELD_IDS=["c194r","cgate","ccash","cbasis","creg","cgstmode","cgst"];
+let lastCertificateStatus=null;
 
-function facts(){return{
-  brand_entity:$("brand_entity").value,
-  brand_business_turnover:(+$("bturn").value||0)*100,
-  brand_profession_receipts:(+$("brec").value||0)*100,
-  brand_in_business:$("nexus").checked,
-  resident:$("resident").checked, pan:$("pan").checked,
-  special_state:$("special").checked, gst_registered:$("gstreg").checked,
-  prior_benefits:(+$("pben").value||0)*100, prior_194r_tds:0,
-  prior_cash_fees:(+$("pcash").value||0)*100, prior_cash_tds:0,
-  prior_turnover:(+$("pturn").value||0)*100,
-  cash:(+$("cash").value||0)*100, product:(+$("product").value||0)*100,
-  retained:$("retained").checked, deliverable_linked:$("linked").checked,
-  bearer:$("bearer").value};}
+const esc=s=>String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]);
+const action=(kind,title,body)=>`<div class="action ${kind}"><b>${esc(title)}</b>${esc(body)}</div>`;
+
+function clearInvalid(ids){
+  for(const id of ids){const el=$(id);el.classList.remove("invalid");el.removeAttribute("aria-invalid");}
+}
+function invalid(el){el.classList.add("invalid");el.setAttribute("aria-invalid","true");}
+
+function readMoney(id,label,errors){
+  const el=$(id),raw=String(el.value).trim();
+  if(raw===""){errors.push(`${label} is required.`);invalid(el);return null;}
+  const rupees=Number(raw);
+  if(!Number.isFinite(rupees)||rupees<0){errors.push(`${label} must be a non-negative number.`);invalid(el);return null;}
+  const rawPaise=rupees*100,paise=Math.round(rawPaise);
+  if(!Number.isSafeInteger(paise)||Math.abs(rawPaise-paise)>1e-7){
+    errors.push(`${label} must be an exact amount with at most two decimal places.`);invalid(el);return null;
+  }
+  return paise;
+}
+
+function readSelection(id,label,allowed,errors){
+  const el=$(id),value=el.value;
+  if(!allowed.includes(value)){errors.push(`${label} is required.`);invalid(el);return null;}
+  return value;
+}
+
+function showDealErrors(errors){
+  $("dealErrors").innerHTML=errors.length
+    ? `<div class="validation"><b>Correct the deal facts:</b><ul>${errors.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>`:"";
+}
+
+function readFacts(){
+  clearInvalid(DEAL_AMOUNT_FIELDS.map(([id])=>id).concat(["brand_entity","bearer"]));
+  const errors=[],n={};
+  for(const [id,label] of DEAL_AMOUNT_FIELDS)n[id]=readMoney(id,label,errors);
+  const brand=readSelection("brand_entity","Brand entity",["company","firm","individual","huf"],errors);
+  const bearer=readSelection("bearer","Tax bearer",["recipient","provider"],errors);
+  if(!errors.length){
+    const exactChecks=[
+      [(n.pben+n.product)*20,"s.194R benefit arithmetic"],
+      [(n.pcash+n.cash)*20,"cash-fee TDS arithmetic"],
+      [(n.pturn+n.cash+n.product)*18,"GST arithmetic"],
+    ];
+    for(const [amount,label] of exactChecks){
+      if(!Number.isSafeInteger(amount)){errors.push(`${label} is too large for exact browser arithmetic.`);break;}
+    }
+  }
+  showDealErrors(errors);
+  if(errors.length)return {ok:false,errors};
+  return {ok:true,value:{
+    brand_entity:brand,
+    brand_business_turnover:n.bturn,brand_profession_receipts:n.brec,
+    brand_in_business:$("nexus").checked,
+    resident:$("resident").checked,pan:$("pan").checked,
+    special_state:$("special").checked,gst_registered:$("gstreg").checked,
+    prior_benefits:n.pben,prior_194r_tds:n.ptds194r,
+    prior_cash_fees:n.pcash,prior_cash_tds:n.ptdscash,
+    prior_turnover:n.pturn,cash:n.cash,product:n.product,
+    retained:$("retained").checked,deliverable_linked:$("linked").checked,
+    bearer,
+  }};
+}
 
 function det(q,v,cites,extra){return `<div class="det"><div class="q">${q}</div>
   <div class="v">${v}</div><div class="c">${cites.map(r=>`[${r}] ${cp.RULES[r]}`).join("<br>")}</div>${extra||""}</div>`;}
 
 function render(){
-  const f=facts(), a=cp.assess(f), out=$("out");
-  if(!a.ok){
-    out.innerHTML=`<div class="status OUT_OF_SCOPE">REFUSED — cannot certify this fact pattern</div>
-      <div class="ref-note">[${a.refusal}] ${cp.RULES[a.refusal]}<br>${a.note}
-      <br><b>This is the point:</b> a system that can prove refuses rather than guesses.</div>`;
-    drawChart(f); return;
+  const parsed=readFacts(),out=$("out");
+  if(!parsed.ok){
+    out.innerHTML=action("REQUEST_FACT","Request fact","Complete or correct every highlighted deal input before assessing the transaction.");
+    showChartUnavailable("Chart not drawn until all deal facts are valid.");
+    return;
   }
-  let h="";
+  const f=parsed.value,a=cp.assess(f);
+  if(!a.ok){
+    out.innerHTML=action("ROUTE_EXPERT","Route expert","The selected facts fall outside this encoded scope; do not force a numeric answer.")+
+      `<div class="status OUT_OF_SCOPE">REFUSED — cannot certify this fact pattern</div>
+      <div class="ref-note">[${a.refusal}] ${cp.RULES[a.refusal]}<br>${a.note}
+      <br>This refusal is a scope decision by the encoded model, not a legal opinion.</div>`;
+    showChartUnavailable("Chart not drawn for an out-of-scope fact pattern.");return;
+  }
+  let h=a.gate
+    ? action("HOLD","Hold product","Do not release under the encoded s.194R gate until the required tax evidence or provider-deposit path is in place.")
+    : action("RELEASE","Release gate clear","This encoded s.194R release gate is not triggered on the selected facts. Confirm the facts and any obligations outside this model before release.");
+  if(a.fork_material)h+=action("ROUTE_EXPERT","Route expert","The cash-fee result depends on an unresolved s.194J versus s.194C basis. Record the chosen interpretation before using that number.");
   h+=det("s.194R TDS due now on the benefit", fmt(a.tds_194r)
         +(a.gate?'<span class="pill on">release gate ON</span>':'<span class="pill off">no gate</span>'),
         a.tds_rules.concat(a.gate?["IT-194R-RELEASEGATE"]:[]),
@@ -200,74 +307,200 @@ function render(){
         ["GST-RATE-18"]);
   for(const [r,n] of a.notes) h+=`<div class="ref-note">[${r}] ${n}</div>`;
   out.innerHTML=h;
-  drawChart(f);
+  drawChart(f,a);
 }
 
-function drawChart(f){
-  const W=620,H=210,L=46,B=178,T=14,R=16;
-  const maxV=30000, rate=f.pan?10:20;
-  const net=v=>v<=20000?v:v*(1-rate/100);
-  const x=v=>L+(v/maxV)*(W-L-R), y=n=>B-(n/maxV)*(B-T);
-  let pts1="",pts2="";
-  for(let v=0;v<=20000;v+=100) pts1+=`${x(v)},${y(net(v))} `;
-  for(let v=20001;v<=maxV;v+=100) pts2+=`${x(v)},${y(net(v))} `;
-  const dzEnd=f.pan?22222:24999;
-  const cur=Math.min((f.product/100),maxV);
-  const inDz=cur>20000&&cur<=dzEnd;
+function showChartUnavailable(message){
+  $("chart").innerHTML=`<div class="chart-empty">${esc(message)}</div>`;
+  $("chartnote").textContent="";
+}
+
+function drawChart(f,a){
+  if(["AMBIGUOUS","OUT_OF_SCOPE"].includes(lastCertificateStatus)){
+    showChartUnavailable(`Chart not drawn after a ${lastCertificateStatus.replace("_"," ")} verdict.`);return;
+  }
+  if(!a||!a.ok){showChartUnavailable("Chart not drawn for an out-of-scope fact pattern.");return;}
+  if(!f.retained){showChartUnavailable("Chart not drawn: the selected facts say the product is returned, so retained-product value does not apply.");return;}
+  if(f.bearer!=="recipient"){
+    showChartUnavailable("Chart not drawn: the brand bears the in-kind tax, so the creator-cash metric used here does not apply.");return;
+  }
+
+  const W=620,H=230,L=58,B=190,T=18,R=18,current=f.product;
+  const increment=cp.rup(5000);
+  const padded=current+Math.max(increment,Math.ceil(current/5));
+  const maxProduct=Math.max(cp.rup(30000),Math.ceil(padded/increment)*increment);
+  const values=new Set([0,current,maxProduct]);
+  for(let i=0;i<=180;i++)values.add(Math.round(maxProduct*i/180));
+  const thresholdCandidate=Math.max(0,cp.K.S194R_FY_THRESHOLD-f.prior_benefits);
+  for(const v of [thresholdCandidate-1,thresholdCandidate,thresholdCandidate+1])
+    if(v>=0&&v<=maxProduct)values.add(v);
+
+  const data=[];
+  for(const product of [...values].sort((x,y)=>x-y)){
+    const point=cp.assess(Object.assign({},f,{product}));
+    if(!point.ok){showChartUnavailable("Chart not drawn because a controlled variation left the encoded scope.");return;}
+    data.push({product,net:product-point.tds_194r});
+  }
+  let minNet=Math.min(0,...data.map(d=>d.net)),maxNet=Math.max(1,...data.map(d=>d.net));
+  const pad=Math.max(1,(maxNet-minNet)*.08);minNet-=pad;maxNet+=pad;
+  const x=v=>L+(v/maxProduct)*(W-L-R);
+  const y=v=>B-((v-minNet)/(maxNet-minNet))*(B-T);
+  const points=data.map(d=>`${x(d.product)},${y(d.net)}`).join(" ");
+  const currentNet=current-a.tds_194r,zeroY=y(0);
   $("chart").innerHTML=
-   `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="net value vs freebie value">
-     <rect x="${x(20001)}" y="${T}" width="${x(dzEnd)-x(20001)}" height="${B-T}" fill="#fdeceb"/>
+   `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Retained product value after current s.194R TDS due, with only product FMV varied">
      <line x1="${L}" y1="${B}" x2="${W-R}" y2="${B}" stroke="#c9cfda"/>
      <line x1="${L}" y1="${T}" x2="${L}" y2="${B}" stroke="#c9cfda"/>
-     <polyline points="${pts1}" fill="none" stroke="#274690" stroke-width="2"/>
-     <polyline points="${pts2}" fill="none" stroke="#274690" stroke-width="2"/>
-     <circle cx="${x(20000)}" cy="${y(20000)}" r="3.5" fill="#274690"/>
-     <circle cx="${x(20001)}" cy="${y(net(20001))}" r="3.5" fill="#b3261e"/>
-     ${cur>0?`<line x1="${x(cur)}" y1="${T}" x2="${x(cur)}" y2="${B}" stroke="${inDz?"#b3261e":"#0a7a4b"}" stroke-dasharray="4 3"/>`:""}
-     <text x="${x(20800)}" y="${T+12}" fill="#b3261e">dead zone ₹20,001–₹${dzEnd.toLocaleString("en-IN")}</text>
-     <text x="${L+4}" y="${T+10}">net value kept by creator (in-kind deal, creator funds TDS)</text>
-     <text x="${W-150}" y="${B-6}">freebie value →</text>
+     ${zeroY>=T&&zeroY<=B?`<line x1="${L}" y1="${zeroY}" x2="${W-R}" y2="${zeroY}" stroke="#e3e7ee" stroke-dasharray="3 3"/>`:""}
+     <polyline points="${points}" fill="none" stroke="#274690" stroke-width="2"/>
+     <line x1="${x(current)}" y1="${T}" x2="${x(current)}" y2="${B}" stroke="#0a7a4b" stroke-dasharray="4 3"/>
+     <circle cx="${x(current)}" cy="${y(currentNet)}" r="4" fill="#0a7a4b"/>
+     <text x="${L}" y="${H-12}">0</text>
+     <text x="${W-R}" y="${H-12}" text-anchor="end">${fmt(maxProduct)} product FMV</text>
+     <text x="${L+5}" y="${T+12}">product FMV less s.194R TDS due now</text>
    </svg>`;
-  $("chartnote").innerHTML =
-   `Rate ${rate}% (${f.pan?"PAN furnished":"no PAN — s.206AA"}). A ₹${(20001).toLocaleString("en-IN")} freebie nets `+
-   `<b>${fmt(net(20001)*100)}</b> — less than a ₹20,000 one. `+
-   (inDz?`<b style="color:#b3261e">Your current product value sits inside the dead zone.</b>`
-        :`Machine-checked in <code>proofs/prove_cliff.py</code> (Z3, unbounded domain).`);
+  $("chartnote").innerHTML=`Each point calls the shipped assessor with every selected fact held fixed; only product FMV varies. `+
+    `The metric applies because the product is retained and the creator bears the in-kind tax. `+
+    `Current point: ${fmt(current)} less ${fmt(a.tds_194r)} due now = <b>${fmt(currentNet)}</b>. `+
+    `This is sensitivity within the encoded model, not an independent legal conclusion.`;
+}
+
+function syncGstLiabilityField(){
+  const amount=$("cgstmode").value==="amount";
+  $("cgstAmountWrap").hidden=!amount;$("cgst").disabled=!amount;
+  if(!amount){$("cgst").classList.remove("invalid");$("cgst").removeAttribute("aria-invalid");}
+}
+
+function readClaim(){
+  clearInvalid(CLAIM_FIELD_IDS);
+  const presence=[
+    {key:"tds_194r",present:String($("c194r").value).trim()!=="",ids:["c194r"]},
+    {key:"release_gate",present:["yes","no"].includes($("cgate").value),ids:["cgate"]},
+    {key:"cash_tds",present:String($("ccash").value).trim()!=="",ids:["ccash"]},
+    {key:"cash_basis",present:$("cbasis").value!=="",ids:["cbasis"]},
+    {key:"gst_reg",present:["yes","no"].includes($("creg").value),ids:["creg"]},
+    {key:"gst_liability",present:$("cgstmode").value==="null"||
+      ($("cgstmode").value==="amount"&&String($("cgst").value).trim()!==""),ids:["cgstmode","cgst"]},
+  ];
+  const missingFields=presence.filter(p=>!p.present).map(p=>p.key);
+  const coverage={present:6-missingFields.length,total:6,missing_fields:missingFields};
+  if(missingFields.length){
+    for(const p of presence.filter(p=>!p.present))for(const id of p.ids)invalid($(id));
+    return {ok:false,status:"INCOMPLETE",missingFields,coverage};
+  }
+  const errors=[];
+  const tds194r=readMoney("c194r","Claimed s.194R TDS",errors);
+  const gate=readSelection("cgate","Release-gate claim",["yes","no"],errors);
+  const cashTds=readMoney("ccash","Claimed cash TDS",errors);
+  const basis=readSelection("cbasis","Cash TDS basis choice",["unstated","IT-194J-PROF","IT-194C-WORK"],errors);
+  const gstReg=readSelection("creg","GST registration claim",["yes","no"],errors);
+  const gstMode=readSelection("cgstmode","GST liability claim",["amount","null"],errors);
+  const gstLiability=gstMode==="amount"?readMoney("cgst","Claimed GST liability",errors):null;
+  if(errors.length)return {ok:false,status:"INVALID",errors,coverage};
+  const claim={tds_194r:tds194r,release_gate:gate==="yes",cash_tds:cashTds,
+               cash_basis:basis==="unstated"?null:basis,
+               gst_reg:gstReg==="yes",gst_liability:gstLiability};
+  return {ok:true,claim,coverage};
+}
+
+function resultAction(status){
+  if(status==="CERTIFIED")return action("CERTIFIED","Certified","Every field in this complete claim matches the encoded FY 2024-25 spec. This does not validate the source facts or legal interpretation independently.");
+  if(status==="REJECTED")return action("REJECT","Reject claim","Do not use this claim until every named mismatch is corrected or resolved.");
+  if(status==="AMBIGUOUS")return action("ROUTE_EXPERT","Route expert","A material statutory basis remains unresolved. Record an interpretation before relying on a number.");
+  if(status==="OUT_OF_SCOPE")return action("ROUTE_EXPERT","Route expert","The fact pattern is outside this encoded scope; request specialist review rather than a forced answer.");
+  if(status==="INVALID")return action("REQUEST_FACT","Request fact","One or more submitted values are malformed or outside the verifier's input contract. Correct them before relying on a verdict.");
+  return action("REQUEST_FACT","Request fact","The claim is incomplete. Obtain every required output before certification.");
+}
+
+const showValue=v=>typeof v==="number"?fmt(v):(v===null?"null":esc(JSON.stringify(v)));
+
+function missingFieldsOf(r){
+  return r.missing_fields||r.missing_required_fields||r.missing||
+    r.coverage?.missing_fields||r.coverage?.missing_required_fields||r.coverage?.missing||[];
+}
+
+function coverageHtml(r){
+  if(Array.isArray(r.required_fields)&&Array.isArray(r.checked_fields)){
+    if(r.required_fields.length===0)
+      return `<div class="note">Claim coverage: not applicable after the verifier refused this fact pattern.</div>`;
+    const missing=missingFieldsOf(r);
+    return `<div class="note">Claim coverage: ${r.checked_fields.length}/${r.required_fields.length} required fields present`+
+      `${missing.length?`; missing ${missing.map(esc).join(", ")}`:""}.</div>`;
+  }
+  const c=r.coverage;if(!c)return "";
+  if(typeof c==="string")return `<div class="note">Claim coverage: ${esc(c)}</div>`;
+  let present=c.present??c.asserted??c.checked??c.present_fields?.length??c.asserted_fields?.length;
+  let total=c.total??c.required??c.required_fields?.length;
+  if(Array.isArray(present))present=present.length;if(Array.isArray(total))total=total.length;
+  const missing=missingFieldsOf(r);
+  const count=(present!==undefined&&total!==undefined)?`${present}/${total} required fields present`:
+    (Array.isArray(c)?`${c.length} fields present`:"coverage reported by verifier");
+  return `<div class="note">Claim coverage: ${esc(count)}${missing.length?`; missing ${missing.map(esc).join(", ")}`:""}.</div>`;
+}
+
+function renderCertificate(r,f,a){
+  lastCertificateStatus=r.status;
+  const known=["CERTIFIED","REJECTED","AMBIGUOUS","OUT_OF_SCOPE","INCOMPLETE","INVALID"];
+  const status=known.includes(r.status)?r.status:"INCOMPLETE";
+  let h=resultAction(status)+`<div class="status ${status}">${status.replaceAll("_"," ")}</div>`+coverageHtml(r);
+  if(status==="REJECTED")
+    h+=(r.mismatches||[]).map(m=>`<div class="mm"><code>${esc(m.field)}</code>: claimed <b>${showValue(m.claimed)}</b>, `+
+      `spec says <b>${showValue(m.expected)}</b><br>`+
+      `<span style="color:var(--mut)">[${esc(m.rule)}] ${cp.RULES[m.rule]||""}</span></div>`).join("");
+  if(status==="AMBIGUOUS")h+=`<div class="mm" style="border-left-color:var(--amb)">${esc(r.note||"A material branch matched, but its basis was not stated.")}<br>
+    <span style="color:var(--mut)">[IT-FORK-JvC] ${cp.RULES["IT-FORK-JvC"]}</span></div>`;
+  if(status==="OUT_OF_SCOPE")h+=`<div class="ref-note">[${esc(r.refusal||a.refusal||"scope")}] ${esc(r.note||a.note||"")} Numeric claims about an out-of-scope pattern are not certified here.</div>`;
+  const missing=missingFieldsOf(r);
+  if(status==="INCOMPLETE"&&missing.length)
+    h+=`<div class="validation"><b>Missing claim fields:</b><ul>${missing.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>`;
+  if(status==="INVALID"){
+    const errors=r.errors||r.invalid_fields||r.invalid_claim_fields||r.notes||[];
+    if(errors.length)h+=`<div class="validation"><b>Invalid claim values:</b><ul>${errors.map(e=>`<li>${esc(typeof e==="string"?e:JSON.stringify(e))}</li>`).join("")}</ul></div>`;
+  }
+  if(status==="CERTIFIED")h+=`<div class="ref-note">Certificate scope: equality to the encoded, version-pinned rule implementation for the supplied facts. It is not tax advice or proof that those facts are correct.</div>`;
+  $("cert").innerHTML=h;
+  if(["AMBIGUOUS","OUT_OF_SCOPE"].includes(status))showChartUnavailable(`Chart not drawn after a ${status.replace("_"," ")} verdict.`);
+  else if(a.ok)drawChart(f,a);
 }
 
 $("btnVerify").onclick=()=>{
-  const f=facts();
-  const claim={};
-  if($("c194r").value!=="") claim.tds_194r=(+$("c194r").value)*100;
-  if($("ccash").value!=="") claim.cash_tds=(+$("ccash").value)*100;
-  if($("cbasis").value) claim.cash_basis=$("cbasis").value;
-  if($("creg").value) claim.gst_reg=$("creg").value==="yes";
-  const r=cp.verify(claim,f);
-  let h=`<div class="status ${r.status}">${r.status.replace("_"," ")}</div>`;
-  if(r.status==="REJECTED")
-    h+=r.mismatches.map(m=>`<div class="mm"><code>${m.field}</code>: claimed <b>${typeof m.claimed==="number"?fmt(m.claimed):m.claimed}</b>, `+
-      `spec says <b>${typeof m.expected==="number"?fmt(m.expected):JSON.stringify(m.expected)}</b><br>`+
-      `<span style="color:var(--mut)">[${m.rule}] ${cp.RULES[m.rule]||""}</span></div>`).join("");
-  if(r.status==="AMBIGUOUS") h+=`<div class="mm" style="border-left-color:var(--amb)">${r.note}<br>
-    <span style="color:var(--mut)">[IT-FORK-JvC] ${cp.RULES["IT-FORK-JvC"]}</span></div>`;
-  if(r.status==="OUT_OF_SCOPE") h+=`<div class="ref-note">[${r.refusal}] ${r.note} Numeric claims about an out-of-scope pattern are uncertifiable.</div>`;
-  $("cert").innerHTML=h;
+  const factResult=readFacts();
+  if(!factResult.ok){render();renderCertificate({status:"INCOMPLETE",missing:["Valid, complete deal facts"]},{},{ok:false});return;}
+  const f=factResult.value,a=cp.assess(f),claimResult=readClaim();
+  if(!claimResult.ok){
+    renderCertificate({status:claimResult.status,missing_fields:claimResult.missingFields||[],
+      errors:claimResult.errors||[],coverage:claimResult.coverage},f,a);return;
+  }
+  let r=cp.verify(claimResult.claim,f);
+  renderCertificate(r,f,a);
 };
 
 $("btnNaive").onclick=()=>{
-  const f=facts(), nb=cp.naive(f), r=cp.verify(nb,f);
+  const factResult=readFacts();
+  if(!factResult.ok){render();renderCertificate({status:"INCOMPLETE",missing:["Valid, complete deal facts"]},{},{ok:false});return;}
+  const f=factResult.value,nb=cp.naive(f);
   $("c194r").value=nb.tds_194r/100; $("ccash").value=nb.cash_tds/100;
-  $("cbasis").value=""; $("creg").value=nb.gst_reg?"yes":"no";
+  $("cgate").value=nb.release_gate?"yes":"no";$("cbasis").value="unstated";
+  $("creg").value=nb.gst_reg?"yes":"no";
+  $("cgstmode").value=nb.gst_liability===null?"null":"amount";
+  $("cgst").value=nb.gst_liability===null?"":nb.gst_liability/100;syncGstLiabilityField();
   $("btnVerify").click();
   $("cert").insertAdjacentHTML("afterbegin",
-    `<div class="note" style="margin-top:10px">Filled the claim boxes with the <b>naive calculator's</b> answer `+
-    `(the common misreadings: TDS on the excess over ₹20k, barter invisible to GST, gate ignored) — and certified it. Verdict below.</div>`);
+    `<div class="contract">Loaded the naive calculator's <b>complete</b> claim, including its release-gate and GST-liability assertions. The operational verdict below comes from checking that claim.</div>`);
 };
 
 // live re-render
 document.querySelectorAll("input,select").forEach(el=>{
-  if(["c194r","ccash","cbasis","creg"].includes(el.id)) return;
-  el.addEventListener("input",render);
+  if(CLAIM_FIELD_IDS.includes(el.id)){
+    el.addEventListener("input",()=>{
+      if(el.id==="cgstmode")syncGstLiabilityField();
+      const wasSuppressed=["AMBIGUOUS","OUT_OF_SCOPE"].includes(lastCertificateStatus);
+      lastCertificateStatus=null;$("cert").innerHTML="";
+      if(wasSuppressed)render();
+    });
+    return;
+  }
+  el.addEventListener("input",()=>{lastCertificateStatus=null;$("cert").innerHTML="";render();});
 });
 
 // parity badge
@@ -276,10 +509,16 @@ document.querySelectorAll("input,select").forEach(el=>{
   try{
     const {total,failures}=cp.runParity(window.PARITY_VECTORS);
     if(failures.length){b.className="badge bad";b.textContent=`PARITY FAILED: ${failures.length}/${total} vectors diverge — do not trust this page`;}
-    else{b.className="badge ok";b.textContent=`parity: JS engine matches the Python spec on ${total}/${total} frozen vectors`;}
+    else{
+      const assessments=window.PARITY_VECTORS.assessments?.length||0;
+      const verifications=window.PARITY_VECTORS.verifications?.length||0;
+      b.className="badge ok";
+      b.textContent=`parity: ${assessments}/${assessments} assessments + ${verifications}/${verifications} verifier cases match Python`;
+    }
   }catch(e){b.className="badge bad";b.textContent="parity check could not run: "+e.message;}
 })();
 
+syncGstLiabilityField();
 render();
 </script>
 </body>

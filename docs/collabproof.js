@@ -1,7 +1,8 @@
 /* collabproof.js — JavaScript port of collabproof/spec.py (FY 2024-25 pin).
  * All money in integer paise. This port is held to the Python spec by
  * parity_vectors.js (generated from Python); the page refuses to show a green
- * badge unless every vector matches. Same rules, same citations, same refusals.
+ * badge unless both assessment and verification vectors match. Same rules,
+ * same citations, same refusal and completeness semantics.
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
@@ -145,47 +146,149 @@
     };
   }
 
-  // The certifier: check an external claim against the spec.
+  const CLAIM_FIELDS = [
+    "tds_194r", "release_gate", "cash_tds", "cash_basis", "gst_reg",
+    "gst_liability",
+  ];
+
+  const owns = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+
+  function causalRule(field, assessment, facts) {
+    const c = Object.assign({}, DEFAULTS, facts);
+    if (field === "tds_194r") {
+      if (!assessment.benefit_qualifies)
+        return c.product > 0 ? "IT-194R-RETAINED" : "IT-194R-SCOPE";
+      if (!assessment.provider_obligated) return "IT-194R-CARVEOUT";
+      if (assessment.aggregate <= K.S194R_FY_THRESHOLD) return "IT-194R-THRESHOLD";
+      if (!c.pan) return "IT-206AA";
+      if (c.bearer === "provider") return "IT-194R-GROSSUP";
+      return "IT-194R-THRESHOLD";
+    }
+    if (field === "release_gate") return "IT-194R-RELEASEGATE";
+    if (field === "gst_reg") return "GST-REG-THRESHOLD";
+    if (field === "gst_liability") return "GST-RATE-18";
+    return "IT-194R-SCOPE";
+  }
+
+  function claimSchemaIssues(claim, checked) {
+    const issues = [];
+    const money = (name, nullable) => {
+      if (!checked.includes(name)) return;
+      const value = claim[name];
+      if (nullable && value === null) return;
+      if (!Number.isSafeInteger(value) || value < 0)
+        issues.push(`${name} must be a non-negative safe integer number of paise`);
+    };
+    const bool = (name) => {
+      if (checked.includes(name) && typeof claim[name] !== "boolean")
+        issues.push(`${name} must be a boolean`);
+    };
+    money("tds_194r", false);
+    bool("release_gate");
+    money("cash_tds", false);
+    bool("gst_reg");
+    money("gst_liability", true);
+    if (checked.includes("cash_basis") && claim.cash_basis !== null &&
+        claim.cash_basis !== "IT-194J-PROF" && claim.cash_basis !== "IT-194C-WORK")
+      issues.push("cash_basis must be IT-194J-PROF, IT-194C-WORK, or explicit null");
+    return issues;
+  }
+
+  function certificate(status, assessment, checked, missing, extra) {
+    return Object.assign({
+      status,
+      mismatches: [],
+      notes: [],
+      assessment,
+      required_fields: CLAIM_FIELDS.slice(),
+      checked_fields: checked,
+      missing_fields: missing,
+    }, extra || {});
+  }
+
+  // The certifier: check a complete, typed external claim against the spec.
   function verify(claim, input) {
     const a = assess(input);
-    if (!a.ok)
-      return { status: "OUT_OF_SCOPE", refusal: a.refusal, note: a.note, mismatches: [] };
+    if (!claim || typeof claim !== "object" || Array.isArray(claim))
+      return certificate("INVALID", a, [], CLAIM_FIELDS.slice(), {
+        notes: ["claim must be an object"], note: "claim must be an object",
+      });
+
+    const checked = CLAIM_FIELDS.filter((field) => owns(claim, field));
+    const missing = CLAIM_FIELDS.filter((field) => !owns(claim, field));
+
+    if (!a.ok) {
+      const notes = [`[${a.refusal}] ${a.note}`];
+      if (checked.length)
+        notes.push("Assertions about an out-of-scope pattern are uncertifiable; the honest output is a refusal.");
+      return certificate("OUT_OF_SCOPE", a, checked, [], {
+        refusal: a.refusal, note: a.note, notes, required_fields: [],
+      });
+    }
+
+    const issues = claimSchemaIssues(claim, checked);
+    if (issues.length)
+      return certificate("INVALID", a, checked, missing, {
+        notes: issues, note: issues.join(" "),
+      });
 
     const mm = [];
-    const chk = (field, claimed, expected, rule) => {
-      if (claimed === undefined || claimed === null) return;
-      if (claimed !== expected) mm.push({ field, claimed, expected, rule });
+    const notes = [];
+    const chk = (field, expected, supportingRules) => {
+      if (!owns(claim, field)) return;
+      if (claim[field] !== expected) mm.push({
+        field, claimed: claim[field], expected,
+        rule: causalRule(field, a, input), supporting_rules: supportingRules,
+      });
     };
-    chk("tds_194r", claim.tds_194r, a.tds_194r, a.tds_rules[0]);
-    chk("release_gate", claim.release_gate, a.gate, "IT-194R-RELEASEGATE");
-    chk("gst_registration_required", claim.gst_reg, a.gst_reg, "GST-REG-THRESHOLD");
-    chk("gst_liability", claim.gst_liability, a.gst_liability, "GST-RATE-18");
+    chk("tds_194r", a.tds_194r, a.tds_rules);
+    chk("release_gate", a.gate, ["IT-194R-RELEASEGATE"]);
+    chk("gst_reg", a.gst_reg, ["GST-REG-THRESHOLD"]);
+    chk("gst_liability", a.gst_liability, ["GST-RATE-18", "GST-VALUE-RULE27"]);
 
     let ambiguous = false;
-    if (claim.cash_tds !== undefined && claim.cash_tds !== null) {
-      if (claim.cash_basis) {
-        if (!(claim.cash_basis in a.fork))
-          mm.push({ field: "cash_basis", claimed: claim.cash_basis,
-                    expected: Object.keys(a.fork), rule: "IT-FORK-JvC" });
-        else if (claim.cash_tds !== a.fork[claim.cash_basis])
+    if (owns(claim, "cash_tds")) {
+      if (!owns(claim, "cash_basis")) {
+        if (!Object.values(a.fork).includes(claim.cash_tds))
           mm.push({ field: "cash_tds", claimed: claim.cash_tds,
-                    expected: a.fork[claim.cash_basis], rule: claim.cash_basis });
-      } else if (!a.fork_material) {
-        const exp = a.fork["IT-194J-PROF"];
-        if (claim.cash_tds !== exp)
+                    expected: Object.values(a.fork), rule: "IT-FORK-JvC",
+                    supporting_rules: Object.keys(a.fork) });
+      } else if (claim.cash_basis === null) {
+        if (!a.fork_material) {
+          const exp = a.fork["IT-194J-PROF"];
+          if (claim.cash_tds !== exp)
+            mm.push({ field: "cash_tds", claimed: claim.cash_tds,
+                      expected: exp, rule: "IT-194J-PROF",
+                      supporting_rules: ["IT-194J-PROF", "IT-194C-WORK"] });
+        } else if (Object.values(a.fork).includes(claim.cash_tds)) {
+          ambiguous = true;
+          notes.push("Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC].");
+        } else {
           mm.push({ field: "cash_tds", claimed: claim.cash_tds,
-                    expected: exp, rule: "IT-194J-PROF" });
-      } else if (Object.values(a.fork).includes(claim.cash_tds)) {
-        ambiguous = true;
+                    expected: Object.values(a.fork), rule: "IT-FORK-JvC",
+                    supporting_rules: Object.keys(a.fork) });
+        }
       } else {
-        mm.push({ field: "cash_tds", claimed: claim.cash_tds,
-                  expected: Object.values(a.fork), rule: "IT-FORK-JvC" });
+        if (claim.cash_tds !== a.fork[claim.cash_basis])
+          mm.push({ field: "cash_tds", claimed: claim.cash_tds,
+                    expected: a.fork[claim.cash_basis], rule: claim.cash_basis,
+                    supporting_rules: [claim.cash_basis] });
+        else
+          notes.push(`Cash TDS certified under ${claim.cash_basis}; the 194J/194C overlap remains unresolved [IT-FORK-JvC].`);
       }
     }
-    if (mm.length) return { status: "REJECTED", mismatches: mm, assessment: a };
-    if (ambiguous) return { status: "AMBIGUOUS", mismatches: [], assessment: a,
-      note: "Value matches one branch of a material 194J/194C fork but no statutory basis was stated." };
-    return { status: "CERTIFIED", mismatches: [], assessment: a };
+    if (mm.length)
+      return certificate("REJECTED", a, checked, missing, { mismatches: mm, notes });
+    if (missing.length)
+      return certificate("INCOMPLETE", a, checked, missing, {
+        notes: ["A certificate requires every output field; omitted fields were not checked."],
+        note: "A certificate requires every output field; omitted fields were not checked.",
+      });
+    if (ambiguous)
+      return certificate("AMBIGUOUS", a, checked, [], {
+        notes, note: notes.join(" "),
+      });
+    return certificate("CERTIFIED", a, checked, [], { notes });
   }
 
   // The "modal misunderstanding" calculator (mirrors baseline.py).
@@ -201,11 +304,13 @@
     };
   }
 
-  // Parity: replay the frozen Python vectors through this JS engine.
+  // Parity: replay frozen Python assessment AND verifier vectors in this engine.
   function runParity(vectors) {
     const failures = [];
-    for (let i = 0; i < vectors.length; i++) {
-      const { facts, expected } = vectors[i];
+    const assessments = Array.isArray(vectors) ? vectors : (vectors.assessments || []);
+    const verifications = Array.isArray(vectors) ? [] : (vectors.verifications || []);
+    for (let i = 0; i < assessments.length; i++) {
+      const { facts, expected } = assessments[i];
       const a = assess(facts);
       if (!expected.ok) {
         if (a.ok || a.refusal !== expected.refusal)
@@ -226,8 +331,25 @@
         JSON.stringify(a.fork) === JSON.stringify(expected.fork);
       if (!same) failures.push({ i, got: a, expected });
     }
-    return { total: vectors.length, failures };
+    for (let i = 0; i < verifications.length; i++) {
+      const { facts, claim, expected, id } = verifications[i];
+      const got = verify(claim, facts);
+      const gotMismatches = got.mismatches.map((m) => ({
+        field: m.field, claimed: m.claimed, expected: m.expected, rule: m.rule,
+      }));
+      const expectedMismatches = (expected.mismatches || []).map((m) => ({
+        field: m.field, claimed: m.claimed, expected: m.expected, rule: m.rule,
+      }));
+      const same = got.status === expected.status &&
+        JSON.stringify(got.required_fields) === JSON.stringify(expected.required_fields || []) &&
+        JSON.stringify(got.checked_fields) === JSON.stringify(expected.checked_fields || []) &&
+        JSON.stringify(got.missing_fields) === JSON.stringify(expected.missing_fields || []) &&
+        (got.refusal || null) === (expected.refusal || null) &&
+        JSON.stringify(gotMismatches) === JSON.stringify(expectedMismatches);
+      if (!same) failures.push({ i: `verify:${id || i}`, got, expected });
+    }
+    return { total: assessments.length + verifications.length, failures };
   }
 
-  return { rup, pct, RULES, DEFAULTS, assess, verify, naive, runParity, K };
+  return { rup, pct, RULES, DEFAULTS, CLAIM_FIELDS, assess, verify, naive, runParity, K };
 });

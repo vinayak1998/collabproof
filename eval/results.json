@@ -10,11 +10,14 @@
   },
   "certified_but_wrong": 0,
   "rejections_by_rule": {
-   "IT-194R-SCOPE": 27,
    "IT-194R-RELEASEGATE": 27,
+   "IT-194R-THRESHOLD": 23,
    "IT-194J-PROF": 16,
-   "IT-194R-THRESHOLD": 7,
+   "IT-194R-RETAINED": 4,
+   "IT-194R-CARVEOUT": 3,
    "GST-REG-THRESHOLD": 3,
+   "IT-206AA": 2,
+   "IT-194R-GROSSUP": 2,
    "GST-RATE-18": 1
   },
   "rows": [
@@ -22,429 +25,525 @@
     "case": 0,
     "status": "CERTIFIED",
     "mismatches": [],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 1,
     "status": "REJECTED",
     "mismatches": [
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 2,
     "status": "AMBIGUOUS",
     "mismatches": [],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 3,
     "status": "CERTIFIED",
     "mismatches": [],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 4,
     "status": "REJECTED",
     "mismatches": [
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 5,
     "status": "AMBIGUOUS",
     "mismatches": [],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 6,
     "status": "CERTIFIED",
     "mismatches": [],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 7,
     "status": "REJECTED",
     "mismatches": [
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 8,
     "status": "AMBIGUOUS",
     "mismatches": [],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 9,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 10,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 11,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10, spec says 200010 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 12,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 13,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 14,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10000, spec says 210000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 15,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 16,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 17,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 22220, spec says 222220 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 18,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 19,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 20,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 22230, spec says 222230 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 21,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 22,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 23,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 24,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 25,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 26,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 27,
     "status": "REJECTED",
     "mismatches": [
-     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 28,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 29,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 30,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+     "cash_tds_paise: claimed 200000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 31,
     "status": "CERTIFIED",
     "mismatches": [],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 32,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10000, spec says 420000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 10000, spec says 420000 [IT-206AA: s.206AA, Income-tax Act 1961; supporting rules: IT-194R-SCOPE, IT-194R-THRESHOLD]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 33,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 100000, spec says 600000 [IT-206AA: s.206AA, Income-tax Act 1961; supporting rules: IT-194R-SCOPE, IT-194R-THRESHOLD]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 34,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
+     "tds_194r_paise: claimed 10000, spec says 0 [IT-194R-CARVEOUT: s.194R, second proviso; supporting rules: IT-194R-THRESHOLD]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 35,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
+     "tds_194r_paise: claimed 100000, spec says 0 [IT-194R-CARVEOUT: s.194R, second proviso; supporting rules: IT-194R-THRESHOLD]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 36,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]"
+     "tds_194r_paise: claimed 400000, spec says 0 [IT-194R-CARVEOUT: s.194R, second proviso; supporting rules: IT-194R-THRESHOLD]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 37,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 0, spec says 250000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 0, spec says 250000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 38,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 0, spec says 205000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 0, spec says 205000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 39,
     "status": "CERTIFIED",
     "mismatches": [],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 40,
     "status": "CERTIFIED",
     "mismatches": [],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 41,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 70000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 70000, spec says 300000 [IT-194R-GROSSUP: CBDT Circular 12/2022, Q9 (pyramiding); supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 42,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 250000, spec says 500000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 250000, spec says 500000 [IT-194R-GROSSUP: CBDT Circular 12/2022, Q9 (pyramiding); supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 43,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 50000, spec says 250000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 50000, spec says 250000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
      "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 44,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 50000, spec says 0 [IT-194R-THRESHOLD: s.194R(1), first proviso]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "tds_194r_paise: claimed 50000, spec says 0 [IT-194R-RETAINED: CBDT Circular 12/2022, Q&A on influencer products; supporting rules: IT-194R-THRESHOLD, IT-194R-CARVEOUT]",
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 45,
     "status": "REJECTED",
     "mismatches": [
      "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
-     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a)]"
+     "cash_tds_paise: claimed 300000, spec says 0 [IT-194J-PROF: s.194J(1) r/w Explanation (a); supporting rules: IT-194C-WORK]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 46,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 400000, spec says 600000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]",
      "gst_registration_required: claimed False, spec says True [GST-REG-THRESHOLD: s.22(1), CGST Act 2017]",
-     "gst_liability_paise: claimed 900000, spec says 1980000 [GST-RATE-18: Notification 11/2017-CT(Rate), SAC 9983 (advertising/marketing)]"
+     "gst_liability_paise: claimed 900000, spec says 1980000 [GST-RATE-18: Notification 11/2017-CT(Rate), SAC 9983 (advertising/marketing); supporting rules: GST-VALUE-RULE27]"
     ],
     "notes": [
-     "cash TDS matches one branch of a MATERIAL 194J/194C fork but no statutory basis was stated. Value alternatives: {'IT-194J-PROF': 500000, 'IT-194C-WORK': 50000} [IT-FORK-JvC]."
-    ]
+     "Cash TDS matches a branch of a material 194J/194C fork, but the claim explicitly states no statutory basis [IT-FORK-JvC]."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 47,
     "status": "REJECTED",
     "mismatches": [
-     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-SCOPE: s.194R(1), Income-tax Act 1961]",
+     "tds_194r_paise: claimed 100000, spec says 300000 [IT-194R-THRESHOLD: s.194R(1), first proviso; supporting rules: IT-194R-SCOPE]",
      "release_gate_required: claimed False, spec says True [IT-194R-RELEASEGATE: CBDT Circular 12/2022 (in-kind benefits)]"
     ],
-    "notes": []
+    "notes": [],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 48,
@@ -452,8 +551,10 @@
     "mismatches": [],
     "notes": [
      "Spec refuses this fact pattern [SCOPE-RESIDENT: s.194R applies to residents; s.195 governs non-residents] \u2014 Recipient is non-resident: s.195 territory, outside this spec.",
-     "Numeric assertions about an out-of-scope pattern are uncertifiable; the honest output is a refusal."
-    ]
+     "Assertions about an out-of-scope pattern are uncertifiable; the honest output is a refusal."
+    ],
+    "missing": [],
+    "validation_error": null
    },
    {
     "case": 49,
@@ -461,8 +562,10 @@
     "mismatches": [],
     "notes": [
      "Spec refuses this fact pattern [SCOPE-BUSINESS-NEXUS: s.194R requires benefit 'arising from business or profession'; cf. s.56(2)(x) for pure gifts] \u2014 No business nexus: not a s.194R event; see s.56(2)(x).",
-     "Numeric assertions about an out-of-scope pattern are uncertifiable; the honest output is a refusal."
-    ]
+     "Assertions about an out-of-scope pattern are uncertifiable; the honest output is a refusal."
+    ],
+    "missing": [],
+    "validation_error": null
    }
   ]
  }

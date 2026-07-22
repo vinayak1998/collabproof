@@ -1,6 +1,6 @@
 // parity_check_node.js — CI-side twin of the in-browser parity badge.
-// Replays the frozen Python vectors through the JS engine; exits non-zero on
-// any divergence. Run: node docs/parity_check_node.js
+// Replays frozen Python assessment and fail-closed verifier vectors through
+// the JS engine; exits non-zero on any divergence.
 const fs = require("fs");
 const path = require("path");
 
@@ -16,4 +16,9 @@ if (failures.length) {
     console.error(JSON.stringify(f, null, 1));
   process.exit(1);
 }
-console.log(`PARITY OK: JS engine matches Python spec on ${total}/${total} vectors`);
+const assessmentCount = window.PARITY_VECTORS.assessments?.length || 0;
+const verifierCount = window.PARITY_VECTORS.verifications?.length || 0;
+console.log(
+  `PARITY OK: ${assessmentCount}/${assessmentCount} assessments and ` +
+  `${verifierCount}/${verifierCount} verifier cases match Python (${total} total)`
+);

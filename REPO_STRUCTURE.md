@@ -6,13 +6,14 @@ this project credible: **the UI may change freely; the engine and its parity cha
 ## The invariant (read this before touching anything)
 
 ```
-Python spec  ──gen_parity_vectors.py──▶  parity_vectors.js  ──runParity()──▶  JS engine
-(source of truth)                        (frozen answers)                    (what the site runs)
+Python assess + verify ──gen_parity_vectors.py──▶ parity_vectors.js ──runParity()──▶ JS engine
+(source of truth)                           (assessment + verifier fixtures)          (site runtime)
 ```
 
 The Python package is the source of truth for the rules. The JS engine is a hand-port, and the
-only reason it can be trusted is that every build replays 62 frozen Python-computed vectors
-through it (in CI *and* in the browser). Whatever website you build:
+only reason it can be trusted is that every build replays 62 assessment fixtures and 15
+adversarial verifier fixtures computed by Python (in CI *and* in the browser). Whatever website
+you build:
 
 1. **Never edit `parity_vectors.js` by hand.** Regenerate: `python gen_parity_vectors.py`.
 2. **Never fork the rule logic into UI code.** Components call `assess()` / `verify()` — no
@@ -30,16 +31,20 @@ collabproof/
 ├── README.md                    # results, claims, limitations — the public story
 ├── REPO_STRUCTURE.md            # this file
 ├── LICENSE                      # MIT (code only; not advice)
-├── .github/workflows/ci.yml    # tests + Z3 proofs + soundness gate + JS↔Python parity
+├── pyproject.toml               # project and pytest configuration
+├── requirements-dev.txt         # pinned test/proof dependencies used by CI
+├── .github/workflows/ci.yml     # tests + Z3 + fixture freshness + JS↔Python parity
 │
 ├── collabproof/                 # ← SOURCE OF TRUTH (Python package)
 │   ├── spec.py                  #   the rules: s.194R, 194J/194C fork, GST; citations inline
-│   ├── verify.py                #   certifier: CERTIFIED / REJECTED / AMBIGUOUS / OUT_OF_SCOPE
+│   ├── verify.py                #   complete typed claims + six fail-closed verdicts
 │   ├── baseline.py              #   the "modal misunderstanding" calculator (demo adversary)
 │   └── llm_adapter.py           #   optional LLM answerer (runs only with an API key)
 │
 ├── tests/
 │   ├── test_golden.py           # 12 hand-computed statutory outcomes (oracle: human)
+│   ├── test_verify.py           # adversarial completeness/type/causal-rule checks
+│   ├── test_llm_boundary.py     # prompt/schema/refusal/retry regressions
 │   └── test_properties.py       # 7 Hypothesis invariant classes (~2,900 cases)
 │
 ├── proofs/
@@ -76,7 +81,9 @@ const cp = require("./collabproof.js");   // or window.collabproof in a <script>
 cp.assess(facts)   // → { ok, tds_194r, tds_rules[], aggregate, gate, fork{}, fork_material,
                    //     gst_supply, gst_turnover_after, gst_reg, gst_liability, notes[] }
                    //   or { ok:false, refusal:"SCOPE-RESIDENT"|..., note }
-cp.verify(claim, facts)  // → { status: "CERTIFIED"|"REJECTED"|"AMBIGUOUS"|"OUT_OF_SCOPE",
+cp.verify(claim, facts)  // → { status: "CERTIFIED"|"INCOMPLETE"|"INVALID"|"REJECTED"|
+                         //             "AMBIGUOUS"|"OUT_OF_SCOPE",
+                         //     required_fields[], checked_fields[], missing_fields[],
                          //     mismatches:[{field, claimed, expected, rule}], ... }
 cp.naive(facts)          // → a plausible-but-wrong Claim (for the comparison demo)
 cp.runParity(window.PARITY_VECTORS)  // → { total, failures[] }  — show the badge
@@ -100,9 +107,10 @@ only (`₹ = paise/100`); never do rule math in rupees or floats.
 5. `/methodology` — scope, FY 2024-25 pin, two-oracle eval design, limitations, "not advice."
 
 **UX states the design must treat as first-class** (this is the product's whole point):
-CERTIFIED (green), REJECTED (red, with rule), **AMBIGUOUS** (amber — matched a branch of the
-194J/194C fork without stating a basis), **REFUSED/OUT_OF_SCOPE** (violet — non-resident,
-no business nexus). Don't bury the non-green states; they're the thesis.
+CERTIFIED (green), INCOMPLETE (missing coverage), INVALID (bad schema), REJECTED (red, with the
+decision rule), **AMBIGUOUS** (amber — matched a branch of the 194J/194C fork without stating a
+basis), and **REFUSED/OUT_OF_SCOPE** (violet — non-resident, no business nexus). Don't bury the
+non-green states; they're the thesis.
 
 ## Hosting
 
@@ -121,7 +129,7 @@ no business nexus). Don't bury the non-green states; they're the thesis.
 > `docs/collabproof.js` and `docs/parity_vectors.js` as an untouchable engine layer. Pages:
 > landing, /check, /certify, /cliff, /methodology as specified in REPO_STRUCTURE.md. All money
 > handled as integer paise at the engine boundary. Render rule citations only via `cp.RULES`.
-> Four verdict states (certified/rejected/ambiguous/refused) each get distinct, prominent visual
+> Six verdict states (certified/incomplete/invalid/rejected/ambiguous/refused) each get distinct, prominent visual
 > treatment. Run `cp.runParity` on app mount and render a pass/fail badge in the header. No tax
 > logic anywhere in components. Keep the existing `docs/index.html` untouched as a reference
 > implementation.
