@@ -10,6 +10,10 @@
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
+  // Generated from manifest + provenance + Python rule registry + spec.py.
+  // Refresh with: python -m collabproof.governance sync-js-hash
+  const RULE_BUNDLE_HASH = "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620";
+
   const rup = (r) => r * 100;
 
   // pct: exact percentage of paise, round half up (mirrors spec.pct)
@@ -203,6 +207,7 @@
       required_fields: CLAIM_FIELDS.slice(),
       checked_fields: checked,
       missing_fields: missing,
+      rule_bundle_hash: RULE_BUNDLE_HASH,
     }, extra || {});
   }
 
@@ -341,6 +346,7 @@
         field: m.field, claimed: m.claimed, expected: m.expected, rule: m.rule,
       }));
       const same = got.status === expected.status &&
+        got.rule_bundle_hash === expected.rule_bundle_hash &&
         JSON.stringify(got.required_fields) === JSON.stringify(expected.required_fields || []) &&
         JSON.stringify(got.checked_fields) === JSON.stringify(expected.checked_fields || []) &&
         JSON.stringify(got.missing_fields) === JSON.stringify(expected.missing_fields || []) &&
@@ -351,5 +357,5 @@
     return { total: assessments.length + verifications.length, failures };
   }
 
-  return { rup, pct, RULES, DEFAULTS, CLAIM_FIELDS, assess, verify, naive, runParity, K };
+  return { rup, pct, RULES, RULE_BUNDLE_HASH, DEFAULTS, CLAIM_FIELDS, assess, verify, naive, runParity, K };
 });

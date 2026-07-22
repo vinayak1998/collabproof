@@ -161,6 +161,7 @@ def verification_expected(c: Collab, raw_claim: dict) -> dict:
     cert = verify(claim_from_js(raw_claim), c)
     return {
         "status": cert.status.value,
+        "rule_bundle_hash": cert.rule_bundle_hash,
         "mismatches": [
             {
                 "field": PY_TO_JS_FIELD[m.fld],

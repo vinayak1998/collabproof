@@ -2349,6 +2349,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "CERTIFIED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2395,6 +2396,7 @@ window.PARITY_VECTORS = {
    "claim": {},
    "expected": {
     "status": "INCOMPLETE",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2443,6 +2445,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INCOMPLETE",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2497,6 +2500,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [
      {
       "field": "tds_194r",
@@ -2557,6 +2561,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "AMBIGUOUS",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2609,6 +2614,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INCOMPLETE",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2663,6 +2669,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [
      {
       "field": "cash_tds",
@@ -2723,6 +2730,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [
      {
       "field": "tds_194r",
@@ -2783,6 +2791,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [
      {
       "field": "tds_194r",
@@ -2843,6 +2852,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "CERTIFIED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2896,6 +2906,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [
      {
       "field": "gst_liability",
@@ -2956,6 +2967,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INVALID",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -3009,6 +3021,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INVALID",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -3055,6 +3068,7 @@ window.PARITY_VECTORS = {
    "claim": {},
    "expected": {
     "status": "OUT_OF_SCOPE",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [],
     "checked_fields": [],
@@ -3094,6 +3108,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "OUT_OF_SCOPE",
+    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
     "mismatches": [],
     "required_fields": [],
     "checked_fields": [

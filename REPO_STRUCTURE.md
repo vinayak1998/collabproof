@@ -33,6 +33,8 @@ collabproof/
 ├── LICENSE                      # MIT (code only; not advice)
 ├── pyproject.toml               # project and pytest configuration
 ├── requirements-dev.txt         # pinned test/proof dependencies used by CI
+├── sources/                     # official-source manifest, provenance, ignored cache
+├── docs/source-governance.md    # review, hashing, maintenance and staleness workflow
 ├── .github/workflows/ci.yml     # tests + Z3 + fixture freshness + JS↔Python parity
 ├── lean-toolchain               # pinned Lean 4 release
 ├── lakefile.toml                # dependency-free Lean build

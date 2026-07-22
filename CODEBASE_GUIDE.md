@@ -89,13 +89,16 @@ flowchart TB
         EVAL["50-case answerer evaluation<br/>run_eval.py"]
         EVALDATA["Evaluation snapshots<br/>eval/cases.json<br/>eval/results.json"]
         EXPERIMENT["Bare / grounded / verified experiment<br/>experiments/three_arms.py"]
-        CORPUS["Paraphrased legal-material corpus<br/>experiments/corpus/"]
+        CORPUS["Ignored official-source cache<br/>sources/cache/"]
         EXPDATA["Experiment result snapshots<br/>results_selftest.json and optional live results.json"]
     end
 
     subgraph ASSURANCE["Tests, proofs, and cross-language checks"]
         TESTS["Golden, adversarial, property,<br/>LLM-boundary, and docs-process tests<br/>tests/"]
         Z3PROOF["Narrow Z3 arithmetic model<br/>proofs/prove_cliff.py"]
+        LEANPROOF["Pinned Section 194R Lean model<br/>LeanProof/S194R.lean"]
+        LEANBRIDGE["Per-case theorem and certificate bridge<br/>collabproof/runtime_proof.py"]
+        GOVERNANCE["Source/rule governance and bundle hash<br/>collabproof/governance.py + sources/"]
         VECTORGEN["Python expectation generator<br/>gen_parity_vectors.py"]
         VECTORS["Frozen Python expectations<br/>docs/parity_vectors.js"]
         NODECHECK["Node parity runner<br/>docs/parity_check_node.js"]
@@ -142,6 +145,10 @@ flowchart TB
     TESTS -->|"exercise"| EXPERIMENT
     TESTS -->|"integration-test"| GUIDEGEN
     Z3PROOF -->|"separately models narrow theorems<br/>and calls assess() for a bounded binding check"| SPEC
+    LEANBRIDGE -->|"gets the covered expected projection"| SPEC
+    LEANBRIDGE -->|"generates and kernel-checks a case theorem"| LEANPROOF
+    GOVERNANCE -->|"maps and hashes"| SPEC
+    CORPUS -.->|"local bytes correspond to"| GOVERNANCE
     VECTORGEN -->|"executes"| SPEC
     VECTORGEN -->|"executes"| VERIFY
     VECTORGEN -->|"writes"| VECTORS
@@ -154,6 +161,8 @@ flowchart TB
     CI -->|"checks authored review and inventory"| GUIDEGEN
     CI -->|"runs"| TESTS
     CI -->|"runs"| Z3PROOF
+    CI -->|"builds and parity-checks"| LEANPROOF
+    CI -->|"validates and checks browser hash"| GOVERNANCE
     CI -->|"regenerates and diffs"| VECTORGEN
     CI -->|"runs"| NODECHECK
     CONFIG -->|"pyproject and requirements define the CI environment"| CI
@@ -1029,9 +1038,11 @@ For an unsupported case, the assessment instead has:
 
 ## 9. The rule registry
 
-`RULES` contains author-entered summaries and citations. They are traceability
-metadata, not downloaded official texts and not independently reviewed source
-manifests.
+`RULES` contains author-entered summaries and citations. The source-governance
+layer maps every ID to official-source metadata, exact locations, assumptions,
+boundary tests, formal evidence, and review status. The summaries remain human
+interpretations: all current rules are experimental, all independent reviews
+are pending, and the official bytes are intentionally absent from Git.
 
 | Rule ID | Plain meaning in the code |
 |---|---|
@@ -1055,6 +1066,22 @@ manifests.
 
 Stable IDs matter because programs, tests, browser output, parity fixtures, and
 experiment feedback can refer to a rule without parsing prose.
+
+### Source governance and freshness
+
+`sources/manifest.yaml` inventories seven official public sources with
+jurisdiction, applicability and retrieval dates, URL, local ignored cache
+path, digest state, redistribution decision, and independent-review status.
+`sources/provenance.yaml` maps all 17 runtime rule IDs to those sources and to
+the relevant interpretation, assumptions, tests, and formal theorems.
+
+`collabproof/governance.py` validates that topology, prevents an unreviewed
+rule from being called production, fetches only from allowlisted government
+hosts, hashes the manifest/provenance/rule-registry/spec bundle, synchronizes
+the browser hash, and reports whether older certificates are current, stale,
+or eligible for re-verification after a rule change. A valid metadata graph is
+not a legal endorsement: source hashes and independent reviews are still
+pending in this POC.
 
 ## 10. Claims and `verify()`
 
@@ -1479,7 +1506,7 @@ the actual scope rule.
 [`experiments/three_arms.py`](experiments/three_arms.py) compares:
 
 - **A — bare:** facts only;
-- **B — grounded:** facts plus the legal corpus;
+- **B — grounded:** facts plus the governed official-source corpus;
 - **C — verified loop:** grounded prompt plus up to two feedback retries.
 
 Arm C preserves the original prompt, corpus, and prior answer in the same
@@ -1493,8 +1520,10 @@ committed results are **not LLM performance**. A real run needs
 `ANTHROPIC_API_KEY`, sends serialized facts to Anthropic, and saves model
 responses locally. Use synthetic, non-confidential cases only.
 
-The bundled corpus files are paraphrased placeholders. They must be replaced
-with official text before publishing grounded-model results.
+No legal corpus is committed. Grounded arms load only the ignored cache paths
+declared in `sources/manifest.yaml` and fail closed if an official HTML file,
+PDF, or required PDF text sidecar is missing. The deterministic self-test does
+not load the corpus.
 
 ## 16. Browser application
 
@@ -1854,24 +1883,19 @@ before choosing to commit it.
 
 #### `experiments/corpus/00_README.md`
 
-The corpus integrity warning: replace paraphrases with official texts before
-publishing real grounded results, and optionally strengthen the corpus with
-practitioner commentary.
+Explains how to fetch manifest-declared official material into the ignored
+cache and create deterministic text sidecars for PDFs. The former paraphrased
+legal summaries were deleted so a grounded run cannot silently use the
+project author's own interpretation as its evidence corpus.
 
-#### `experiments/corpus/01_194r_benefits.md`
+### Source governance files
 
-Placeholder summary of benefit scope, threshold, carve-out, retention,
-valuation, release gate, gross-up, no-PAN, and recipient-side note.
-
-#### `experiments/corpus/02_cash_tds_194j_194c.md`
-
-Placeholder summary of the two cash sections, rates, thresholds, overlap, and
-no-PAN effect.
-
-#### `experiments/corpus/03_gst_barter.md`
-
-Placeholder summary of barter supply, non-money consideration, open-market
-value, registration/turnover, special-state threshold, and 18% rate.
+`sources/manifest.yaml` and `sources/provenance.yaml` are the governed inputs;
+`sources/schema.md` documents them. `sources/cache/.gitignore` and its README
+keep downloaded law outside Git unless redistribution is explicitly approved.
+`sources/fixtures/official-corpus-metadata.json` is a metadata-only fixture,
+and `tests/test_governance.py` exercises validation, hash sensitivity, review
+promotion, impact analysis, cache integrity, and certificate freshness.
 
 ### CI and documentation automation
 
@@ -2153,6 +2177,9 @@ enforce the policy from a separately protected organization-level workflow.
 
 ### Documentation review record
 
+- 2026-07-22 — Reviewed the source-governance branch integration; documented
+  governed official-source metadata, rule provenance, cache policy, bundle
+  hashing/freshness, experimental review state, and fail-closed LLM grounding.
 - 2026-07-22 — Reviewed the runtime-proof branch integration; documented the
   pinned Lean project, per-case Section 194R theorem/certificate path, parity
   gate, and the narrower proof trust boundary.
@@ -2171,8 +2198,9 @@ Future entries can be short when the surrounding sections remain correct:
 
 1. **Version pin:** the rules are FY 2024–25. Later legislation and renumbering
    are not silently incorporated.
-2. **Manual legal encoding:** rule summaries and citations are author-entered
-   and not independently reviewed.
+2. **Manual legal encoding:** source/provenance metadata is versioned and
+   mechanically validated, but rule interpretations and all seven source
+   records still await independent tax/CA review and verified source bytes.
 3. **Partial per-answer formal proof:** the runtime Lean certificate covers
    only the Section 194R projection. The broader six-field Python certificate
    remains comparison against `assess()`; cash TDS and GST are not Lean-proved.
@@ -2208,8 +2236,9 @@ Future entries can be short when the surrounding sections remain correct:
     arithmetic.
 16. **Generated evaluation freshness:** CI checks parity and documentation
     freshness, but not stale `eval/` or self-test JSON against their generators.
-17. **LLM corpus:** bundled grounded materials are paraphrases and unsuitable
-    for publishable live-model claims until replaced.
+17. **LLM corpus:** official materials are not bundled; grounded live-model
+   runs fail closed until every governed cache file and PDF text sidecar is
+   supplied locally and its provenance is reviewed.
 18. **Privacy:** live model modes send facts to an external provider and save
     responses.
 19. **Documentation quality remains human:** automation can detect an inventory
@@ -2222,8 +2251,10 @@ requires.”
 ## 24. Defensible answers to likely questions
 
 **Is this a theorem prover?**
-The runtime is a deterministic Python rule engine plus a strict checker. A
-separate Z3 artifact proves narrow threshold statements.
+The broad runtime is a deterministic Python rule engine plus a strict checker.
+A separate Z3 artifact proves narrow threshold statements, and the Section
+194R runtime bridge generates a concrete theorem that Lean kernel-checks for
+each normalized case. Cash TDS and GST remain outside that Lean proof.
 
 **What does CERTIFIED prove?**
 That a complete typed claim equals the encoded FY 2024–25 result for the
@@ -2277,8 +2308,8 @@ file, update the authored explanations above, then run the generator.
 <!-- BEGIN GENERATED REPOSITORY INVENTORY -->
 <!-- Generated by tools/update_codebase_guide.py. Do not hand-edit this block. -->
 
-**Documented files:** 46
-**Repository-content snapshot (staged Git index):** `sha256:af88ec2e9deda1120ced81756bf5ff1142d2d9f70cf2493e4a1e43c0ca2912a6`
+**Documented files:** 52
+**Repository-content snapshot (staged Git index):** `sha256:5adb558f3be2fd6e4b646d764ec551aa14d435ded5d61688a10d564419e1906b`
 
 The digest covers the path, Git-style file mode, and contents of every row except this guide itself. It changes when source, tests, data, configuration, automation, or executable bits change, even if the file's line count does not.
 
@@ -2286,48 +2317,54 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 |---|---|---:|---|---|
 | `.githooks/pre-commit` | Automation | 27 | Authored hook | Guards unstaged enforcement/prose edits, requires an authored review, refreshes the index-pure guide inventory, and stages the guide before a local commit. |
 | `.githooks/pre-merge-commit` | Automation | 5 | Authored hook | Reuses the pre-commit documentation refresh before Git creates a non-fast-forward merge commit. |
-| `.github/workflows/ci.yml` | Automation | 82 | Authored workflow | Runs per-commit documentation review, inventory freshness, the pinned Lean build, Python tests, Z3 proofs, generated-fixture freshness, and Python/JavaScript/Lean parity on pushes and pull requests. |
+| `.github/workflows/ci.yml` | Automation | 91 | Authored workflow | Runs documentation and source-governance gates, the pinned Lean build, Python tests, Z3 proofs, generated-fixture freshness, and Python/JavaScript/Lean parity on pushes and pull requests. |
 | `.gitignore` | Repository | 31 | Authored configuration | Keeps editor files, Python caches, virtual environments, secrets, build output, and unpublished private writing out of Git. |
 | `CODEBASE_GUIDE.md` | Documentation | self | Authored text + generated inventory | Explains the entire project, its domain, trust model, data flow, files, commands, limitations, and documentation-maintenance process for a technically fluent newcomer. |
 | `LICENSE` | Repository | 25 | Authored legal text | Applies the MIT software license and disclaims warranties; it does not turn the project into tax or legal advice. |
 | `LeanProof.lean` | Lean proof project | 1 | Authored module root | Imports the checked-in Section 194R Lean module so the pinned Lake project has one stable build root. |
 | `LeanProof/S194R.lean` | Lean proof project | 119 | Authored formal specification | Defines the exact-paise Section 194R fact model, decision function, refusal paths, and compile-time examples used by runtime case proofs. |
-| `README.md` | Documentation | 164 | Authored overview | Presents the public thesis, machine-checked finding, measured results, comparison with Pramaana's public pattern, and scope limitations. |
-| `REPO_STRUCTURE.md` | Documentation | 145 | Authored maintainer guide | Gives front-end builders the shorter trust-chain, engine API, page, and hosting constraints needed to redesign the website safely. |
+| `README.md` | Documentation | 166 | Authored overview | Presents the public thesis, machine-checked finding, measured results, comparison with Pramaana's public pattern, and scope limitations. |
+| `REPO_STRUCTURE.md` | Documentation | 147 | Authored maintainer guide | Gives front-end builders the shorter trust-chain, engine API, page, and hosting constraints needed to redesign the website safely. |
 | `collabproof/__init__.py` | Python package | 18 | Authored source | Defines the package's public import surface by re-exporting the assessor, verifier, domain models, helpers, rules, and deliberately naive answerer. |
 | `collabproof/baseline.py` | Python package | 49 | Authored source | Implements a plausible but intentionally wrong calculator whose eight documented mistakes give the verifier a realistic adversary. |
+| `collabproof/governance.py` | Python package | 395 | Authored governance tooling | Validates official-source metadata and rule provenance, hashes the governed bundle, fetches allowlisted sources, and reports certificate freshness impact. |
 | `collabproof/llm_adapter.py` | Python package | 323 | Authored source | Serializes facts for an LLM, enforces an exact eight-key JSON boundary, classifies abstentions/refusals, and optionally calls Anthropic when a key is supplied. |
 | `collabproof/runtime_proof.py` | Python package | 435 | Authored proof bridge | Normalizes a collaboration, generates a concrete Section 194R Lean theorem, checks it in a fresh Lean process, and emits a fail-closed hashed certificate. |
 | `collabproof/spec.py` | Python package | 389 | Authored source of truth | Encodes the FY 2024-25 tax-rule interpretation, exact-paise arithmetic, input/output data models, citations, refusal boundaries, and facts-to-assessment algorithm. |
-| `collabproof/verify.py` | Python package | 354 | Authored source of truth | Checks a complete typed six-field claim against an assessment and returns a fail-closed certificate with coverage, causal rule IDs, and one of six statuses. |
-| `docs/collabproof.js` | Browser | 355 | Authored JavaScript port | Ports the Python assessor, verifier, naive baseline, constants, and citations to a browser/Node-compatible engine whose behavior is checked by parity vectors. |
+| `collabproof/verify.py` | Python package | 390 | Authored source of truth | Checks a complete typed six-field claim against an assessment and returns a fail-closed certificate with coverage, causal rule IDs, governed bundle identity, and freshness support. |
+| `docs/collabproof.js` | Browser | 361 | Authored JavaScript port | Ports the Python assessor, verifier, naive baseline, constants, and citations to a browser/Node-compatible engine whose behavior is checked by parity vectors. |
 | `docs/index.html` | Browser | 525 | Authored static UI | Provides the no-build interactive deal assessor, claim certifier, parity badge, rule explanations, and product-value sensitivity chart. |
 | `docs/parity_check_node.js` | Browser verification | 24 | Authored CI runner | Loads the JavaScript engine and generated vectors in Node, reports divergences, and exits non-zero so browser drift fails CI. |
-| `docs/parity_vectors.js` | Browser verification | 3112 | Generated by gen_parity_vectors.py | Stores Python-produced expected results for 62 assessment rows (52 unique facts) and 15 adversarial verifier rows; it must never be edited by hand. |
+| `docs/parity_vectors.js` | Browser verification | 3127 | Generated by gen_parity_vectors.py | Stores Python-produced expected results for 62 assessment rows (52 unique facts) and 15 adversarial verifier rows; it must never be edited by hand. |
 | `docs/runtime-proof-artifacts.md` | Documentation | 94 | Authored proof guide | Documents the Section 194R runtime theorem, certificate contents, trust boundary, uncovered outputs, and reproduction commands. |
+| `docs/source-governance.md` | Documentation | 63 | Authored governance guide | Explains source fetching, hashing, independent review gates, governed bundle identity, impact analysis, and stale-certificate handling. |
 | `eval/cases.json` | Evaluation | 1202 | Generated by run_eval.py | Stores the 50 serialized collaboration fact patterns used to compare answerers against the executable specification. |
 | `eval/results.json` | Evaluation | 572 | Generated by run_eval.py | Stores per-case verdicts, mismatch explanations, rule-hit counts, and the limited secondary certified-but-wrong guard for the committed naive-baseline run. |
-| `experiments/corpus/00_README.md` | LLM experiment | 12 | Authored warning | Explains that the bundled corpus is paraphrased and must be replaced with official statutory text before publishing grounded-LLM results. |
-| `experiments/corpus/01_194r_benefits.md` | LLM experiment | 25 | Placeholder corpus | Summarizes the encoded section 194R, Circular, no-PAN, gross-up, retention, and release-gate rules supplied to grounded experiment arms. |
-| `experiments/corpus/02_cash_tds_194j_194c.md` | LLM experiment | 16 | Placeholder corpus | Summarizes the competing cash-fee TDS sections and their unresolved advertising overlap for grounded experiment arms. |
-| `experiments/corpus/03_gst_barter.md` | LLM experiment | 18 | Placeholder corpus | Summarizes the encoded GST supply, consideration, valuation, registration-threshold, turnover, and rate rules for grounded experiment arms. |
+| `experiments/corpus/00_README.md` | LLM experiment | 15 | Authored warning | Explains that grounded experiment arms load only ignored, manifest-declared official-source caches and fail closed when governed material is absent. |
 | `experiments/results_selftest.json` | LLM experiment | 890 | Generated by three_arms.py --selftest | Stores scripted plumbing-check results proving retries, incomplete answers, abstentions, invalid output, and out-of-scope assertions are counted as intended; these are not LLM results. |
-| `experiments/three_arms.py` | LLM experiment | 400 | Authored experiment | Runs bare, grounded, and verifier-feedback LLM arms, or a deterministic self-test, while preserving strict output validation and multi-turn context. |
-| `gen_parity_vectors.py` | Generation | 317 | Authored generator | Executes the Python source of truth over evaluation, golden, and adversarial verification cases and writes the frozen JavaScript expectations. |
+| `experiments/three_arms.py` | LLM experiment | 457 | Authored experiment | Runs bare, official-source-grounded, and verifier-feedback LLM arms, or a deterministic self-test, while preserving strict output validation and multi-turn context. |
+| `gen_parity_vectors.py` | Generation | 318 | Authored generator | Executes the Python source of truth over evaluation, golden, and adversarial verification cases and writes the frozen JavaScript expectations. |
 | `lake-manifest.json` | Lean proof project | 6 | Generated Lake manifest | Pins the dependency-free Lake workspace metadata used to reproduce the checked Lean build. |
 | `lakefile.toml` | Lean proof project | 6 | Authored build configuration | Defines the dependency-free Lean library and root module built locally and in CI. |
 | `lean-toolchain` | Lean proof project | 1 | Authored toolchain pin | Selects the exact Lean release used for local kernel checks and the CI build. |
 | `proofs/check_lean_parity.py` | Proof | 166 | Authored parity runner | Checks fixed Section 194R cases across the Python assessor, browser JavaScript engine, and compiled Lean model. |
 | `proofs/example_s194r_facts.json` | Proof | 26 | Authored example input | Provides a reproducible complete normalized fact pattern for the runtime Lean certificate CLI. |
 | `proofs/prove_cliff.py` | Proof | 160 | Authored Z3 artifact | Proves narrow recipient-mode dead-zone theorems, binds 100,000 values to assess(), and prints a separately labeled provider illustration that is not runtime-bound. |
-| `pyproject.toml` | Repository | 11 | Authored configuration | Declares package metadata, Python 3.10+ compatibility, the MIT license file, and pytest's test directory/options. |
-| `requirements-dev.txt` | Repository | 10 | Authored lock-style list | Pins the exact test and proof dependency versions used locally and in CI for reproducibility. |
+| `pyproject.toml` | Repository | 12 | Authored configuration | Declares package metadata, Python 3.10+ compatibility, the MIT license file, and pytest's test directory/options. |
+| `requirements-dev.txt` | Repository | 11 | Authored lock-style list | Pins the exact test and proof dependency versions used locally and in CI for reproducibility. |
 | `run_eval.py` | Evaluation | 189 | Authored runner | Builds the 50-case evaluation set, grades the naive or optional LLM answerer against the spec, prints aggregates, and regenerates eval JSON artifacts. |
+| `sources/cache/.gitignore` | Source governance | 3 | Authored ignore policy | Keeps fetched statutory bytes and derived text sidecars local while allowing the cache instructions and ignore policy to remain versioned. |
+| `sources/cache/README.md` | Source governance | 8 | Authored cache guide | Explains that official source bytes are local-only inputs governed by the manifest and must not be committed without documented redistribution permission. |
+| `sources/fixtures/official-corpus-metadata.json` | Source governance | 12 | Authored metadata fixture | Provides non-copyrighted official-source metadata for reproducible governance and grounded-corpus tests without bundling legal text. |
+| `sources/manifest.yaml` | Source governance | 165 | Authored source manifest | Inventories official authorities, URLs, applicability dates, retrieval state, digests, redistribution decisions, caches, and review status. |
+| `sources/provenance.yaml` | Source governance | 178 | Authored rule provenance | Maps every runtime rule ID to exact source locations, interpretation, assumptions, boundary tests, formal evidence, and review status. |
+| `sources/schema.md` | Source governance | 32 | Authored schema guide | Documents the manifest and provenance fields plus the mechanical requirements for promoting a rule from experimental to production. |
 | `tests/test_codebase_guide.py` | Tests | 117 | Authored integration tests | Exercises index purity, deletion review, unborn-repository adoption, per-commit history enforcement, atomic mode preservation, and marker validation for documentation automation. |
 | `tests/test_golden.py` | Tests | 131 | Authored tests | Checks ten hand-computed statutory scenarios and two refusal scenarios, using a human interpretation rather than the implementation as the oracle. |
+| `tests/test_governance.py` | Tests | 97 | Authored governance tests | Checks source/rule completeness, bundle-hash sensitivity, cache integrity, review promotion, impact analysis, and certificate freshness decisions. |
 | `tests/test_llm_boundary.py` | Tests | 291 | Authored tests | Regression-tests complete fact serialization, strict JSON types/keys, refusal and abstention semantics, evaluator consistency, and context-preserving retries. |
 | `tests/test_properties.py` | Tests | 125 | Authored property tests | Uses Hypothesis-generated collaborations to check seven invariants such as selected TDS non-negativity, threshold behavior, round-trip certification, and monotonic registration. |
 | `tests/test_runtime_proof.py` | Tests | 108 | Authored proof-bridge tests | Checks normalized fact completeness, concrete theorem generation, certificate hashes and scope labels, conditional cash output, and fail-closed Lean failures. |
 | `tests/test_verify.py` | Tests | 155 | Authored adversarial tests | Checks completeness, runtime claim types, status precedence, ambiguity, refusals, and path-specific mismatch rule attribution. |
-| `tools/update_codebase_guide.py` | Documentation automation | 670 | Authored standard-library tool | Requires per-file purposes, refreshes or validates the repository digest, and enforces authored guide movement per staged change and per CI commit. |
+| `tools/update_codebase_guide.py` | Documentation automation | 700 | Authored standard-library tool | Requires per-file purposes, refreshes or validates the repository digest, and enforces authored guide movement per staged change and per CI commit. |
 <!-- END GENERATED REPOSITORY INVENTORY -->

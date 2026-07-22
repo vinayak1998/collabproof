@@ -13,6 +13,7 @@ Every number in this README was produced by code in this repo. Run it yourself:
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q                 # golden, adversarial, LLM-boundary, property tests
+python -m collabproof.governance validate  # source/rule/review/hash gates
 python proofs/prove_cliff.py        # Z3 proofs + exhaustive enumeration
 python proofs/check_lean_parity.py  # Python ↔ JavaScript ↔ Lean s.194R parity
 python run_eval.py                  # certifier vs the naive baseline (n=50)
@@ -103,8 +104,9 @@ without asserting an outcome. Wrong beats missing (`REJECTED` takes precedence).
 asserts expected counts for partial answers, malformed output, asserted refusals, and abstaining
 retries. Also included: a dead-zone probe
 ("is a ₹21,000 freebie better than ₹20,000?") whose raw answers are saved verbatim, unscored,
-for quotation against the machine-checked proof. Before publishing results, replace the
-placeholder corpus with official statutory text (`experiments/corpus/00_README.md`).
+for quotation against the machine-checked proof. Grounded arms load only the manifest-driven,
+ignored cache of official government material and fail closed when it is absent
+(`experiments/corpus/00_README.md`).
 `--selftest` exercises the plumbing with a scripted answerer and is labeled as such.
 
 ## How this extends (not duplicates) Pramaana's published work
@@ -157,7 +159,7 @@ is certified garbage.
 
 ## Limitations (read before citing)
 
-Toy scope, deliberately: one recipient-per-brand aggregation model; no s.288B rounding; ss.206AB, 195, GST time-of-supply/ITC/RCM/e-commerce TCS unmodeled; the GST-exclusive valuation line of Circular 12/2022 and mixed prior bearer-modes are flagged in docstrings as verify-before-relying. The rule registry contains author-entered summaries and citations, not yet an independently reviewed source-to-formalization manifest. **Version pin:** FY 2024-25 (Act of 1961 through Finance (No. 2) Act 2024). Finance Act 2025 threshold revisions and the Income-tax Act 2025 renumbering would both break this spec — which is the point: *rule drift makes spec versioning a first-class product problem for any verification company.* Educational, synthetic, and not legal or tax advice.
+Toy scope, deliberately: one recipient-per-brand aggregation model; no s.288B rounding; ss.206AB, 195, GST time-of-supply/ITC/RCM/e-commerce TCS unmodeled; the GST-exclusive valuation line of Circular 12/2022 and mixed prior bearer-modes are flagged in docstrings as verify-before-relying. The versioned [source governance pipeline](docs/source-governance.md) maps every rule to official public sources, assumptions and tests, but **no rule currently claims independent tax/CA review**; all remain experimental and the provider-borne gross-up threshold path is the early review target. **Version pin:** FY 2024-25 (Act of 1961 through Finance (No. 2) Act 2024). Finance Act 2025 threshold revisions and the Income-tax Act 2025 renumbering would both break this spec — which is the point: *rule drift makes spec versioning a first-class product problem for any verification company.* Educational, synthetic, and not legal or tax advice.
 
 ---
 
