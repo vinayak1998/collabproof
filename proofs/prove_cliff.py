@@ -26,6 +26,13 @@ Three layers of evidence, strongest first:
      spec.assess() on every enumerated whole-rupee point in the bounded range.
      This catches transcription drift in that slice; it is not a general proof
      that the Python implementation and Z3 model are equivalent.
+
+IMPORTANT — T6 below is a standalone historical gross-up illustration, not a
+binding claim about spec.assess(). Its cost() function applies the Rs 20,000
+threshold to raw product value before gross-up. The shipped assessor instead
+adds current gross-up to the aggregate before testing the threshold, so its
+first whole-rupee provider-mode trigger is Rs 18,001. The binding loop below is
+recipient mode only and does not reconcile these two provider-side models.
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -114,7 +121,7 @@ def main():
         "T5b no-PAN indifference point: net(25,000) == net(20,000)",
         net20(z3.IntVal(rup(25_000))) == net20(z3.IntVal(THRESH))))
 
-    print("== Brand-side cliff under gross-up (computed exhibit, exact rationals) ==")
+    print("== Standalone brand gross-up illustration (NOT runtime-bound) ==")
     cost = lambda x: Fraction(x) + Fraction(x, 9) if x > 20_000 else Fraction(x)
     j = cost(20_001) - cost(20_000)
     assert j == Fraction(1) + Fraction(20_001, 9), j

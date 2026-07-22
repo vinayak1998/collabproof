@@ -4,6 +4,10 @@
 
 Built independently from public materials as a [Pramaana Labs](https://pramaanalabs.ai/)-inspired exploration of the verification-layer pattern (answer proposed → deterministic specification checks → certify, reject, or refuse). The synthetic domain is **Section 194R TDS on creator benefits, composed with GST barter rules**. This project is not affiliated with or endorsed by Pramaana Labs or any employer.
 
+**New to the codebase?** Start with the exhaustive, plain-language
+[codebase guide](CODEBASE_GUIDE.md), which explains the domain, every execution path,
+every folder and file, the proof/testing boundaries, and how documentation stays current.
+
 Every number in this README was produced by code in this repo. Run it yourself:
 
 ```bash
@@ -34,9 +38,9 @@ Section 194R has a **cliff, not a marginal rule** in this encoded interpretation
 | Accepting a **bigger** freebie can leave the creator with **less** (witness: ₹20,000 → ₹20,001) | EXHIBIT (SAT) |
 | **Whole-rupee dead zone is exactly ₹20,001–₹22,222**: every value in it nets below a plain ₹20,000 freebie | **PROVED** (unsat of negation) |
 | From ₹22,223 up, net strictly beats ₹20,000 | **PROVED** |
-| The cliff is unique — strictly monotone on each side of the threshold | **PROVED** |
+| The cliff is unique — above-threshold monotonicity is Z3-proved; below threshold `net(v)=v` directly | **PROVED + DIRECT** |
 | **No PAN (s.206AA, 20%): dead zone widens to ₹20,001–₹24,999**, indifference at exactly ₹25,000 | **PROVED** |
-| Brand side, gross-up mode: the marginal rupee of gift at the boundary costs the brand **₹2,223.33** (exactly 6670/3) | EXHIBIT (exact rationals) |
+| Standalone brand gross-up illustration in `prove_cliff.py`: raw product ₹20,000 → ₹20,001 changes the illustrative cost by **₹2,223.33** | **EXHIBIT ONLY — not runtime-bound:** it applies the threshold before gross-up, unlike `assess()`; see `CODEBASE_GUIDE.md` |
 
 Exhaustive enumeration over the 100,000 whole-rupee points ₹1–₹1,00,000 confirms **2,222 dead-zone values and a worst immediate cash-adjusted loss of ₹1,999.10 at ₹20,001**. It is a strong binding check for that slice, not a proof that the entire Python implementation is equivalent to the Z3 model. The runtime engine accepts paise; the paise-granularity boundary is outside this theorem.
 

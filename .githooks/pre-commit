@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+# The hook executes the working-tree updater. Require the enforcement files to
+# match their staged versions so unstaged policy edits cannot authorize a
+# different proposed commit.
+if ! git diff --quiet -- tools/update_codebase_guide.py .githooks/pre-commit .githooks/pre-merge-commit; then
+  echo "Documentation automation has unstaged edits." >&2
+  echo "Review and stage those edits before committing; then retry." >&2
+  exit 1
+fi
+
+# Avoid accidentally staging an author's unrelated prose edits when this hook
+# stages the refreshed generated block. Stage intended guide edits first.
+if ! git diff --quiet -- CODEBASE_GUIDE.md; then
+  echo "CODEBASE_GUIDE.md has unstaged edits." >&2
+  echo "Review and stage those edits before committing; then retry." >&2
+  exit 1
+fi
+
+python3 tools/update_codebase_guide.py --require-authored-change-from HEAD
+python3 tools/update_codebase_guide.py --staged
+git add CODEBASE_GUIDE.md
+python3 tools/update_codebase_guide.py --check --staged
