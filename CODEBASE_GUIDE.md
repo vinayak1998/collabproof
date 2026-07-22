@@ -505,12 +505,15 @@ This repository explores that shape:
 6. Stable rule IDs explain why a claim failed.
 7. Unsupported facts and unresolved material interpretations do not silently
    receive a green result.
+8. For the narrow Section 194R projection, `runtime_proof.py` generates a
+   concrete Lean theorem, checks it in a fresh Lean process, and emits a
+   hashed proof certificate.
 
 The similarities stop there. This code does **not**:
 
 - use Pramaana's software or services;
 - automatically translate statutes into formal rules;
-- generate a Lean theorem for each deal;
+- generate a Lean theorem for cash TDS, GST, or the complete six-field claim;
 - ask Z3 to approve every runtime answer;
 - prove that its author-entered legal interpretation is correct;
 - prove that the supplied real-world facts are true.
@@ -544,16 +547,22 @@ Python assessment. `verify()` mostly performs strict type checks, completeness
 checks, and equality comparisons, with special handling for the unresolved
 cash-TDS fork.
 
-### Certificate
+### Certificates
 
-A `Certificate` is a structured checker result. “CERTIFIED” means:
+A Python `Certificate` is a structured checker result. “CERTIFIED” means:
 
 > all six required fields were supplied, had the accepted runtime types, and
 > matched this version-pinned executable specification for these supplied
 > facts.
 
-It does not mean a court, government authority, chartered accountant, or proof
-kernel certified the legal conclusion.
+It does not mean a court, government authority, or chartered accountant
+certified the legal conclusion.
+
+The separate runtime proof certificate is narrower but stronger in one
+dimension: a fresh Lean process kernel-checks the concrete Section 194R
+equality for the normalized facts. It records fact, artifact, and source
+hashes. It still assumes the facts and legal formalization are correct, and it
+labels cash TDS and GST as outside its trusted scope.
 
 ### Fail-closed
 
@@ -596,8 +605,16 @@ To prove statement `P`, `prove_cliff.py` asks Z3 whether `not P` can be true. If
 
 Lean is a proof assistant whose definitions and proofs are checked by a small
 trusted kernel. Z3 is an automated solver that is particularly convenient for
-arithmetic constraints. This repository uses ordinary Python for the runtime
-rules and a separate Z3 model for narrow threshold theorems.
+arithmetic constraints. This repository uses ordinary Python for the broad
+runtime rules, a separate Z3 model for narrow threshold theorems, and a Lean
+model for the Section 194R runtime projection.
+
+`certify_194r()` hashes a complete normalized `Collab`, asks Python for the
+covered expected projection, writes a concrete theorem of the form
+`decide currentSpec caseFacts = expectedDecision`, and invokes Lean in a fresh
+process. This closes a per-case Python/Lean agreement gap for the covered
+fields; it does not make Python, JavaScript, and Lean universally equivalent
+or independently validate the legal interpretation.
 
 That separation leaves a **transcription gap**: the Z3 formula and Python code
 could differ. The repository reduces that risk by checking the Z3-style
@@ -615,6 +632,7 @@ These forms of evidence are different:
 | Exhaustive bounded check | Checks every value in a finite range | Says nothing beyond the range or outside the simplified slice |
 | Z3 theorem | Rules out all counterexamples in its encoded mathematical domain | The domain is intentionally narrower than the full program |
 | Runtime certificate | Checks a complete claim against `assess()` | Depends on the encoded rules and supplied facts |
+| Runtime Lean certificate | Kernel-checks the concrete Section 194R projection for normalized facts | Does not cover cash TDS or GST and cannot establish fact or legal truth |
 
 ## 4. Tax vocabulary used by the code
 
@@ -1697,6 +1715,34 @@ Disposable-Git-repository tests for the documentation process: staged deletion
 purity, deletion review, unborn-repository adoption, per-commit history checks,
 atomic file-mode preservation, and malformed inventory markers.
 
+#### `tests/test_runtime_proof.py`
+
+Exercises the Python-to-Lean bridge: complete normalized facts, concrete
+theorem generation, source and artifact identities, kernel-checked certificate
+contents, explicit conditional labeling for the unresolved cash fork, and
+fail-closed behavior when Lean cannot build or accept an artifact.
+
+### Lean runtime proof project
+
+`lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and `LeanProof.lean`
+pin and build the dependency-free Lean project. `LeanProof/S194R.lean` contains
+the narrow exact-paise Section 194R decision model. It covers retained-product
+qualification, provider obligation, the aggregate threshold, PAN/no-PAN
+rates, bearer modes, release gate, and the two explicit scope refusals. It does
+not cover the cash-TDS fork or GST.
+
+`collabproof/runtime_proof.py` is the fail-closed bridge. It normalizes every
+`Collab` input field, hashes the canonical JSON, generates a case theorem,
+builds the checked-in Lean module, checks the generated theorem in a fresh
+Lean process, and only then writes a JSON certificate. The certificate states
+its covered and unsupported outputs rather than allowing a narrow proof to be
+mistaken for whole-system assurance.
+
+`proofs/check_lean_parity.py` runs fixed Section 194R cases through Python,
+JavaScript, and Lean. `proofs/example_s194r_facts.json` is a reproducible CLI
+input. `docs/runtime-proof-artifacts.md` documents the certificate and trust
+boundary in a shorter standalone form.
+
 ### Proof artifact
 
 #### `proofs/prove_cliff.py`
@@ -2082,6 +2128,7 @@ On pull requests and pushes, CI:
 - validates the staged-tree inventory without rewriting it;
 - audits each commit's authored guide text against its first parent;
 - validates hook shell syntax;
+- builds the pinned Lean project and checks fixed Python/JavaScript/Lean parity;
 - runs the rest of the verification gate.
 
 To prevent an outdated guide from merging, configure the repository host to:
@@ -2106,6 +2153,9 @@ enforce the policy from a separately protected organization-level workflow.
 
 ### Documentation review record
 
+- 2026-07-22 — Reviewed the runtime-proof branch integration; documented the
+  pinned Lean project, per-case Section 194R theorem/certificate path, parity
+  gate, and the narrower proof trust boundary.
 - 2026-07-22 — Initial exhaustive codebase audit; added staged inventory,
   per-file purpose enforcement, authored-prose review enforcement, local commit
   and merge hooks, and CI checks.
@@ -2123,9 +2173,10 @@ Future entries can be short when the surrounding sections remain correct:
    are not silently incorporated.
 2. **Manual legal encoding:** rule summaries and citations are author-entered
    and not independently reviewed.
-3. **Not per-answer formal proof:** runtime assessment is Python execution and
-   certification is comparison, not a Lean proof or a Z3 query.
-4. **Narrow theorem:** Z3 covers a whole-rupee recipient-mode Section 194R
+3. **Partial per-answer formal proof:** the runtime Lean certificate covers
+   only the Section 194R projection. The broader six-field Python certificate
+   remains comparison against `assess()`; cash TDS and GST are not Lean-proved.
+4. **Narrow Z3 theorem:** Z3 covers a whole-rupee recipient-mode Section 194R
    slice, not the full system. Its standalone provider T6 threshold ordering
    conflicts with runtime and is not bound evidence.
 5. **Fact truth is external:** residency, PAN, turnover, FMV, retention, and
@@ -2226,8 +2277,8 @@ file, update the authored explanations above, then run the generator.
 <!-- BEGIN GENERATED REPOSITORY INVENTORY -->
 <!-- Generated by tools/update_codebase_guide.py. Do not hand-edit this block. -->
 
-**Documented files:** 36
-**Repository-content snapshot (staged Git index):** `sha256:c6e6a8d27e10dd24a919c97b7f525669a304fac820dae71c27f65a67993831de`
+**Documented files:** 46
+**Repository-content snapshot (staged Git index):** `sha256:af88ec2e9deda1120ced81756bf5ff1142d2d9f70cf2493e4a1e43c0ca2912a6`
 
 The digest covers the path, Git-style file mode, and contents of every row except this guide itself. It changes when source, tests, data, configuration, automation, or executable bits change, even if the file's line count does not.
 
@@ -2235,21 +2286,25 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 |---|---|---:|---|---|
 | `.githooks/pre-commit` | Automation | 27 | Authored hook | Guards unstaged enforcement/prose edits, requires an authored review, refreshes the index-pure guide inventory, and stages the guide before a local commit. |
 | `.githooks/pre-merge-commit` | Automation | 5 | Authored hook | Reuses the pre-commit documentation refresh before Git creates a non-fast-forward merge commit. |
-| `.github/workflows/ci.yml` | Automation | 72 | Authored workflow | Runs per-commit documentation review, inventory freshness, tests, Z3 proofs, generated-fixture freshness, and Python/JavaScript parity on pushes and pull requests. |
+| `.github/workflows/ci.yml` | Automation | 82 | Authored workflow | Runs per-commit documentation review, inventory freshness, the pinned Lean build, Python tests, Z3 proofs, generated-fixture freshness, and Python/JavaScript/Lean parity on pushes and pull requests. |
 | `.gitignore` | Repository | 31 | Authored configuration | Keeps editor files, Python caches, virtual environments, secrets, build output, and unpublished private writing out of Git. |
 | `CODEBASE_GUIDE.md` | Documentation | self | Authored text + generated inventory | Explains the entire project, its domain, trust model, data flow, files, commands, limitations, and documentation-maintenance process for a technically fluent newcomer. |
 | `LICENSE` | Repository | 25 | Authored legal text | Applies the MIT software license and disclaims warranties; it does not turn the project into tax or legal advice. |
-| `README.md` | Documentation | 160 | Authored overview | Presents the public thesis, machine-checked finding, measured results, comparison with Pramaana's public pattern, and scope limitations. |
-| `REPO_STRUCTURE.md` | Documentation | 136 | Authored maintainer guide | Gives front-end builders the shorter trust-chain, engine API, page, and hosting constraints needed to redesign the website safely. |
-| `collabproof/__init__.py` | Python package | 10 | Authored source | Defines the package's public import surface by re-exporting the assessor, verifier, domain models, helpers, rules, and deliberately naive answerer. |
+| `LeanProof.lean` | Lean proof project | 1 | Authored module root | Imports the checked-in Section 194R Lean module so the pinned Lake project has one stable build root. |
+| `LeanProof/S194R.lean` | Lean proof project | 119 | Authored formal specification | Defines the exact-paise Section 194R fact model, decision function, refusal paths, and compile-time examples used by runtime case proofs. |
+| `README.md` | Documentation | 164 | Authored overview | Presents the public thesis, machine-checked finding, measured results, comparison with Pramaana's public pattern, and scope limitations. |
+| `REPO_STRUCTURE.md` | Documentation | 145 | Authored maintainer guide | Gives front-end builders the shorter trust-chain, engine API, page, and hosting constraints needed to redesign the website safely. |
+| `collabproof/__init__.py` | Python package | 18 | Authored source | Defines the package's public import surface by re-exporting the assessor, verifier, domain models, helpers, rules, and deliberately naive answerer. |
 | `collabproof/baseline.py` | Python package | 49 | Authored source | Implements a plausible but intentionally wrong calculator whose eight documented mistakes give the verifier a realistic adversary. |
 | `collabproof/llm_adapter.py` | Python package | 323 | Authored source | Serializes facts for an LLM, enforces an exact eight-key JSON boundary, classifies abstentions/refusals, and optionally calls Anthropic when a key is supplied. |
+| `collabproof/runtime_proof.py` | Python package | 435 | Authored proof bridge | Normalizes a collaboration, generates a concrete Section 194R Lean theorem, checks it in a fresh Lean process, and emits a fail-closed hashed certificate. |
 | `collabproof/spec.py` | Python package | 389 | Authored source of truth | Encodes the FY 2024-25 tax-rule interpretation, exact-paise arithmetic, input/output data models, citations, refusal boundaries, and facts-to-assessment algorithm. |
 | `collabproof/verify.py` | Python package | 354 | Authored source of truth | Checks a complete typed six-field claim against an assessment and returns a fail-closed certificate with coverage, causal rule IDs, and one of six statuses. |
 | `docs/collabproof.js` | Browser | 355 | Authored JavaScript port | Ports the Python assessor, verifier, naive baseline, constants, and citations to a browser/Node-compatible engine whose behavior is checked by parity vectors. |
 | `docs/index.html` | Browser | 525 | Authored static UI | Provides the no-build interactive deal assessor, claim certifier, parity badge, rule explanations, and product-value sensitivity chart. |
 | `docs/parity_check_node.js` | Browser verification | 24 | Authored CI runner | Loads the JavaScript engine and generated vectors in Node, reports divergences, and exits non-zero so browser drift fails CI. |
 | `docs/parity_vectors.js` | Browser verification | 3112 | Generated by gen_parity_vectors.py | Stores Python-produced expected results for 62 assessment rows (52 unique facts) and 15 adversarial verifier rows; it must never be edited by hand. |
+| `docs/runtime-proof-artifacts.md` | Documentation | 94 | Authored proof guide | Documents the Section 194R runtime theorem, certificate contents, trust boundary, uncovered outputs, and reproduction commands. |
 | `eval/cases.json` | Evaluation | 1202 | Generated by run_eval.py | Stores the 50 serialized collaboration fact patterns used to compare answerers against the executable specification. |
 | `eval/results.json` | Evaluation | 572 | Generated by run_eval.py | Stores per-case verdicts, mismatch explanations, rule-hit counts, and the limited secondary certified-but-wrong guard for the committed naive-baseline run. |
 | `experiments/corpus/00_README.md` | LLM experiment | 12 | Authored warning | Explains that the bundled corpus is paraphrased and must be replaced with official statutory text before publishing grounded-LLM results. |
@@ -2259,6 +2314,11 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 | `experiments/results_selftest.json` | LLM experiment | 890 | Generated by three_arms.py --selftest | Stores scripted plumbing-check results proving retries, incomplete answers, abstentions, invalid output, and out-of-scope assertions are counted as intended; these are not LLM results. |
 | `experiments/three_arms.py` | LLM experiment | 400 | Authored experiment | Runs bare, grounded, and verifier-feedback LLM arms, or a deterministic self-test, while preserving strict output validation and multi-turn context. |
 | `gen_parity_vectors.py` | Generation | 317 | Authored generator | Executes the Python source of truth over evaluation, golden, and adversarial verification cases and writes the frozen JavaScript expectations. |
+| `lake-manifest.json` | Lean proof project | 6 | Generated Lake manifest | Pins the dependency-free Lake workspace metadata used to reproduce the checked Lean build. |
+| `lakefile.toml` | Lean proof project | 6 | Authored build configuration | Defines the dependency-free Lean library and root module built locally and in CI. |
+| `lean-toolchain` | Lean proof project | 1 | Authored toolchain pin | Selects the exact Lean release used for local kernel checks and the CI build. |
+| `proofs/check_lean_parity.py` | Proof | 166 | Authored parity runner | Checks fixed Section 194R cases across the Python assessor, browser JavaScript engine, and compiled Lean model. |
+| `proofs/example_s194r_facts.json` | Proof | 26 | Authored example input | Provides a reproducible complete normalized fact pattern for the runtime Lean certificate CLI. |
 | `proofs/prove_cliff.py` | Proof | 160 | Authored Z3 artifact | Proves narrow recipient-mode dead-zone theorems, binds 100,000 values to assess(), and prints a separately labeled provider illustration that is not runtime-bound. |
 | `pyproject.toml` | Repository | 11 | Authored configuration | Declares package metadata, Python 3.10+ compatibility, the MIT license file, and pytest's test directory/options. |
 | `requirements-dev.txt` | Repository | 10 | Authored lock-style list | Pins the exact test and proof dependency versions used locally and in CI for reproducibility. |
@@ -2267,6 +2327,7 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 | `tests/test_golden.py` | Tests | 131 | Authored tests | Checks ten hand-computed statutory scenarios and two refusal scenarios, using a human interpretation rather than the implementation as the oracle. |
 | `tests/test_llm_boundary.py` | Tests | 291 | Authored tests | Regression-tests complete fact serialization, strict JSON types/keys, refusal and abstention semantics, evaluator consistency, and context-preserving retries. |
 | `tests/test_properties.py` | Tests | 125 | Authored property tests | Uses Hypothesis-generated collaborations to check seven invariants such as selected TDS non-negativity, threshold behavior, round-trip certification, and monotonic registration. |
+| `tests/test_runtime_proof.py` | Tests | 108 | Authored proof-bridge tests | Checks normalized fact completeness, concrete theorem generation, certificate hashes and scope labels, conditional cash output, and fail-closed Lean failures. |
 | `tests/test_verify.py` | Tests | 155 | Authored adversarial tests | Checks completeness, runtime claim types, status precedence, ambiguity, refusals, and path-specific mismatch rule attribution. |
-| `tools/update_codebase_guide.py` | Documentation automation | 620 | Authored standard-library tool | Requires per-file purposes, refreshes or validates the repository digest, and enforces authored guide movement per staged change and per CI commit. |
+| `tools/update_codebase_guide.py` | Documentation automation | 670 | Authored standard-library tool | Requires per-file purposes, refreshes or validates the repository digest, and enforces authored guide movement per staged change and per CI commit. |
 <!-- END GENERATED REPOSITORY INVENTORY -->

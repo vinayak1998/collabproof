@@ -14,6 +14,7 @@ Every number in this README was produced by code in this repo. Run it yourself:
 python -m pip install -r requirements-dev.txt
 python -m pytest -q                 # golden, adversarial, LLM-boundary, property tests
 python proofs/prove_cliff.py        # Z3 proofs + exhaustive enumeration
+python proofs/check_lean_parity.py  # Python ↔ JavaScript ↔ Lean s.194R parity
 python run_eval.py                  # certifier vs the naive baseline (n=50)
 python run_eval.py --llm            # optional; needs ANTHROPIC_API_KEY
 python gen_parity_vectors.py && node docs/parity_check_node.js   # assessor + verifier parity
@@ -24,7 +25,8 @@ Settings → Pages → deploy from `/docs`). Enter a deal, get every number with
 certify your own (or an LLM's) complete answer, and inspect a fact-sensitive product-value chart.
 The page's JS engine is mechanically held to the Python source of truth: **62 assessment and 15
 verifier fixtures** replay on every page load and in CI (`.github/workflows/ci.yml`). CI also runs
-the full Python suite, the Z3 artifact, stale-fixture detection, and Node parity. A drifted browser
+the full Python suite, the Lean build and s.194R tri-party parity gate, the Z3 artifact,
+stale-fixture detection, and Node parity. A drifted browser
 engine makes the badge and build go red.
 
 ---
@@ -124,19 +126,21 @@ decision rule and support trail when a claim breaks — refusing unsupported pat
 explores that pattern without claiming implementation equivalence: `spec.py` is a hand-encoded
 rule engine; `verify()` is a fail-closed equality checker over its outputs;
 `AMBIGUOUS`/`OUT_OF_SCOPE` are refusal verdicts; and the rule-ID trail is the plain-language
-back-translation. It does **not** emit a machine-checkable proof for each runtime answer. What this
-toy also deliberately does **not** have is the hard part —
+back-translation. For the deliberately narrow s.194R slice, it now emits a per-case Lean theorem,
+kernel-check result, complete normalized facts and hashes in a runtime certificate; GST and the
+194J/194C fork remain explicitly unverified by Lean. See
+[`docs/runtime-proof-artifacts.md`](docs/runtime-proof-artifacts.md). What this toy still does
+**not** have is the hard part —
 automated translation of statute into formal rules. Every hour I spent hand-encoding circular
 Q&As is an argument for why automating that step is the actual product.
 
-**Why Python + Z3, not Lean 4?** A deliberate one-week trade-off, not a claim of equivalence.
-Lean puts definitions and proofs in one kernel-checked system; here the executable spec (Python)
-and the proofs (Z3) are separate artifacts, which is exactly why `prove_cliff.py` includes a
-100,000-point binding check between the two — the transcription gap is real and had to be closed
-empirically. The natural v2 is a Lean 4 port of the s.194R slice (the structures, the threshold
-rule, and the dead-zone theorem), at which point the binding check becomes unnecessary by
-construction. No uncompiled Lean ships in this repo on principle: nothing is claimed that wasn't
-run.
+**Why retain Python and Z3 alongside Lean 4?** Python remains the broader executable product spec
+and JavaScript remains the browser port. Z3 remains useful for property discovery and the
+unbounded dead-zone proofs. Lean now owns one narrow trusted vertical slice: exact structures,
+rules, and per-case decision equalities for s.194R. The tri-party parity gate detects transcription
+drift, but it does not erase that the Python, JavaScript, and Lean implementations are separately
+authored. No uncompiled Lean ships in this repo: the module, generated case theorems, and parity
+cases are all checked in tests and CI.
 
 One boundary this build made vivid: **proof is conditional on facts.** The spec certifies
 consequences of the FMV you enter; whether ₹25,000 is the *right* FMV for a gifted lehenga is an
