@@ -1,0 +1,6 @@
+name = "collabproof"
+version = "0.1.0"
+defaultTargets = ["LeanProof"]
+
+[[lean_lib]]
+name = "LeanProof"

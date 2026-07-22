@@ -1,0 +1,26 @@
+{
+  "brand": {
+    "entity_type": "company",
+    "in_business": true,
+    "preceding_fy_business_turnover_paise": 0,
+    "preceding_fy_profession_receipts_paise": 0
+  },
+  "creator": {
+    "is_resident": true,
+    "pan_furnished": true,
+    "special_category_state": false,
+    "gst_registered": false,
+    "fy_prior_benefits_from_brand_paise": 0,
+    "fy_prior_194r_tds_paise": 0,
+    "fy_prior_cash_fees_from_brand_paise": 0,
+    "fy_prior_cash_tds_paise": 0,
+    "fy_prior_aggregate_turnover_paise": 0
+  },
+  "transaction": {
+    "cash_fee_paise": 0,
+    "product_fmv_paise": 3000000,
+    "product_retained": true,
+    "deliverable_linked": true,
+    "tax_borne_by": "recipient"
+  }
+}

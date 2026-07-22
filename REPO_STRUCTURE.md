@@ -34,9 +34,14 @@ collabproof/
 ├── pyproject.toml               # project and pytest configuration
 ├── requirements-dev.txt         # pinned test/proof dependencies used by CI
 ├── .github/workflows/ci.yml     # tests + Z3 + fixture freshness + JS↔Python parity
+├── lean-toolchain               # pinned Lean 4 release
+├── lakefile.toml                # dependency-free Lean build
+├── LeanProof/
+│   └── S194R.lean               # narrow trusted s.194R decision model
 │
 ├── collabproof/                 # ← SOURCE OF TRUTH (Python package)
 │   ├── spec.py                  #   the rules: s.194R, 194J/194C fork, GST; citations inline
+│   ├── runtime_proof.py         #   per-case Lean artifact + fail-closed certificate
 │   ├── verify.py                #   complete typed claims + six fail-closed verdicts
 │   ├── baseline.py              #   the "modal misunderstanding" calculator (demo adversary)
 │   └── llm_adapter.py           #   optional LLM answerer (runs only with an API key)
@@ -45,10 +50,13 @@ collabproof/
 │   ├── test_golden.py           # 12 hand-computed statutory outcomes (oracle: human)
 │   ├── test_verify.py           # adversarial completeness/type/causal-rule checks
 │   ├── test_llm_boundary.py     # prompt/schema/refusal/retry regressions
-│   └── test_properties.py       # 7 Hypothesis invariant classes (~2,900 cases)
+│   ├── test_properties.py       # 7 Hypothesis invariant classes (~2,900 cases)
+│   └── test_runtime_proof.py    # certificate, conditional fork, fail-closed checks
 │
 ├── proofs/
-│   └── prove_cliff.py           # Z3 dead-zone proofs + 100k enumeration + spec binding
+│   ├── prove_cliff.py           # Z3 dead-zone proofs + 100k enumeration + spec binding
+│   ├── check_lean_parity.py     # fixed Python↔JavaScript↔Lean s.194R gate
+│   └── example_s194r_facts.json # reproducible certificate input
 │
 ├── run_eval.py                  # answerers vs spec (oracle: spec); writes eval/results.json
 ├── gen_parity_vectors.py        # Python → docs/parity_vectors.js (the frozen answers)
@@ -57,6 +65,7 @@ collabproof/
     ├── collabproof.js           #   THE ENGINE (UMD: browser + Node). Portable. Sacred.
     ├── parity_vectors.js        #   generated — do not hand-edit
     ├── parity_check_node.js     #   CI-side parity twin
+    ├── runtime-proof-artifacts.md # Lean certificate architecture and reproduction
     └── index.html               #   reference UI — treat as a functional wireframe to replace
 ```
 
