@@ -82,7 +82,7 @@ FILE_PURPOSES: dict[str, tuple[str, str, str]] = {
     "collabproof/__init__.py": (
         "Python package",
         "Authored source",
-        "Defines the package's public import surface by re-exporting the assessor, verifier, domain models, helpers, rules, and deliberately naive answerer.",
+        "Defines the public import surface for the broad assessor/verifier and the exact Section 194R slice's fact, intake, Lean-certificate, rendering, and pipeline APIs.",
     ),
     "collabproof/baseline.py": (
         "Python package",
@@ -94,15 +94,35 @@ FILE_PURPOSES: dict[str, tuple[str, str, str]] = {
         "Authored governance tooling",
         "Validates official-source metadata and rule provenance, hashes the governed bundle, fetches allowlisted sources, and reports certificate freshness impact.",
     ),
+    "collabproof/intake.py": (
+        "Python package",
+        "Authored intake boundary",
+        "Parses bounded controlled-English Section 194R queries into typed facts with exact source spans, blocks missing or conflicting facts, and binds explicit acceptance to the exact specification sources and governance.",
+    ),
     "collabproof/llm_adapter.py": (
         "Python package",
         "Authored source",
         "Serializes facts for an LLM, enforces an exact eight-key JSON boundary, classifies abstentions/refusals, and optionally calls Anthropic when a key is supplied.",
     ),
+    "collabproof/pipeline.py": (
+        "Python package",
+        "Authored pipeline",
+        "Orchestrates the two-phase formalize-and-prove CLI, requiring exact draft acceptance and a unique private run directory before confirmed-case persistence, Lean certification, safe rendering, and a cross-checked final hash manifest.",
+    ),
+    "collabproof/render.py": (
+        "Python package",
+        "Authored safe renderer",
+        "Revalidates the confirmed sidecar and every v2 certificate binding, independently reruns Lean, and fail-closes before rendering fixed English output, canonical assumptions, and governed rule citations.",
+    ),
     "collabproof/runtime_proof.py": (
         "Python package",
         "Authored proof bridge",
-        "Normalizes a collaboration, generates a concrete Section 194R Lean theorem, checks it in a fresh Lean process, and emits a fail-closed hashed certificate.",
+        "Fresh-parses a confirmed-case artifact, generates and kernel-checks an exact Section 194R theorem, and emits a non-overwriting v2 certificate bound to source evidence, specification, governance, and rule trails.",
+    ),
+    "collabproof/s194r.py": (
+        "Python package",
+        "Authored trusted fact model",
+        "Defines the strict bounded eleven-field, no-default fact envelope consumed by the Section 194R Lean slice and its explicit projection to and from the broader collaboration model.",
     ),
     "collabproof/spec.py": (
         "Python package",
@@ -123,6 +143,11 @@ FILE_PURPOSES: dict[str, tuple[str, str, str]] = {
         "Browser",
         "Authored static UI",
         "Provides the no-build interactive deal assessor, claim certifier, parity badge, rule explanations, and product-value sensitivity chart.",
+    ),
+    "docs/nl-verified-pipeline.md": (
+        "Documentation",
+        "Authored pipeline guide",
+        "Documents the controlled-English contract, evidence spans, explicit confirmation, governance-bound Lean certificate, certificate-only rendering, commands, and trust limits.",
     ),
     "docs/parity_check_node.js": (
         "Browser verification",
@@ -192,12 +217,17 @@ FILE_PURPOSES: dict[str, tuple[str, str, str]] = {
     "proofs/check_lean_parity.py": (
         "Proof",
         "Authored parity runner",
-        "Checks fixed Section 194R cases across the Python assessor, browser JavaScript engine, and compiled Lean model.",
+        "Checks fixed Section 194R cases and the production eleven-field theorem identity across the Python assessor, browser JavaScript engine, and compiled Lean model.",
     ),
     "proofs/example_s194r_facts.json": (
         "Proof",
         "Authored example input",
         "Provides a reproducible complete normalized fact pattern for the runtime Lean certificate CLI.",
+    ),
+    "proofs/example_s194r_query.txt": (
+        "Proof",
+        "Authored controlled-English example",
+        "Provides a complete eleven-fact FY 2024-25 Section 194R query for reproducing the formalize, confirm, prove, and render pipeline.",
     ),
     "proofs/prove_cliff.py": (
         "Proof",
@@ -259,10 +289,20 @@ FILE_PURPOSES: dict[str, tuple[str, str, str]] = {
         "Authored governance tests",
         "Checks source/rule completeness, bundle-hash sensitivity, cache integrity, review promotion, impact analysis, and certificate freshness decisions.",
     ),
+    "tests/test_intake.py": (
+        "Tests",
+        "Authored intake tests",
+        "Checks controlled-English structure and types, exact money and evidence spans, missing and conflicting facts, persistence integrity, explicit confirmation, and governance drift.",
+    ),
     "tests/test_llm_boundary.py": (
         "Tests",
         "Authored tests",
         "Regression-tests complete fact serialization, strict JSON types/keys, refusal and abstention semantics, evaluator consistency, and context-preserving retries.",
+    ),
+    "tests/test_pipeline.py": (
+        "Tests",
+        "Authored pipeline tests",
+        "Checks review-draft persistence, duplicate-key and confirmation gates, the end-to-end Lean path, non-overwriting artifact manifests, rendering, and CLI status reporting.",
     ),
     "tests/test_codebase_guide.py": (
         "Tests",
@@ -274,10 +314,20 @@ FILE_PURPOSES: dict[str, tuple[str, str, str]] = {
         "Authored property tests",
         "Uses Hypothesis-generated collaborations to check seven invariants such as selected TDS non-negativity, threshold behavior, round-trip certification, and monotonic registration.",
     ),
+    "tests/test_render.py": (
+        "Tests",
+        "Authored renderer tests",
+        "Checks answered and refusal prose, assumption/citation support, fresh Lean replay, and fail-closed rejection of tampered certificates, confirmations, governance, outputs, and artifacts.",
+    ),
     "tests/test_runtime_proof.py": (
         "Tests",
         "Authored proof-bridge tests",
-        "Checks normalized fact completeness, concrete theorem generation, certificate hashes and scope labels, conditional cash output, and fail-closed Lean failures.",
+        "Checks bounded normalized facts, confirmed-sidecar integrity, concrete theorem generation, certificate identities, conditional cash output, timeouts, source drift, and fail-closed Lean failures.",
+    ),
+    "tests/test_three_arms_cli.py": (
+        "Tests",
+        "Authored experiment regressions",
+        "Checks that the live experiment exits before corpus access without an API key and that governance does not misclassify the standalone T6 gross-up exhibit as a theorem.",
     ),
     "tests/test_verify.py": (
         "Tests",

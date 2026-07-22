@@ -45,10 +45,10 @@ rules:
     sources:
       - source_id: cbdt-circular-12-2022
         location: Question 9, final paragraph on tax paid by provider being a further benefit
-    interpretation: Provider-borne tax is pyramided as t = value * rate / (1-rate); the threshold-crossing path is a model interpretation requiring early review.
-    assumptions: [No mixed prior bearer modes, paise rounding half up, provider deposit is itself a benefit.]
+    interpretation: Provider-borne tax is pyramided as t = value * rate / (1-rate); the threshold-crossing path is a model interpretation requiring early review. T6 is a standalone non-runtime-bound exhibit whose threshold ordering differs from assess(), not formal evidence for this runtime path.
+    assumptions: [No mixed prior bearer modes, paise rounding half up, provider deposit is itself a benefit., T6 remains only a standalone non-runtime-bound illustration and is not a theorem about assess().]
     boundary_tests: [tests/test_golden.py::test_g8_grossup_pyramiding, tests/test_verify.py::test_provider_borne_error_names_grossup_rule, tests/test_properties.py::test_p5_grossup_never_cheaper]
-    formal_theorems: [T6 brand-side gross-up boundary exhibit]
+    formal_theorems: []
     review: {status: needs_independent_tax_review, priority: early, reviewer: null, reviewed_on: null}
   IT-194R-RELEASEGATE:
     status: experimental

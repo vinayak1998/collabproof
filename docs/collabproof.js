@@ -12,7 +12,7 @@
 
   // Generated from manifest + provenance + Python rule registry + spec.py.
   // Refresh with: python -m collabproof.governance sync-js-hash
-  const RULE_BUNDLE_HASH = "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620";
+  const RULE_BUNDLE_HASH = "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c";
 
   const rup = (r) => r * 100;
 

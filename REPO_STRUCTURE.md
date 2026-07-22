@@ -35,7 +35,7 @@ collabproof/
 ├── requirements-dev.txt         # pinned test/proof dependencies used by CI
 ├── sources/                     # official-source manifest, provenance, ignored cache
 ├── docs/source-governance.md    # review, hashing, maintenance and staleness workflow
-├── .github/workflows/ci.yml     # tests + Z3 + fixture freshness + JS↔Python parity
+├── .github/workflows/ci.yml     # docs + governance + Python + Lean + Z3 + parity gates
 ├── lean-toolchain               # pinned Lean 4 release
 ├── lakefile.toml                # dependency-free Lean build
 ├── LeanProof/
@@ -43,7 +43,11 @@ collabproof/
 │
 ├── collabproof/                 # ← SOURCE OF TRUTH (Python package)
 │   ├── spec.py                  #   the rules: s.194R, 194J/194C fork, GST; citations inline
-│   ├── runtime_proof.py         #   per-case Lean artifact + fail-closed certificate
+│   ├── s194r.py                 #   exact no-default fact envelope consumed by Lean
+│   ├── intake.py                #   controlled English → evidence-linked confirmation draft
+│   ├── pipeline.py              #   two-phase confirmation/proof/render orchestration + CLI
+│   ├── runtime_proof.py         #   per-case Lean artifact + governance-bound certificate
+│   ├── render.py                #   certificate-led validation + static natural-language output
 │   ├── verify.py                #   complete typed claims + six fail-closed verdicts
 │   ├── baseline.py              #   the "modal misunderstanding" calculator (demo adversary)
 │   └── llm_adapter.py           #   optional LLM answerer (runs only with an API key)
@@ -53,12 +57,17 @@ collabproof/
 │   ├── test_verify.py           # adversarial completeness/type/causal-rule checks
 │   ├── test_llm_boundary.py     # prompt/schema/refusal/retry regressions
 │   ├── test_properties.py       # 7 Hypothesis invariant classes (~2,900 cases)
-│   └── test_runtime_proof.py    # certificate, conditional fork, fail-closed checks
+│   ├── test_intake.py           # extraction/provenance/confirmation adversarial checks
+│   ├── test_runtime_proof.py    # certificate, governance binding, fail-closed checks
+│   ├── test_render.py           # persisted-certificate tamper and prose-scope checks
+│   ├── test_pipeline.py         # proof gating and real end-to-end Lean workflow
+│   └── test_three_arms_cli.py   # no-key/corpus and T6 provenance regressions
 │
 ├── proofs/
 │   ├── prove_cliff.py           # Z3 dead-zone proofs + 100k enumeration + spec binding
 │   ├── check_lean_parity.py     # fixed Python↔JavaScript↔Lean s.194R gate
-│   └── example_s194r_facts.json # reproducible certificate input
+│   ├── example_s194r_facts.json # reproducible low-level certificate input
+│   └── example_s194r_query.txt  # reproducible controlled-English pipeline input
 │
 ├── run_eval.py                  # answerers vs spec (oracle: spec); writes eval/results.json
 ├── gen_parity_vectors.py        # Python → docs/parity_vectors.js (the frozen answers)
@@ -68,11 +77,16 @@ collabproof/
     ├── parity_vectors.js        #   generated — do not hand-edit
     ├── parity_check_node.js     #   CI-side parity twin
     ├── runtime-proof-artifacts.md # Lean certificate architecture and reproduction
+    ├── nl-verified-pipeline.md  #   controlled intake, confirmation, proof, render boundary
     └── index.html               #   reference UI — treat as a functional wireframe to replace
 ```
 
 `eval/` output (cases.json, results.json) is generated; commit it if you want the numbers
 browsable on GitHub, or gitignore it and let CI regenerate.
+
+The proof pipeline currently runs from a source checkout. The project metadata
+does not package `LeanProof/`, `sources/`, `lean-toolchain`, or the Lake files
+into a standalone wheel.
 
 ## Building the real website
 
@@ -125,12 +139,18 @@ non-green states; they're the thesis.
 
 ## Hosting
 
-- **Static is enough** — the engine is client-side; there is no backend.
+- **Static is enough for the existing broad browser assessor** — its engine is
+  client-side and the current `docs/` site has no backend.
   - GitHub Pages: free, current `docs/` deploys as-is (Settings → Pages → `/docs`).
   - **Vercel or Netlify (recommended for the real site):** import the repo, build the `web/`
     app, custom domain (e.g. `collabproof.in` / a subdomain of your site) with automatic HTTPS.
 - Keep CI as the merge gate; add the site build to it. Optional: a deploy check that runs
   `node docs/parity_check_node.js` post-build so a bad engine bundle can't ship.
+- The controlled-English → Lean → rendered-answer pipeline is separate and is
+  not exposed by `docs/`. Putting it online requires a trusted Python/Lean
+  execution service, isolated per-run storage and processes, authentication,
+  quotas/timeouts, access control, and artifact retention/deletion policy; do
+  not move proof execution into browser components.
 - Meta/SEO: title "collabproof — certify the tax treatment of a creator barter deal", OG image
   of the dead-zone chart, footer disclaimers on every page (FY pin · educational · not advice).
 

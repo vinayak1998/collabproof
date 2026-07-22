@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from collabproof import (Brand, Collab, Creator, EntityType, Q, TaxBearer,
                          assess, rup)
-from collabproof.runtime_proof import normalized_facts, theorem_source
+from collabproof.runtime_proof import normalized_194r_facts, theorem_source
 
 
 COMPANY = Brand(EntityType.COMPANY)
@@ -130,7 +130,7 @@ def main() -> int:
     for index, case in enumerate(parity_cases):
         fact_hash = __import__("hashlib").sha256(
             json.dumps(
-                normalized_facts(case), sort_keys=True, separators=(",", ":")
+                normalized_194r_facts(case), sort_keys=True, separators=(",", ":")
             ).encode()
         ).hexdigest()
         source, _ = theorem_source(case, fact_hash)

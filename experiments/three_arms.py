@@ -402,11 +402,11 @@ def main():
                   "assertions cannot hide behind refusal; invalid types and "
                   "contradictory refusals are rejected)")
     else:
-        corpus = load_corpus()
         if not os.environ.get("ANTHROPIC_API_KEY"):
             print("ANTHROPIC_API_KEY not set. No LLM numbers are invented; "
                   "run --selftest to check plumbing.")
             return 1
+        corpus = load_corpus()
 
         bare_of = lambda c: BARE.format(facts=facts_of(c), schema=SCHEMA)
         grounded_of = lambda c: GROUNDED.format(

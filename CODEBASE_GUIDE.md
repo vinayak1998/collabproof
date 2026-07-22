@@ -195,6 +195,9 @@ The architectural layers can also be read as this compact contract table:
 |---|---|---|---|
 | Python assessor | A `Collab` fact object | An `Assessment` or explicit refusal | Calculates the encoded treatment deterministically |
 | Python verifier | The same `Collab` plus a six-field `Claim` | A `Certificate` with a status and diagnostics | Separates “someone proposed an answer” from “the encoded rules accept it” |
+| Controlled Section 194R intake | A bounded FY 2024–25 question plus eleven explicit fact bullets | An evidence-linked draft, clarification, conflict, or refusal state | Makes the question-to-facts translation reviewable without pretending to solve general NLP |
+| Confirmation and Lean bridge | An exact accepted draft and its digest | A per-case theorem plus a governance-bound v2 certificate | Prevents missing, changed, or unconfirmed facts from reaching the prover |
+| Certificate-only renderer | A persisted, current, internally consistent Lean certificate | Static prose plus field/rule pointers | Keeps untrusted query text out of answer generation and prevents unsupported claims |
 | Answerers | Facts, and sometimes legal text | A proposed claim, refusal, or invalid response | Supplies realistic material for the verifier to judge |
 | Browser app | Human-entered form values | A locally rendered assessment, certificate, and chart | Makes the prototype usable without a backend |
 | Evaluation and experiments | Fixed cases plus answerers | JSON reports and aggregate counts | Measures answerer behavior without treating it as proof of the spec |
@@ -278,6 +281,55 @@ The two top-level return types serve different audiences:
 - A `Certificate` is for a caller that already has an answer and wants to know
   whether that answer is complete, well typed, in scope, and equal to the
   engine's calculation.
+
+#### 1.2.1 Controlled question → confirmed facts → Lean → constrained answer
+
+The separate `collabproof.pipeline` path is a deliberately narrow end-to-end
+slice. It does not accept arbitrary prose. It accepts one documented
+line-oriented question for the FY 2024–25 Section 194R decision and requires
+all eleven fields consumed by `LeanProof/S194R.lean` to be stated explicitly.
+There are no hidden defaults in `S194RFacts`.
+
+```mermaid
+flowchart LR
+    Q["Controlled-English query file"] --> I["intake.py parses intent and exact values<br/>and records source spans"]
+    I --> S{"Draft status"}
+    S -->|"missing"| C["NEEDS_CLARIFICATION<br/>specific questions"]
+    S -->|"conflict"| X["CONFLICTING_FACTS<br/>all candidates preserved"]
+    S -->|"invalid or unsupported"| R["Refuse before proof"]
+    S -->|"complete"| D["AWAITING_CONFIRMATION<br/>canonical draft SHA-256"]
+    D --> A{"Exact digest presented<br/>and --accept supplied?"}
+    A -->|"no"| R
+    A -->|"yes"| F["Confirmed no-default S194RFacts<br/>source + evidence + spec + governance bound"]
+    F --> L["runtime_proof.py generates theorem<br/>fresh Lean process kernel-checks it"]
+    L --> V["Persisted v2 certificate<br/>facts + artifact + rule trail + governance"]
+    V --> T["render.py revalidates the trust envelope<br/>and selects static templates"]
+    T --> N["Natural-language answer<br/>with machine-readable claim pointers"]
+```
+
+The phases are separate on purpose. `formalize` writes a JSON draft that a
+person can inspect. `prove` reloads and freshly parses that draft, requires its
+exact hash and explicit acceptance, and only then starts Lean. The confirmation
+hash is an integrity binding and a record of the local CLI action; it is not an
+authenticated user identity, digital signature, or legal consent mechanism.
+
+Every fact carries the SHA-256 of the exact UTF-8 query and one or more exact
+Unicode-character source spans. Missing values remain missing, explicit zero
+remains zero, and contradictory repetitions remain conflicts rather than using
+last-write-wins. Unknown prose—including attempted instructions—makes the
+draft invalid instead of becoming a fact.
+
+The renderer's only entrypoint is the certificate path. It follows the
+certificate's colocated, hash-bound confirmed-case sidecar so it can freshly
+reparse the source and evidence, but never uses that prose to generate an
+answer. It recomputes the fact and confirmation hashes, current governance
+identity, specification source hashes, exact theorem text and artifact hash,
+expected outputs, and output-to-rule mapping. It then independently reruns the
+pinned Lean build and exact case artifact before releasing prose. An ANSWERED certificate gets static
+Section 194R prose. A REFUSED certificate states only the checked scope refusal
+and explicitly says that refusal is not a finding of zero tax. Cash TDS, GST,
+fact truth, legal correctness, and current-law completeness are never added by
+the renderer.
 
 ### 1.3 Browser runtime: a parallel local implementation
 
@@ -365,7 +417,7 @@ flowchart TB
     PURPOSES["If a file was added or removed:<br/>update its plain-language FILE_PURPOSES entry"]
     PARITYGEN["As applicable, regenerate derived artifacts:<br/>parity vectors, evaluation JSON, or experiment results"]
     JSSYNC["If behavior changed:<br/>review and update the JavaScript port"]
-    LOCALCHECKS["Run proportionate local checks<br/>pytest, Z3, parity, experiment self-test"]
+    LOCALCHECKS["Run proportionate local checks<br/>pytest, governance, Lean, Z3, parity, experiment self-test"]
     STAGE["Stage the intended files"]
     COMMITTRY["git commit"]
 
@@ -385,20 +437,26 @@ flowchart TB
         DOCGATE["1. Check exact guide-inventory freshness"]
         REVIEWGATE["2. Check authored guide review<br/>for every relevant commit"]
         HOOKGATE["3. Validate versioned hook shell syntax"]
-        DEPGATE["4. Install pinned dependencies<br/>and run pip check"]
-        TESTGATE["5. Run the full Python test suite"]
-        PROOFGATE["6. Run Z3 theorems<br/>and implementation binding"]
-        REGEN["7. Regenerate Python parity vectors"]
-        DIFFGATE["8. Reject any vector-file diff"]
-        NODEGATE["9. Replay assessment and verifier<br/>vectors in Node"]
+        LEANBUILD["4. Install and build<br/>the pinned Lean project"]
+        DEPGATE["5. Install pinned dependencies<br/>and run pip check"]
+        TESTGATE["6. Run the full Python test suite"]
+        GOVGATE["7. Validate source/rule governance,<br/>refresh browser bundle hash,<br/>and reject any diff"]
+        PROOFGATE["8. Run Z3 theorems<br/>and implementation binding"]
+        LEANPARITY["9. Check fixed Python / JavaScript / Lean<br/>Section 194R parity"]
+        REGEN["10. Regenerate Python parity vectors"]
+        DIFFGATE["11. Reject any vector-file diff"]
+        NODEGATE["12. Replay assessment and verifier<br/>vectors in Node"]
         PASS["Verification gate passes"]
 
         DOCGATE --> REVIEWGATE
         REVIEWGATE --> HOOKGATE
-        HOOKGATE --> DEPGATE
+        HOOKGATE --> LEANBUILD
+        LEANBUILD --> DEPGATE
         DEPGATE --> TESTGATE
-        TESTGATE --> PROOFGATE
-        PROOFGATE --> REGEN
+        TESTGATE --> GOVGATE
+        GOVGATE --> PROOFGATE
+        PROOFGATE --> LEANPARITY
+        LEANPARITY --> REGEN
         REGEN --> DIFFGATE
         DIFFGATE --> NODEGATE
         NODEGATE --> PASS
@@ -517,11 +575,18 @@ This repository explores that shape:
 8. For the narrow Section 194R projection, `runtime_proof.py` generates a
    concrete Lean theorem, checks it in a fresh Lean process, and emits a
    hashed proof certificate.
+9. For one bounded query grammar, `intake.py` translates natural-language
+   labels and values into the exact Lean fact envelope while preserving
+   evidence spans, missing facts, and conflicts.
+10. `pipeline.py` requires review and explicit digest confirmation before
+    proof, while `render.py` converts only a fully revalidated certificate
+    into static natural-language prose.
 
 The similarities stop there. This code does **not**:
 
 - use Pramaana's software or services;
 - automatically translate statutes into formal rules;
+- understand arbitrary natural language or infer unstated facts;
 - generate a Lean theorem for cash TDS, GST, or the complete six-field claim;
 - ask Z3 to approve every runtime answer;
 - prove that its author-entered legal interpretation is correct;
@@ -569,9 +634,12 @@ certified the legal conclusion.
 
 The separate runtime proof certificate is narrower but stronger in one
 dimension: a fresh Lean process kernel-checks the concrete Section 194R
-equality for the normalized facts. It records fact, artifact, and source
-hashes. It still assumes the facts and legal formalization are correct, and it
-labels cash TDS and GST as outside its trusted scope.
+equality for the normalized facts. Its v2 schema records fact, confirmation,
+artifact, specification, governed rule-bundle, and dynamic rule-trail hashes
+or bindings. It still assumes the facts and legal formalization are correct,
+and it labels cash TDS and GST as outside its trusted scope. Lean proves the
+decision fields, while the causal rule-ID trail is required to match current
+Python/governance metadata rather than appearing in the Lean `Decision` type.
 
 ### Fail-closed
 
@@ -579,6 +647,9 @@ A checker is **fail-closed** when uncertainty or missing information does not
 accidentally become approval. An empty or partial claim is `INCOMPLETE`, not
 `CERTIFIED`. Bad types are `INVALID`. Facts beyond the encoded scope are
 `OUT_OF_SCOPE`. A material legal fork without a stated basis is `AMBIGUOUS`.
+In the controlled-English path, an omitted fact is `NEEDS_CLARIFICATION`, a
+contradiction is `CONFLICTING_FACTS`, unknown syntax is `INVALID`, and none of
+those states can invoke the prover.
 
 ### Oracle
 
@@ -618,8 +689,9 @@ arithmetic constraints. This repository uses ordinary Python for the broad
 runtime rules, a separate Z3 model for narrow threshold theorems, and a Lean
 model for the Section 194R runtime projection.
 
-`certify_194r()` hashes a complete normalized `Collab`, asks Python for the
-covered expected projection, writes a concrete theorem of the form
+`certify_194r()` hashes exactly the eleven fields projected from a `Collab`
+into `S194RFacts`, asks Python for the covered expected projection, writes a
+concrete theorem of the form
 `decide currentSpec caseFacts = expectedDecision`, and invokes Lean in a fresh
 process. This closes a per-case Python/Lean agreement gap for the covered
 fields; it does not make Python, JavaScript, and Lean universally equivalent
@@ -1586,11 +1658,13 @@ fixture mismatch. It uses only Node built-ins.
 .
 ├── .github/                 GitHub Actions verification gate
 ├── .githooks/               opt-in versioned local documentation hooks
-├── collabproof/             authoritative Python rules and checker
-├── docs/                    static browser engine, UI, and parity artifacts
+├── LeanProof/               pinned exact-paise Section 194R Lean model
+├── collabproof/             rules, checker, intake, proof bridge, and renderer
+├── docs/                    browser artifacts plus governance/proof guides
 ├── eval/                    generated 50-case inputs and committed results
 ├── experiments/             optional LLM study, corpus, and self-test output
-├── proofs/                  separate Z3 threshold theorem artifact
+├── proofs/                  Z3/Lean parity tools and reproducible example inputs
+├── sources/                 official-source manifest, provenance, and ignored cache
 ├── tests/                   rule, verifier, LLM, property, and docs-process tests
 ├── tools/                   documentation refresh/check tooling
 ├── CODEBASE_GUIDE.md        this complete guide
@@ -1643,8 +1717,8 @@ writing. `.env.example` would remain allowed if created.
 #### `pyproject.toml`
 
 Declares package name/version/description, Python 3.10+, README, license file,
-and pytest options. It has no build-system block and declares no runtime
-dependencies; the core package uses the standard library.
+the pinned PyYAML runtime dependency used by source governance, and pytest
+options. It has no build-system block.
 
 #### `requirements-dev.txt`
 
@@ -1657,8 +1731,10 @@ optional adapter uses `urllib`.
 #### `collabproof/__init__.py`
 
 The package's convenience API. It re-exports domain types, helpers, rules,
-assessment/checking types and functions, and `naive_answer()`. The optional LLM
-adapter is not automatically imported.
+assessment/checking types and functions, the exact Section 194R fact envelope,
+and `naive_answer()`. Proof, intake, rendering, and pipeline APIs are exposed
+through lazy imports so importing the base package does not eagerly load the
+whole proof stack. The optional LLM adapter is not automatically imported.
 
 #### `collabproof/spec.py`
 
@@ -1712,6 +1788,49 @@ That wrapper's returned claim may still be incomplete, rejected, ambiguous, or
 asserted on out-of-scope facts. Callers that need a verdict should use the
 validated response and classification path, not treat non-`None` as usable.
 
+#### `collabproof/s194r.py`
+
+Defines `S194RFacts`, the exact eleven-field projection represented in Lean.
+Every field is required; booleans must be real booleans, money is non-negative
+integer paise capped at `10^20`, and enum values are strict. It can project a broad `Collab` into
+the trusted slice and reconstruct a broad object with explicit neutral values
+only for fields outside that slice. Its nested JSON schema is exact: missing or
+unknown fields fail.
+
+#### `collabproof/intake.py`
+
+Implements the fail-closed controlled-English front end. It parses one pinned
+question form, strict yes/no/enums and INR/Rs/₹ amounts, records exact source
+spans, reports missing or conflicting fields, and persists immutable drafts.
+Both draft and confirmed-case loaders freshly parse the source and compare all
+derived fields; they do not trust a JSON object's claims about its own
+provenance. Confirmation binds the draft, normalized facts, source bundle,
+evidence provenance, specification, and governance hashes.
+
+#### `collabproof/pipeline.py`
+
+Provides the two-phase library and CLI orchestration. `formalize_file()` writes
+a reviewable draft. `prove_draft_file()` reloads that strict draft, requires its
+exact digest and explicit acceptance, creates a private non-overwriting run
+directory, persists the confirmed case before proof, invokes
+`certify_194r_facts()`, and then passes the persisted certificate path to the
+renderer. Successful runs write a confirmed case, Lean artifact, certificate,
+answer JSON, answer text, and a last-written manifest cross-checking and hashing
+those five artifacts. Pre-confirmation failures never call the Lean bridge.
+
+#### `collabproof/render.py`
+
+Treats persisted certificates as untrusted input. It rejects duplicate or
+unknown JSON keys, stale specification/governance identities, broken fact or
+confirmation hashes, wrong theorem bytes, failed/misdirected Lean check
+records, false output-to-rule trails, and any attempt to expose cash/GST as
+verified. It independently reruns the pinned Lean build and exact case artifact,
+then rechecks the mutable identities before releasing prose. The returned prose
+comes from fixed ANSWERED/REFUSED templates, names the Python/governance-checked
+rule citations with their non-Lean assurance boundary, and explicitly carries
+the certificate's exact trusted assumptions. Each machine-readable
+`RenderedClaim` points to its certificate output or assumption and rule IDs.
+
 ### Tests
 
 #### `tests/test_golden.py`
@@ -1746,10 +1865,23 @@ atomic file-mode preservation, and malformed inventory markers.
 
 #### `tests/test_runtime_proof.py`
 
-Exercises the Python-to-Lean bridge: complete normalized facts, concrete
-theorem generation, source and artifact identities, kernel-checked certificate
-contents, explicit conditional labeling for the unresolved cash fork, and
-fail-closed behavior when Lean cannot build or accept an artifact.
+Exercises the Python-to-Lean bridge: exact normalized Lean facts, concrete
+theorem generation, source/artifact/governance/confirmation identities,
+kernel-checked certificate contents, explicit conditional labeling for the
+unresolved cash fork, and fail-closed behavior when Lean cannot build or
+accept an artifact.
+
+#### `tests/test_intake.py`, `tests/test_pipeline.py`, and `tests/test_render.py`
+
+Together these cover the new vertical slice. Intake tests exercise every
+required omission, contradictions, money syntax, prompt-like junk, source
+spans, persistence reparsing, drift, and tampering. Pipeline tests prove Lean
+is not called before valid confirmation and run one real end-to-end case.
+Renderer tests mutate facts, hashes, schema, scope, rule trails, artifact
+identity, Lean status, governance, assumptions, and unsupported outputs; all
+such mutations must fail before prose is returned. They also verify explicit
+assumption pointers and rule citations, while the pipeline test exercises the
+real independent Lean replay.
 
 ### Lean runtime proof project
 
@@ -1760,17 +1892,24 @@ qualification, provider obligation, the aggregate threshold, PAN/no-PAN
 rates, bearer modes, release gate, and the two explicit scope refusals. It does
 not cover the cash-TDS fork or GST.
 
-`collabproof/runtime_proof.py` is the fail-closed bridge. It normalizes every
-`Collab` input field, hashes the canonical JSON, generates a case theorem,
-builds the checked-in Lean module, checks the generated theorem in a fresh
-Lean process, and only then writes a JSON certificate. The certificate states
-its covered and unsupported outputs rather than allowing a narrow proof to be
-mistaken for whole-system assurance.
+`collabproof/runtime_proof.py` is the fail-closed bridge. Its product API first
+fresh-parses a complete colocated confirmed-case artifact; the explicitly
+named compatibility API can prove unconfirmed broad structured facts but emits
+`intake: null` and cannot enter the renderer. The bridge hashes the exact
+eleven-field Lean projection, generates a case theorem, builds the checked-in
+Lean module, checks the generated theorem in a fresh Lean process, and only
+then writes a v2 JSON certificate without overwriting an earlier artifact. It
+binds the confirmed artifact bytes, current governance bundle, full formal
+rule whitelist, applied rules, and output-specific rule trail. The certificate
+states its covered and unsupported outputs rather than allowing a narrow proof
+to be mistaken for whole-system assurance.
 
 `proofs/check_lean_parity.py` runs fixed Section 194R cases through Python,
-JavaScript, and Lean. `proofs/example_s194r_facts.json` is a reproducible CLI
-input. `docs/runtime-proof-artifacts.md` documents the certificate and trust
-boundary in a shorter standalone form.
+JavaScript, and Lean. `proofs/example_s194r_facts.json` is a reproducible
+low-level certificate input; `proofs/example_s194r_query.txt` exercises the
+controlled pipeline. `docs/runtime-proof-artifacts.md` and
+`docs/nl-verified-pipeline.md` document the two trust boundaries in shorter
+standalone forms.
 
 ### Proof artifact
 
@@ -1964,27 +2103,47 @@ Ignored private files are outside this version-controlled code guide by design.
 
 ## 20. Running the repository
 
-From the repository root:
+From a source checkout, install Python 3.10+ dependencies, Node 20, and
+`elan`/`lake` with the exact release in `lean-toolchain`; the current wheel
+metadata does not package the repository-level Lean and governance assets.
+Then run:
 
 ~~~bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
+python -m collabproof.governance validate
+lake build
+python proofs/check_lean_parity.py
 python proofs/prove_cliff.py
 python run_eval.py
 python gen_parity_vectors.py
 node docs/parity_check_node.js
 python experiments/three_arms.py --selftest
 python tools/update_codebase_guide.py --check
+
+python -m collabproof.pipeline formalize proofs/example_s194r_query.txt \
+  --output /tmp/collabproof-draft.json --case-id demo-194r
+# Review the draft, then replace the placeholder with its printed digest:
+python -m collabproof.pipeline prove /tmp/collabproof-draft.json \
+  --confirm-sha256 REVIEWED_DRAFT_SHA256 --accept \
+  --output-dir /tmp/collabproof-proof
 ~~~
 
 Effects:
 
 - tests should not intentionally rewrite project files;
+- governance validation checks the manifest/provenance topology, review state,
+  source cache claims, formal-evidence field shape, and bundle identity; named
+  theorem references are still reviewed rather than resolved mechanically;
+- `lake build` and `check_lean_parity.py` compile the pinned model and compare
+  fixed Section 194R cases across Python, JavaScript, and Lean;
 - `prove_cliff.py` prints proofs/exhibits and performs 100,000 assessor calls;
 - `run_eval.py` rewrites both `eval/` JSON files;
 - `gen_parity_vectors.py` rewrites `docs/parity_vectors.js`;
 - the experiment self-test rewrites `experiments/results_selftest.json`;
 - a live three-arm run writes `experiments/results.json`;
+- pipeline formalization writes a draft even for a non-ready status; the proof
+  phase writes artifacts only after a ready draft is explicitly confirmed;
 - the guide `--check` mode never writes.
 
 To view the static browser locally:
@@ -2010,14 +2169,21 @@ facts.
 ### Change an encoded tax rule
 
 1. Confirm the version pin and source interpretation.
-2. Update constants, `RULES`, models, or `assess()` in `spec.py`.
-3. Add or update a human-oracle golden case.
-4. Update relevant property/adversarial tests.
-5. Update the hand-written JavaScript engine.
-6. Regenerate parity vectors.
-7. Re-run tests, proof artifact, and Node parity.
-8. Update the explanatory prose and review record in this guide.
-9. Update public claims or limitations in `README.md` if affected.
+2. Update `sources/manifest.yaml` and `sources/provenance.yaml`; fetch and pin
+   reviewed official bytes when promotion is intended.
+3. Update constants, `RULES`, models, or `assess()` in `spec.py`.
+4. If Section 194R changed, update `LeanProof/S194R.lean`, `S194RFacts`, intake
+   fields/templates, runtime certificate rules, and Lean parity cases together.
+5. Add or update a human-oracle golden case and relevant adversarial/property
+   tests.
+6. Update the hand-written JavaScript engine and synchronize its governance
+   bundle hash.
+7. Regenerate parity vectors.
+8. Run governance validation, the Lean build/parity gate, Python tests, Z3
+   binding, generated-fixture freshness, and Node parity.
+9. Use governance impact analysis to identify certificates made stale.
+10. Update this guide's explanatory prose/review record and affected public
+    claims or limitations in `README.md`.
 
 If the Z3 slice changed, modify the theorem separately and retain the binding
 check.
@@ -2152,8 +2318,13 @@ On pull requests and pushes, CI:
 - validates the staged-tree inventory without rewriting it;
 - audits each commit's authored guide text against its first parent;
 - validates hook shell syntax;
-- builds the pinned Lean project and checks fixed Python/JavaScript/Lean parity;
-- runs the rest of the verification gate.
+- builds the pinned Lean project;
+- installs and checks the pinned Python environment, then runs every Python
+  test—including the real controlled-query/Lean/render path;
+- validates source/rule governance, regenerates the browser rule-bundle hash,
+  and rejects drift;
+- runs the Z3 theorem/binding artifact and fixed Python/JavaScript/Lean parity;
+- regenerates and rejects stale browser fixtures, then replays them in Node.
 
 To prevent an outdated guide from merging, configure the repository host to:
 
@@ -2177,6 +2348,11 @@ enforce the policy from a separately protected organization-level workflow.
 
 ### Documentation review record
 
+- 2026-07-22 — Reviewed the controlled-English-to-Lean vertical slice;
+  documented its exact no-default fact envelope, evidence and confirmation
+  bindings, unified v2 certificate, independently replayed static renderer,
+  canonical assumption and citation projections, hashed run manifest,
+  adversarial proof gates, CLI artifacts, and remaining trust boundaries.
 - 2026-07-22 — Reviewed the source-governance branch integration; documented
   governed official-source metadata, rule provenance, cache policy, bundle
   hashing/freshness, experimental review state, and fail-closed LLM grounding.
@@ -2204,44 +2380,54 @@ Future entries can be short when the surrounding sections remain correct:
 3. **Partial per-answer formal proof:** the runtime Lean certificate covers
    only the Section 194R projection. The broader six-field Python certificate
    remains comparison against `assess()`; cash TDS and GST are not Lean-proved.
-4. **Narrow Z3 theorem:** Z3 covers a whole-rupee recipient-mode Section 194R
+4. **Controlled language, not general NLP:** the new intake recognizes one
+   documented Section 194R/FY 2024–25 line grammar. Rephrased, multi-document,
+   or implicit fact patterns are refused rather than inferred.
+5. **Confirmation is not authentication:** its digest binds the reviewed bytes,
+   facts, evidence, specification, and governance state, but does not prove who
+   clicked `--accept`, capture a legal signature, or prevent an authorized
+   local operator from fabricating a new acknowledgment.
+6. **Narrow Z3 theorem:** Z3 covers a whole-rupee recipient-mode Section 194R
    slice, not the full system. Its standalone provider T6 threshold ordering
    conflicts with runtime and is not bound evidence.
-5. **Fact truth is external:** residency, PAN, turnover, FMV, retention, and
-   deliverable linkage must be grounded elsewhere.
-6. **Weak direct fact schema:** Python callers can pass malformed prior values
-   or wrong runtime types; only current negative cash/product are explicitly
-   rejected.
-7. **Individual creator assumption:** the Section 194C branch always uses the
+7. **Fact truth is external:** evidence spans prove what the local query said,
+   not whether residency, PAN, turnover, FMV, or retention is true.
+8. **Two different fact boundaries:** `S194RFacts` and controlled intake are
+   strict, but broad direct `Collab` callers can still pass malformed prior
+   values or wrong runtime types; `assess()` explicitly rejects only a smaller
+   set of conditions.
+9. **Individual creator assumption:** the Section 194C branch always uses the
    individual-payee rate unless no PAN overrides it.
-8. **Simplified aggregation:** one recipient-per-brand model; richer party and
+10. **Simplified aggregation:** one recipient-per-brand model; richer party and
    transaction histories are absent.
-9. **Mixed prior histories are not represented:** one prior cash-TDS number is
+11. **Mixed prior histories are not represented:** one prior cash-TDS number is
    subtracted from both legal branches without recording its basis, and the
    current bearer mode is applied across prior-plus-current gross-up math.
-10. **Omitted law:** Section 288B rounding, Sections 206AB and 195, GST
+12. **Omitted law:** Section 288B rounding, Sections 206AB and 195, GST
     time-of-supply, input tax credit, reverse charge, e-commerce TCS, and other
     regimes are not modeled.
-11. **GST state transition:** the code can flag registration required while
+13. **GST state transition:** the code can flag registration required while
     leaving liability `None` because the input says not registered.
-12. **JavaScript parity is sampled:** 77 rows do not prove all-input
+14. **JavaScript parity is sampled:** 77 rows do not prove all-input
     equivalence, omit prior-TDS paths and several output fields, and do not load
     the HTML UI.
-13. **Different outer claim boundaries:** Python expects a `Claim` and can
+15. **Different outer claim boundaries:** Python expects a `Claim` and can
     raise on arbitrary objects; JavaScript accepts plain objects and ignores
     unknown object keys.
-14. **Untested arithmetic paths:** nonzero prior deductions, mixed histories,
+16. **Untested arithmetic paths:** nonzero prior deductions, mixed histories,
     and fractional-paisa rounding lack assessment/eval/parity coverage.
-15. **JavaScript numeric range:** direct callers must stay within safe integer
+17. **JavaScript numeric range:** direct callers must stay within safe integer
     arithmetic.
-16. **Generated evaluation freshness:** CI checks parity and documentation
+18. **Generated evaluation freshness:** CI checks parity and documentation
     freshness, but not stale `eval/` or self-test JSON against their generators.
-17. **LLM corpus:** official materials are not bundled; grounded live-model
-   runs fail closed until every governed cache file and PDF text sidecar is
-   supplied locally and its provenance is reviewed.
-18. **Privacy:** live model modes send facts to an external provider and save
-    responses.
-19. **Documentation quality remains human:** automation can detect an inventory
+19. **LLM corpus:** official materials are not bundled; grounded live-model
+    runs fail closed until every governed cache file and PDF text sidecar is
+    supplied locally and its provenance is reviewed.
+20. **Privacy:** live model modes send facts to an external provider and save
+    responses. The local pipeline also persists the full raw query in draft
+    and confirmed-case JSON, so real deployments need access, retention, and
+    deletion controls.
+21. **Documentation quality remains human:** automation can detect an inventory
     or review change, not whether prose is genuinely simple or correct.
 
 Other omissions are listed in `spec.py` and `README.md`. When in doubt, describe
@@ -2261,7 +2447,8 @@ That a complete typed claim equals the encoded FY 2024–25 result for the
 supplied facts.
 
 **Does it prove the facts?**
-No. It is conditional on the entered facts and FMV.
+No. Exact source spans and confirmation prove which local text was accepted;
+they do not prove the statements or FMV are true.
 
 **Does it prove the legal encoding?**
 No. Golden tests and citations support the human translation, but independent
@@ -2270,6 +2457,19 @@ legal review and source governance are separate.
 **Why not let the LLM answer directly?**
 The experiment is testing exactly that. The deterministic layer makes missing,
 wrong, ambiguous, and out-of-scope states observable and non-green.
+
+**Does the new pipeline understand natural language?**
+Only a controlled subset. It recognizes one documented question and eleven
+explicit labeled facts. This makes the translation inspectable and testable;
+general paraphrases or unstated facts deliberately fail closed.
+
+**Why translate back into prose after proof?**
+The renderer never reasons over the original query. It revalidates the
+persisted certificate and selects fixed templates whose claims point to exact
+certificate fields, assumptions, and rule IDs. It also labels the explanatory
+citations as Python/governance-validated metadata rather than theorem fields.
+That gives a readable answer without letting free-form generation add
+conclusions or assumptions the proof did not cover.
 
 **Why two languages?**
 Python is convenient for the authoritative model, tests, evaluation, and Z3
@@ -2308,8 +2508,8 @@ file, update the authored explanations above, then run the generator.
 <!-- BEGIN GENERATED REPOSITORY INVENTORY -->
 <!-- Generated by tools/update_codebase_guide.py. Do not hand-edit this block. -->
 
-**Documented files:** 52
-**Repository-content snapshot (staged Git index):** `sha256:5adb558f3be2fd6e4b646d764ec551aa14d435ded5d61688a10d564419e1906b`
+**Documented files:** 62
+**Repository-content snapshot (staged Git index):** `sha256:dd93c28075272fe0a6b8cf6278349b19aa793e149add8fca16e7ba80c96d7474`
 
 The digest covers the path, Git-style file mode, and contents of every row except this guide itself. It changes when source, tests, data, configuration, automation, or executable bits change, even if the file's line count does not.
 
@@ -2323,20 +2523,25 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 | `LICENSE` | Repository | 25 | Authored legal text | Applies the MIT software license and disclaims warranties; it does not turn the project into tax or legal advice. |
 | `LeanProof.lean` | Lean proof project | 1 | Authored module root | Imports the checked-in Section 194R Lean module so the pinned Lake project has one stable build root. |
 | `LeanProof/S194R.lean` | Lean proof project | 119 | Authored formal specification | Defines the exact-paise Section 194R fact model, decision function, refusal paths, and compile-time examples used by runtime case proofs. |
-| `README.md` | Documentation | 166 | Authored overview | Presents the public thesis, machine-checked finding, measured results, comparison with Pramaana's public pattern, and scope limitations. |
-| `REPO_STRUCTURE.md` | Documentation | 147 | Authored maintainer guide | Gives front-end builders the shorter trust-chain, engine API, page, and hosting constraints needed to redesign the website safely. |
-| `collabproof/__init__.py` | Python package | 18 | Authored source | Defines the package's public import surface by re-exporting the assessor, verifier, domain models, helpers, rules, and deliberately naive answerer. |
+| `README.md` | Documentation | 204 | Authored overview | Presents the public thesis, machine-checked finding, measured results, comparison with Pramaana's public pattern, and scope limitations. |
+| `REPO_STRUCTURE.md` | Documentation | 167 | Authored maintainer guide | Gives front-end builders the shorter trust-chain, engine API, page, and hosting constraints needed to redesign the website safely. |
+| `collabproof/__init__.py` | Python package | 65 | Authored source | Defines the public import surface for the broad assessor/verifier and the exact Section 194R slice's fact, intake, Lean-certificate, rendering, and pipeline APIs. |
 | `collabproof/baseline.py` | Python package | 49 | Authored source | Implements a plausible but intentionally wrong calculator whose eight documented mistakes give the verifier a realistic adversary. |
 | `collabproof/governance.py` | Python package | 395 | Authored governance tooling | Validates official-source metadata and rule provenance, hashes the governed bundle, fetches allowlisted sources, and reports certificate freshness impact. |
+| `collabproof/intake.py` | Python package | 1189 | Authored intake boundary | Parses bounded controlled-English Section 194R queries into typed facts with exact source spans, blocks missing or conflicting facts, and binds explicit acceptance to the exact specification sources and governance. |
 | `collabproof/llm_adapter.py` | Python package | 323 | Authored source | Serializes facts for an LLM, enforces an exact eight-key JSON boundary, classifies abstentions/refusals, and optionally calls Anthropic when a key is supplied. |
-| `collabproof/runtime_proof.py` | Python package | 435 | Authored proof bridge | Normalizes a collaboration, generates a concrete Section 194R Lean theorem, checks it in a fresh Lean process, and emits a fail-closed hashed certificate. |
+| `collabproof/pipeline.py` | Python package | 353 | Authored pipeline | Orchestrates the two-phase formalize-and-prove CLI, requiring exact draft acceptance and a unique private run directory before confirmed-case persistence, Lean certification, safe rendering, and a cross-checked final hash manifest. |
+| `collabproof/render.py` | Python package | 969 | Authored safe renderer | Revalidates the confirmed sidecar and every v2 certificate binding, independently reruns Lean, and fail-closes before rendering fixed English output, canonical assumptions, and governed rule citations. |
+| `collabproof/runtime_proof.py` | Python package | 859 | Authored proof bridge | Fresh-parses a confirmed-case artifact, generates and kernel-checks an exact Section 194R theorem, and emits a non-overwriting v2 certificate bound to source evidence, specification, governance, and rule trails. |
+| `collabproof/s194r.py` | Python package | 221 | Authored trusted fact model | Defines the strict bounded eleven-field, no-default fact envelope consumed by the Section 194R Lean slice and its explicit projection to and from the broader collaboration model. |
 | `collabproof/spec.py` | Python package | 389 | Authored source of truth | Encodes the FY 2024-25 tax-rule interpretation, exact-paise arithmetic, input/output data models, citations, refusal boundaries, and facts-to-assessment algorithm. |
 | `collabproof/verify.py` | Python package | 390 | Authored source of truth | Checks a complete typed six-field claim against an assessment and returns a fail-closed certificate with coverage, causal rule IDs, governed bundle identity, and freshness support. |
 | `docs/collabproof.js` | Browser | 361 | Authored JavaScript port | Ports the Python assessor, verifier, naive baseline, constants, and citations to a browser/Node-compatible engine whose behavior is checked by parity vectors. |
 | `docs/index.html` | Browser | 525 | Authored static UI | Provides the no-build interactive deal assessor, claim certifier, parity badge, rule explanations, and product-value sensitivity chart. |
+| `docs/nl-verified-pipeline.md` | Documentation | 361 | Authored pipeline guide | Documents the controlled-English contract, evidence spans, explicit confirmation, governance-bound Lean certificate, certificate-only rendering, commands, and trust limits. |
 | `docs/parity_check_node.js` | Browser verification | 24 | Authored CI runner | Loads the JavaScript engine and generated vectors in Node, reports divergences, and exits non-zero so browser drift fails CI. |
 | `docs/parity_vectors.js` | Browser verification | 3127 | Generated by gen_parity_vectors.py | Stores Python-produced expected results for 62 assessment rows (52 unique facts) and 15 adversarial verifier rows; it must never be edited by hand. |
-| `docs/runtime-proof-artifacts.md` | Documentation | 94 | Authored proof guide | Documents the Section 194R runtime theorem, certificate contents, trust boundary, uncovered outputs, and reproduction commands. |
+| `docs/runtime-proof-artifacts.md` | Documentation | 140 | Authored proof guide | Documents the Section 194R runtime theorem, certificate contents, trust boundary, uncovered outputs, and reproduction commands. |
 | `docs/source-governance.md` | Documentation | 63 | Authored governance guide | Explains source fetching, hashing, independent review gates, governed bundle identity, impact analysis, and stale-certificate handling. |
 | `eval/cases.json` | Evaluation | 1202 | Generated by run_eval.py | Stores the 50 serialized collaboration fact patterns used to compare answerers against the executable specification. |
 | `eval/results.json` | Evaluation | 572 | Generated by run_eval.py | Stores per-case verdicts, mismatch explanations, rule-hit counts, and the limited secondary certified-but-wrong guard for the committed naive-baseline run. |
@@ -2347,8 +2552,9 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 | `lake-manifest.json` | Lean proof project | 6 | Generated Lake manifest | Pins the dependency-free Lake workspace metadata used to reproduce the checked Lean build. |
 | `lakefile.toml` | Lean proof project | 6 | Authored build configuration | Defines the dependency-free Lean library and root module built locally and in CI. |
 | `lean-toolchain` | Lean proof project | 1 | Authored toolchain pin | Selects the exact Lean release used for local kernel checks and the CI build. |
-| `proofs/check_lean_parity.py` | Proof | 166 | Authored parity runner | Checks fixed Section 194R cases across the Python assessor, browser JavaScript engine, and compiled Lean model. |
+| `proofs/check_lean_parity.py` | Proof | 166 | Authored parity runner | Checks fixed Section 194R cases and the production eleven-field theorem identity across the Python assessor, browser JavaScript engine, and compiled Lean model. |
 | `proofs/example_s194r_facts.json` | Proof | 26 | Authored example input | Provides a reproducible complete normalized fact pattern for the runtime Lean certificate CLI. |
+| `proofs/example_s194r_query.txt` | Proof | 13 | Authored controlled-English example | Provides a complete eleven-fact FY 2024-25 Section 194R query for reproducing the formalize, confirm, prove, and render pipeline. |
 | `proofs/prove_cliff.py` | Proof | 160 | Authored Z3 artifact | Proves narrow recipient-mode dead-zone theorems, binds 100,000 values to assess(), and prints a separately labeled provider illustration that is not runtime-bound. |
 | `pyproject.toml` | Repository | 12 | Authored configuration | Declares package metadata, Python 3.10+ compatibility, the MIT license file, and pytest's test directory/options. |
 | `requirements-dev.txt` | Repository | 11 | Authored lock-style list | Pins the exact test and proof dependency versions used locally and in CI for reproducibility. |
@@ -2362,9 +2568,13 @@ The digest covers the path, Git-style file mode, and contents of every row excep
 | `tests/test_codebase_guide.py` | Tests | 117 | Authored integration tests | Exercises index purity, deletion review, unborn-repository adoption, per-commit history enforcement, atomic mode preservation, and marker validation for documentation automation. |
 | `tests/test_golden.py` | Tests | 131 | Authored tests | Checks ten hand-computed statutory scenarios and two refusal scenarios, using a human interpretation rather than the implementation as the oracle. |
 | `tests/test_governance.py` | Tests | 97 | Authored governance tests | Checks source/rule completeness, bundle-hash sensitivity, cache integrity, review promotion, impact analysis, and certificate freshness decisions. |
+| `tests/test_intake.py` | Tests | 400 | Authored intake tests | Checks controlled-English structure and types, exact money and evidence spans, missing and conflicting facts, persistence integrity, explicit confirmation, and governance drift. |
 | `tests/test_llm_boundary.py` | Tests | 291 | Authored tests | Regression-tests complete fact serialization, strict JSON types/keys, refusal and abstention semantics, evaluator consistency, and context-preserving retries. |
+| `tests/test_pipeline.py` | Tests | 236 | Authored pipeline tests | Checks review-draft persistence, duplicate-key and confirmation gates, the end-to-end Lean path, non-overwriting artifact manifests, rendering, and CLI status reporting. |
 | `tests/test_properties.py` | Tests | 125 | Authored property tests | Uses Hypothesis-generated collaborations to check seven invariants such as selected TDS non-negativity, threshold behavior, round-trip certification, and monotonic registration. |
-| `tests/test_runtime_proof.py` | Tests | 108 | Authored proof-bridge tests | Checks normalized fact completeness, concrete theorem generation, certificate hashes and scope labels, conditional cash output, and fail-closed Lean failures. |
+| `tests/test_render.py` | Tests | 391 | Authored renderer tests | Checks answered and refusal prose, assumption/citation support, fresh Lean replay, and fail-closed rejection of tampered certificates, confirmations, governance, outputs, and artifacts. |
+| `tests/test_runtime_proof.py` | Tests | 215 | Authored proof-bridge tests | Checks bounded normalized facts, confirmed-sidecar integrity, concrete theorem generation, certificate identities, conditional cash output, timeouts, source drift, and fail-closed Lean failures. |
+| `tests/test_three_arms_cli.py` | Tests | 31 | Authored experiment regressions | Checks that the live experiment exits before corpus access without an API key and that governance does not misclassify the standalone T6 gross-up exhibit as a theorem. |
 | `tests/test_verify.py` | Tests | 155 | Authored adversarial tests | Checks completeness, runtime claim types, status precedence, ambiguity, refusals, and path-specific mismatch rule attribution. |
-| `tools/update_codebase_guide.py` | Documentation automation | 700 | Authored standard-library tool | Requires per-file purposes, refreshes or validates the repository digest, and enforces authored guide movement per staged change and per CI commit. |
+| `tools/update_codebase_guide.py` | Documentation automation | 750 | Authored standard-library tool | Requires per-file purposes, refreshes or validates the repository digest, and enforces authored guide movement per staged change and per CI commit. |
 <!-- END GENERATED REPOSITORY INVENTORY -->

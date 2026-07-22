@@ -2349,7 +2349,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "CERTIFIED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2396,7 +2396,7 @@ window.PARITY_VECTORS = {
    "claim": {},
    "expected": {
     "status": "INCOMPLETE",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2445,7 +2445,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INCOMPLETE",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2500,7 +2500,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [
      {
       "field": "tds_194r",
@@ -2561,7 +2561,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "AMBIGUOUS",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2614,7 +2614,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INCOMPLETE",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2669,7 +2669,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [
      {
       "field": "cash_tds",
@@ -2730,7 +2730,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [
      {
       "field": "tds_194r",
@@ -2791,7 +2791,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [
      {
       "field": "tds_194r",
@@ -2852,7 +2852,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "CERTIFIED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -2906,7 +2906,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "REJECTED",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [
      {
       "field": "gst_liability",
@@ -2967,7 +2967,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INVALID",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -3021,7 +3021,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "INVALID",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [
      "tds_194r",
@@ -3068,7 +3068,7 @@ window.PARITY_VECTORS = {
    "claim": {},
    "expected": {
     "status": "OUT_OF_SCOPE",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [],
     "checked_fields": [],
@@ -3108,7 +3108,7 @@ window.PARITY_VECTORS = {
    },
    "expected": {
     "status": "OUT_OF_SCOPE",
-    "rule_bundle_hash": "46d371fb99ac68318f5c71cf33e8f7b718fde380825ebe01b2d18cd64a51f620",
+    "rule_bundle_hash": "4076f71d038b47f35f8c059c81053d5c519308191202e91e60cbf5c70c7eff0c",
     "mismatches": [],
     "required_fields": [],
     "checked_fields": [

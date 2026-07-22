@@ -8,7 +8,11 @@ Built independently from public materials as a [Pramaana Labs](https://pramaanal
 [codebase guide](CODEBASE_GUIDE.md), which explains the domain, every execution path,
 every folder and file, the proof/testing boundaries, and how documentation stays current.
 
-Every number in this README was produced by code in this repo. Run it yourself:
+Every number in this README was produced by code in this repo. The full gate
+requires Python 3.10+ (CI uses 3.12), Node 20, and `elan`/`lake` with the exact
+toolchain in `lean-toolchain`. Run it from a source checkout; the current
+package metadata does not bundle `LeanProof/`, `sources/`, or the Lake files
+into a standalone wheel.
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -20,6 +24,24 @@ python run_eval.py                  # certifier vs the naive baseline (n=50)
 python run_eval.py --llm            # optional; needs ANTHROPIC_API_KEY
 python gen_parity_vectors.py && node docs/parity_check_node.js   # assessor + verifier parity
 ```
+
+The next vertical slice is also executable end to end: a bounded
+controlled-English question becomes an evidence-linked 11-fact draft, waits
+for explicit confirmation, becomes a per-case Lean theorem and certificate,
+and is rendered through static certificate-led prose:
+
+```bash
+python -m collabproof.pipeline formalize proofs/example_s194r_query.txt \
+  --output /tmp/collabproof-draft.json --case-id demo-194r
+# Review the JSON and copy the printed draft_sha256 only if every fact is right.
+python -m collabproof.pipeline prove /tmp/collabproof-draft.json \
+  --confirm-sha256 REVIEWED_DRAFT_SHA256 --accept \
+  --output-dir /tmp/collabproof-proof
+```
+
+This is deliberately not general NLP: unknown wording, omitted facts,
+conflicts, unsupported periods, and injected instructions fail closed. See
+[`docs/nl-verified-pipeline.md`](docs/nl-verified-pipeline.md).
 
 **Try it in a browser — no install:** `docs/` is a self-contained page (GitHub Pages-ready:
 Settings → Pages → deploy from `/docs`). Enter a deal, get every number with its statutory rule,
@@ -59,6 +81,18 @@ Exhaustive enumeration over the 100,000 whole-rupee points ₹1–₹1,00,000 co
 - `REJECTED` — with the path-specific decision rule and supporting trail, e.g. an excess-only calculation is attributed to `IT-194R-THRESHOLD`, not a generic scope citation
 - `AMBIGUOUS` — the answer matches one branch of a *material* statutory fork but states no basis
 - `OUT_OF_SCOPE` — the spec refuses the pattern (non-resident payee → s.195; no business nexus → s.56(2)(x)) rather than guessing
+
+For the narrower Lean path, `formalize_194r()` accepts one documented
+controlled-English grammar and proposes exactly the facts consumed by the
+formal model. It attaches exact source spans, asks for clarification on every
+missing fact, preserves contradictions, and requires confirmation of the
+draft digest. Only then can the confirmed `certify_194r_facts()` path invoke
+Lean. `render_194r()` reloads the persisted certificate and its confirmed-case
+sidecar, rechecks their fact, source, evidence, specification, governance, and
+rule-trail bindings, independently reruns Lean on the exact artifact, and then
+selects static prose with explicit assumptions and governed citations. A
+last-written manifest hashes every persisted run artifact.
+A scope refusal is rendered as a refusal—not as a zero-tax result.
 
 ## Results (all real, all reproducible)
 
@@ -128,13 +162,17 @@ decision rule and support trail when a claim breaks — refusing unsupported pat
 explores that pattern without claiming implementation equivalence: `spec.py` is a hand-encoded
 rule engine; `verify()` is a fail-closed equality checker over its outputs;
 `AMBIGUOUS`/`OUT_OF_SCOPE` are refusal verdicts; and the rule-ID trail is the plain-language
-back-translation. For the deliberately narrow s.194R slice, it now emits a per-case Lean theorem,
-kernel-check result, complete normalized facts and hashes in a runtime certificate; GST and the
-194J/194C fork remain explicitly unverified by Lean. See
-[`docs/runtime-proof-artifacts.md`](docs/runtime-proof-artifacts.md). What this toy still does
-**not** have is the hard part —
-automated translation of statute into formal rules. Every hour I spent hand-encoding circular
-Q&As is an argument for why automating that step is the actual product.
+back-translation. For the deliberately narrow s.194R slice, it now implements
+the complete controlled path: question → evidence-linked typed facts → explicit
+digest acceptance → per-case Lean theorem → kernel-check result → governance-bound
+certificate → constrained natural-language answer. GST and the 194J/194C fork
+remain explicitly unverified by Lean. See
+[`docs/nl-verified-pipeline.md`](docs/nl-verified-pipeline.md) and
+[`docs/runtime-proof-artifacts.md`](docs/runtime-proof-artifacts.md). What this
+toy still does **not** have is either general natural-language understanding or
+the harder offline compiler from statute into reviewed formal rules. Every
+hour spent hand-encoding circular Q&As is an argument for why automating and
+reviewing that step is the actual product.
 
 **Why retain Python and Z3 alongside Lean 4?** Python remains the broader executable product spec
 and JavaScript remains the browser port. Z3 remains useful for property discovery and the
@@ -159,7 +197,7 @@ is certified garbage.
 
 ## Limitations (read before citing)
 
-Toy scope, deliberately: one recipient-per-brand aggregation model; no s.288B rounding; ss.206AB, 195, GST time-of-supply/ITC/RCM/e-commerce TCS unmodeled; the GST-exclusive valuation line of Circular 12/2022 and mixed prior bearer-modes are flagged in docstrings as verify-before-relying. The versioned [source governance pipeline](docs/source-governance.md) maps every rule to official public sources, assumptions and tests, but **no rule currently claims independent tax/CA review**; all remain experimental and the provider-borne gross-up threshold path is the early review target. **Version pin:** FY 2024-25 (Act of 1961 through Finance (No. 2) Act 2024). Finance Act 2025 threshold revisions and the Income-tax Act 2025 renumbering would both break this spec — which is the point: *rule drift makes spec versioning a first-class product problem for any verification company.* Educational, synthetic, and not legal or tax advice.
+Toy scope, deliberately: the natural-language layer is a controlled grammar rather than general NLP, and its confirmation digest records integrity and explicit local acknowledgment—not authenticated identity or a legal signature. The model uses one recipient-per-brand aggregation; has no s.288B rounding; and leaves ss.206AB, 195, GST time-of-supply/ITC/RCM/e-commerce TCS unmodeled. The GST-exclusive valuation line of Circular 12/2022 and mixed prior bearer-modes are flagged in docstrings as verify-before-relying. The versioned [source governance pipeline](docs/source-governance.md) maps every rule to official public sources, assumptions and tests, but **no rule currently claims independent tax/CA review**; all remain experimental and the provider-borne gross-up threshold path is the early review target. **Version pin:** FY 2024-25 (Act of 1961 through Finance (No. 2) Act 2024). Finance Act 2025 threshold revisions and the Income-tax Act 2025 renumbering would both break this spec — which is the point: *rule drift makes spec versioning a first-class product problem for any verification company.* Educational, synthetic, and not legal or tax advice.
 
 ---
 
