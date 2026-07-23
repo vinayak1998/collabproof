@@ -2348,6 +2348,11 @@ enforce the policy from a separately protected organization-level workflow.
 
 ### Documentation review record
 
+- 2026-07-23 — Reviewed the tree-preserving ancestry merge of the runtime-proof
+  and source-governance feature branches; confirmed its tree is byte-for-byte
+  identical to the tested `be62417` milestone tree and that the integrated
+  behavior is documented by the preceding runtime, governance, and controlled-
+  English review entries. No runtime behavior changed in the ancestry merge.
 - 2026-07-22 — Reviewed the controlled-English-to-Lean vertical slice;
   documented its exact no-default fact envelope, evidence and confirmation
   bindings, unified v2 certificate, independently replayed static renderer,
